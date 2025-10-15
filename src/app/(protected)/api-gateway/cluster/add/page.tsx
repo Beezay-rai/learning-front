@@ -1,164 +1,200 @@
-// "use client";
+"use client";
 
-// import React from "react";
-// import {
-//   Box,
-//   Button,
-//   Container,
-//   TextField,
-//   Paper,
-//   Typography,
-//   IconButton,
-// } from "@mui/material";
-// import { useForm, Controller, useFieldArray } from "react-hook-form";
-// import { yupResolver } from "@hookform/resolvers/yup";
-// import * as yup from "yup";
-// import { apiService } from "@/api/api-gateway/apiService";
-// import { Minus, Plus } from "lucide-react";
-// import { AddClusterRequest } from "@/api/api-gateway/interfaces/cluster";
-// // import { Delete, Add } from "@mui/icons-material";
+import React from "react";
+import {
+  Box,
+  Button,
+  Container,
+  TextField,
+  Paper,
+  Typography,
+  IconButton,
+  Grid,
+} from "@mui/material";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { apiService } from "@/api/api-gateway/apiService";
+import { Minus, Plus } from "lucide-react";
+import { AddClusterRequest } from "@/api/api-gateway/interfaces/cluster";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import Link from "next/link";
+import { routes } from "@/app/routes.generated";
 
-// // Yup schema
-// const schema = yup.object({
-//   name: yup.string().required("Name is required"),
-//   destinationAddress: yup
-//     .array()
-//     .of(
-//       yup.object({
-//         key: yup.string().required("Key is required"),
-//         value: yup.string().required("Value is required"),
-//       })
-//     )
-//     .min(1, "At least one destination is required"),
-// });
+const schema = yup.object({
+  name: yup
+    .string()
+    .required("Cluster name is required")
+    .max(50, "Cluster name must be at most 50 characters"),
+  destinationAddress: yup
+    .array()
+    .of(
+      yup.object({
+        name: yup
+          .string()
+          .required("Destination name is required")
+          .max(30, "Destination name must be at most 30 characters"),
+        destinationAddress: yup
+          .string()
+          .required("Destination address is required"),
+        // .url(
+        //   "Must be a valid URI (e.g., http://example.com or https://example.com)"
+        // ),
+      })
+    )
+    .required("At least one destination is required")
+    .min(1, "At least one destination is required"),
+});
 
-// export default function AddClusterDestinationPage() {
-//   const { control, handleSubmit, formState, reset } =
-//     useForm<AddClusterRequest>({
-//       resolver: yupResolver(schema),
-//       defaultValues: {
-//         name: "",
-//         destinationAddress: [{ key: "", value: "" }],
-//       },
-//     });
+export default function AddClusterDestinationPage() {
+  const router = useRouter();
+  const { control, handleSubmit, formState, reset } =
+    useForm<AddClusterRequest>({
+      resolver: yupResolver(schema),
+      defaultValues: {
+        name: "",
+        destinationAddress: [],
+      },
+    });
 
-//   const { fields, append, remove } = useFieldArray({
-//     control,
-//     name: "destinationAddress",
-//   });
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "destinationAddress",
+  });
 
-//   const onSubmit = async (data: AddClusterRequest) => {
-//     try {
-//       // Convert array to dictionary
-//       const payload = {
-//         name: data.name,
-//         destinationAddress: data.destinationAddress.reduce(
-//           (acc, cur) => ({ ...acc, [cur.key]: cur.value }),
-//           {}
-//         ),
-//       };
-//       const response = await apiService.addCluster(
-//         payload as AddClusterRequest
-//       );
-//       alert("Cluster destination added successfully!");
-//       reset();
-//     } catch (err) {
-//       console.error(err);
-//       alert("Failed to add cluster destination.");
-//     }
-//   };
+  const {
+    mutateAsync,
+    isPending: isSubmitting,
+    isSuccess,
+  } = apiService.useAddCluster();
+  const onSubmit = async (data: AddClusterRequest) => {
+    try {
+      await mutateAsync(data, {
+        onSuccess: () => {
+          toast.success("Cluster Created Sucessfully !");
+          router.push(routes["(protected)"]["api-gateway"].cluster.index);
+        },
+      });
+    } catch (err) {
+      console.error("Failed to add cluster:", err);
+    }
+  };
 
-//   return (
-//     <Container maxWidth="sm" sx={{ mt: 4 }}>
-//       <Paper sx={{ p: 4 }}>
-//         <Typography variant="h5" gutterBottom>
-//           Add Cluster Destination
-//         </Typography>
+  return (
+    <Paper sx={{ p: 4 }}>
+      <Typography variant="h5" gutterBottom>
+        Add Cluster
+      </Typography>
 
-//         <Box
-//           component="form"
-//           noValidate
-//           onSubmit={handleSubmit(onSubmit)}
-//           sx={{ display: "flex", flexDirection: "column", gap: 2 }}
-//         >
-//           {/* Name Field */}
-//           <Controller
-//             name="name"
-//             control={control}
-//             render={({ field }) => (
-//               <TextField
-//                 {...field}
-//                 label="Cluster Destination Name"
-//                 error={!!formState.errors.name}
-//                 helperText={formState.errors.name?.message}
-//                 fullWidth
-//               />
-//             )}
-//           />
+      <Box
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+        sx={{ display: "flex", flexDirection: "column", gap: 3 }}
+      >
+        <Grid container spacing={2}>
+          <Grid size={5}>
+            <Controller
+              name="name"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Cluster Name"
+                  error={!!formState.errors.name}
+                  helperText={formState.errors.name?.message}
+                  fullWidth
+                  inputProps={{ maxLength: 50 }}
+                />
+              )}
+            />
+          </Grid>
+          <Grid size={2}>
+            <Button
+              type="button"
+              variant="outlined"
+              startIcon={<Plus />}
+              onClick={() => append({ name: "", destinationAddress: "" })}
+            >
+              Add Entry
+            </Button>
+          </Grid>
+        </Grid>
 
-//           {/* Dynamic Destination Entries */}
-//           {fields.map((field, index) => (
-//             <Box
-//               key={field.id}
-//               sx={{ display: "flex", gap: 1, alignItems: "center" }}
-//             >
-//               <Controller
-//                 name={`destinationAddress.${index}.key`}
-//                 control={control}
-//                 render={({ field }) => (
-//                   <TextField
-//                     {...field}
-//                     label="Key"
-//                     error={!!formState.errors.destinationAddress?.[index]?.key}
-//                     helperText={
-//                       formState.errors.destinationAddress?.[index]?.key?.message
-//                     }
-//                     fullWidth
-//                   />
-//                 )}
-//               />
-//               <Controller
-//                 name={`destinationAddress.${index}.value`}
-//                 control={control}
-//                 render={({ field }) => (
-//                   <TextField
-//                     {...field}
-//                     label="Value"
-//                     error={
-//                       !!formState.errors.destinationAddress?.[index]?.value
-//                     }
-//                     helperText={
-//                       formState.errors.destinationAddress?.[index]?.value
-//                         ?.message
-//                     }
-//                     fullWidth
-//                   />
-//                 )}
-//               />
-//               <IconButton color="error" onClick={() => remove(index)}>
-//                 <Minus />
-//               </IconButton>
-//             </Box>
-//           ))}
+        {fields.map((field, index) => (
+          <Grid container key={field.id} spacing={2} alignItems="center">
+            <Grid size={4}>
+              <Controller
+                name={`destinationAddress.${index}.name`}
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Name"
+                    error={!!formState.errors.destinationAddress?.[index]?.name}
+                    helperText={
+                      formState.errors.destinationAddress?.[index]?.name
+                        ?.message
+                    }
+                    fullWidth
+                    inputProps={{ maxLength: 30 }}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid size={7}>
+              <Controller
+                name={`destinationAddress.${index}.destinationAddress`}
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Address"
+                    error={
+                      !!formState.errors.destinationAddress?.[index]
+                        ?.destinationAddress
+                    }
+                    helperText={
+                      formState.errors.destinationAddress?.[index]
+                        ?.destinationAddress?.message
+                    }
+                    fullWidth
+                  />
+                )}
+              />
+            </Grid>
+            <Grid size={1}>
+              <IconButton color="error" onClick={() => remove(index)}>
+                <Minus />
+              </IconButton>
+            </Grid>
+          </Grid>
+        ))}
 
-//           <Button
-//             type="button"
-//             startIcon={<Plus />}
-//             onClick={() => append({ key: "", value: "" })}
-//           >
-//             Add Entry
-//           </Button>
+        <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            disabled={isSubmitting}
+            sx={{ minWidth: 120 }}
+          >
+            {isSubmitting ? "Adding..." : "Add Cluster"}
+          </Button>
 
-//           <Button
-//             type="submit"
-//             variant="contained"
-//             color="primary"
-//             disabled={formState.isSubmitting}
-//           >
-//             {formState.isSubmitting ? "Adding..." : "Add Destination"}
-//           </Button>
-//         </Box>
-//       </Paper>
-//     </Container>
-//   );
-// }
+          <Link href={routes["(protected)"]["api-gateway"].cluster.index}>
+            <Button
+              type="button"
+              variant="outlined"
+              color="error"
+              disabled={isSubmitting}
+              sx={{ minWidth: 120 }}
+            >
+              Cancel
+            </Button>
+          </Link>
+        </Box>
+      </Box>
+    </Paper>
+  );
+}

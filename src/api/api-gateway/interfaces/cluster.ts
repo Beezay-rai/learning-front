@@ -1,5 +1,10 @@
 import { string } from "yup";
 
+export interface AddClusterDestination {
+  name: string;
+  destinationAddress: string;
+}
+
 export interface ClusterDestination {
   clusterId: string;
   name: string;
@@ -29,5 +34,5 @@ export interface Cluster {
 
 export interface AddClusterRequest {
   name: string;
-  destinationAddress: Record<string, string>;
+  destinationAddress: AddClusterDestination[];
 }
