@@ -6,7 +6,7 @@ import { Controller } from "react-hook-form";
 
 export interface Option {
   label: string;
-  value: string;
+  value: string | number;
 }
 
 interface SearchableSelectProps {

@@ -124,7 +124,7 @@ function RoutePage() {
         const value = info.getValue() as string;
         return value === "0001-01-01T00:00:00"
           ? "N/A"
-          : new Date(value).toLocaleDateString();
+          : new Date(value).toLocaleDateString("en-CA");
       },
     },
     {
@@ -140,7 +140,8 @@ function RoutePage() {
     {
       accessorKey: "created_date",
       header: "Created Date",
-      cell: (info) => new Date(info.getValue() as string).toLocaleDateString(),
+      cell: (info) =>
+        new Date(info.getValue() as string).toLocaleDateString("en-CA"),
     },
     {
       accessorKey: "updated_By",
@@ -155,7 +156,7 @@ function RoutePage() {
         const value = info.getValue() as string;
         return value === "0001-01-01T00:00:00"
           ? "N/A"
-          : new Date(value).toLocaleDateString();
+          : new Date(value).toLocaleDateString("en-CA");
       },
     },
 

@@ -59,34 +59,22 @@ export default function EditRoutePage() {
     }
   );
 
-  const { control, handleSubmit, formState, reset } = useForm<RouteRequest>({
-    resolver: yupResolver(schema),
-    defaultValues: {
-      name: "",
-      clusterId: "",
-      path: "",
-      methods: [],
-    },
-  });
-
-  const { data: clusters } = apiService.useGetClusters();
-  const clusterOptions = clusters?.items.map((item, index) => {
-    return {
-      label: item.name,
-      value: item.id,
-    };
-  });
-
   const { mutateAsync, isPending: isSubmitting } = apiService.useUpdateRoute();
 
   const onSubmit = async (data: RouteRequest) => {
     try {
-      await mutateAsync(data, {
-        onSuccess: () => {
-          toast.success("Route Updated successfully!");
-          router.push(routes["(protected)"]["api-gateway"].route.index);
+      await mutateAsync(
+        {
+          routeId: id,
+          data: data,
         },
-      });
+        {
+          onSuccess: () => {
+            toast.success("Route Updated successfully!");
+            router.push(routes["(protected)"]["api-gateway"].route.index);
+          },
+        }
+      );
     } catch (err) {
       console.error("Failed to add route:", err);
       toast.error("Failed to Update route");
@@ -105,7 +93,7 @@ export default function EditRoutePage() {
         <RouteForm
           isAdd={false}
           onSubmit={onSubmit}
-          loading={routeLoading}
+          loading={isSubmitting}
           defaultValue={route}
         ></RouteForm>
       )}

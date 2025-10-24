@@ -14,6 +14,9 @@ export const routes = {
         add: {
           index: "/api-gateway/cluster/add",
         },
+        edit: {
+          index: "/api-gateway/cluster/",
+        },
       },
       route: {
         index: "/api-gateway/route",

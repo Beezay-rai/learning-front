@@ -5,7 +5,7 @@ import {
   UseQueryOptions,
 } from "@tanstack/react-query";
 import myApiClient from "./apiClient";
-import { AddClusterRequest, Cluster } from "./interfaces/cluster";
+import { ClusterRequest, Cluster } from "./interfaces/cluster";
 import { RouteRequest, Route } from "./interfaces/route";
 
 const getAllRoutes = async (): Promise<PaginatedResponse<Route>> => {
@@ -23,8 +23,16 @@ const addRoute = async (data: RouteRequest): Promise<Route> => {
   return response.data.data;
 };
 
-const updateRoute = async (data: RouteRequest): Promise<Route> => {
-  const response = await myApiClient.put(`/v1/routes`, data);
+type UpdateRouteParams = {
+  routeId: number;
+  data: RouteRequest;
+};
+
+const updateRoute = async ({
+  routeId,
+  data,
+}: UpdateRouteParams): Promise<Route> => {
+  const response = await myApiClient.put(`/v1/routes/${routeId}`, data);
   return response.data.data;
 };
 
@@ -33,8 +41,26 @@ const getAllClusters = async (): Promise<PaginatedResponse<Cluster>> => {
   return response.data.data;
 };
 
-const addCluster = async (data: AddClusterRequest): Promise<Cluster> => {
+const getClusterById = async (id: number): Promise<Cluster> => {
+  const response = await myApiClient.get(`/v1/clusters/` + id);
+  return response.data.data;
+};
+
+const addCluster = async (data: ClusterRequest): Promise<Cluster> => {
   const response = await myApiClient.post(`/v1/clusters`, data);
+  return response.data.data;
+};
+
+type UpdateClusterParams = {
+  clusterId: number;
+  data: ClusterRequest;
+};
+
+const updateCluster = async ({
+  clusterId,
+  data,
+}: UpdateClusterParams): Promise<Cluster> => {
+  const response = await myApiClient.put(`/v1/clusters/${clusterId}`, data);
   return response.data.data;
 };
 
@@ -42,7 +68,7 @@ const serverApiService = {
   getRouteById: (id: number) => getRouteById(id),
   getAllClusters: () => getAllClusters(),
   createRoute: (data: RouteRequest) => addRoute(data),
-  updateRoute: (id: number, data: RouteRequest) => updateRoute(data),
+  // updateRoute: (id: number, data: RouteRequest) => updateRoute(id, data),
 };
 
 const apiService = {
@@ -92,11 +118,33 @@ const apiService = {
       queryFn: getAllClusters,
     });
   },
+  useGetClusterById: (
+    id: number,
+    options?: Omit<
+      UseQueryOptions<Cluster, Error, Cluster, ["cluster", number | undefined]>,
+      "queryKey" | "queryFn"
+    >
+  ) => {
+    return useQuery({
+      queryKey: ["cluster", id],
+      queryFn: () => getClusterById(id),
+      ...options,
+    });
+  },
 
   useAddCluster: () => {
     const queryClient = useQueryClient();
     return useMutation({
       mutationFn: addCluster,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["clusters"] });
+      },
+    });
+  },
+  useUpdateCluster: () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationFn: updateCluster,
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["clusters"] });
       },

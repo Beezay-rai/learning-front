@@ -16,11 +16,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { apiService } from "@/api/api-gateway/apiService";
 import { Minus, Plus } from "lucide-react";
-import { AddClusterRequest } from "@/api/api-gateway/interfaces/cluster";
+import { ClusterRequest } from "@/api/api-gateway/interfaces/cluster";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import { routes } from "@/app/routes.generated";
+import ClusterForm from "../ClusterForm";
 
 const schema = yup.object({
   name: yup
@@ -47,16 +48,15 @@ const schema = yup.object({
     .min(1, "At least one destination is required"),
 });
 
-export default function AddClusterDestinationPage() {
+export default function AddCluster() {
   const router = useRouter();
-  const { control, handleSubmit, formState, reset } =
-    useForm<AddClusterRequest>({
-      resolver: yupResolver(schema),
-      defaultValues: {
-        name: "",
-        destinationAddress: [],
-      },
-    });
+  const { control, handleSubmit, formState, reset } = useForm<ClusterRequest>({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      name: "",
+      clusterDestination: [],
+    },
+  });
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -68,7 +68,7 @@ export default function AddClusterDestinationPage() {
     isPending: isSubmitting,
     isSuccess,
   } = apiService.useAddCluster();
-  const onSubmit = async (data: AddClusterRequest) => {
+  const onSubmit = async (data: ClusterRequest) => {
     try {
       await mutateAsync(data, {
         onSuccess: () => {
@@ -86,8 +86,8 @@ export default function AddClusterDestinationPage() {
       <Typography variant="h5" gutterBottom>
         Add Cluster
       </Typography>
-
-      <Box
+      <ClusterForm onSubmit={onSubmit} loading={isSubmitting}></ClusterForm>
+      {/* <Box
         component="form"
         onSubmit={handleSubmit(onSubmit)}
         sx={{ display: "flex", flexDirection: "column", gap: 3 }}
@@ -194,7 +194,7 @@ export default function AddClusterDestinationPage() {
             </Button>
           </Link>
         </Box>
-      </Box>
+      </Box> */}
     </Paper>
   );
 }

@@ -2,6 +2,9 @@
 
 import { apiService } from "@/api/api-gateway/apiService";
 import { Cluster } from "@/api/api-gateway/interfaces/cluster";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+
 import {
   Table,
   TableBody,
@@ -18,10 +21,12 @@ import {
   Button,
   Box,
   Chip,
+  Stack,
 } from "@mui/material";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
+import { routes } from "@/app/routes.generated";
 
 const ClusterPage = () => {
   const [page, setPage] = useState<number>(0);
@@ -127,9 +132,35 @@ const ClusterPage = () => {
                         ></Chip>
                       </TableCell>
                       <TableCell>
-                        {new Date(cluster.created_date).toLocaleDateString()}
+                        {new Date(cluster.created_date).toLocaleDateString(
+                          "en-CA"
+                        )}
                       </TableCell>
                       <TableCell>{cluster.created_By || "N/A"}</TableCell>
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        <Stack direction="row" spacing={1}>
+                          <Link
+                            href={
+                              routes["(protected)"]["api-gateway"].cluster.edit
+                                .index + cluster.id
+                            }
+                          >
+                            <IconButton color="primary" size="small">
+                              <EditIcon />
+                            </IconButton>
+                          </Link>
+
+                          {/* <IconButton
+                            color="error"
+                            size="small"
+                            onClick={() => {
+                              // handle delete logic here (e.g., open confirm dialog)
+                            }}
+                          >
+                            <DeleteIcon />
+                          </IconButton> */}
+                        </Stack>
+                      </TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell
@@ -176,7 +207,7 @@ const ClusterPage = () => {
                                   <TableCell>
                                     {new Date(
                                       dest.created_date
-                                    ).toLocaleDateString()}
+                                    ).toLocaleDateString("en-CA")}
                                   </TableCell>
                                 </TableRow>
                               ))}

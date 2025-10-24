@@ -10,6 +10,8 @@ import {
   Database,
   Layers,
   House,
+  Activity,
+  CornerDownRight,
 } from "lucide-react";
 import {
   Button,
@@ -37,16 +39,39 @@ const menuItems: MenuItem[] = [
     label: "API Gateway",
     icon: Layers,
     subItems: [
-      { id: "route", label: "Route", link: "/api-gateway/route", icon: Layers },
+      {
+        id: "route",
+        label: "Route",
+        link: "/api-gateway/route",
+        icon: CornerDownRight,
+      },
       {
         id: "cluster",
         label: "Cluster",
         link: "/api-gateway/cluster",
-        icon: Layers,
+        icon: CornerDownRight,
       },
     ],
   },
-  { id: "webSocket", label: "Web Socket", icon: Layers },
+  {
+    id: "webSocket",
+    label: "Sockets",
+    icon: Activity,
+    subItems: [
+      {
+        id: "signalR",
+        label: "SignalR Hubs",
+        link: "/sockets/signalR",
+        icon: CornerDownRight,
+      },
+      {
+        id: "webSocket",
+        label: "Web Sockets",
+        link: "/sockets/web-socket",
+        icon: CornerDownRight,
+      },
+    ],
+  },
 ];
 
 export function SideBar() {
