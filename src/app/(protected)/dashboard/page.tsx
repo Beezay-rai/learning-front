@@ -19,7 +19,6 @@ import {
 } from "recharts";
 
 export default function DashboardPage() {
-  // Random data
   const lineData = Array.from({ length: 5 }, (_, i) => ({
     name: `Month ${i + 1}`,
     value: Math.floor(Math.random() * 1000),
@@ -53,7 +52,6 @@ export default function DashboardPage() {
     >
       <Typography variant="h4">Dashboard</Typography>
 
-      {/* Charts container */}
       <Box
         sx={{
           display: "flex",
@@ -63,7 +61,7 @@ export default function DashboardPage() {
         }}
       >
         {/* Line Chart */}
-        <Card sx={{ flex: 1, p: 2, minHeight: 300 }}>
+        <Card sx={{ flex: 1, p: 2, minHeight: 300, maxHeight: 600 }}>
           <Typography variant="h6" mb={2}>
             Line Chart
           </Typography>
@@ -84,7 +82,7 @@ export default function DashboardPage() {
         </Card>
 
         {/* Bar Chart */}
-        <Card sx={{ flex: 1, p: 2, minHeight: 300 }}>
+        <Card sx={{ flex: 1, p: 2, minHeight: 300, maxHeight: 600 }}>
           <Typography variant="h6" mb={2}>
             Bar Chart
           </Typography>
@@ -101,7 +99,7 @@ export default function DashboardPage() {
         </Card>
 
         {/* Pie Chart */}
-        <Card sx={{ flex: 1, p: 2, minHeight: 300 }}>
+        <Card sx={{ flex: 1, p: 2, minHeight: 300, maxHeight: 600 }}>
           <Typography variant="h6" mb={2}>
             Pie Chart
           </Typography>

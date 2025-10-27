@@ -1,4 +1,5 @@
 interface BaseEntity {
+  id: number;
   deleted_Status: boolean;
   deleted_date: string; // ISO date string, use Date if parsed
   deleted_By: string | null;

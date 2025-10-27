@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { UserDetail } from "@/common/store/appSlices";
+import { useRouter, redirect } from "next/navigation";
 import { useSelector } from "react-redux";
 
 export default function AuthProvider({
@@ -7,7 +8,10 @@ export default function AuthProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const userData = useSelector((state) => state.userDetail);
-
-  return children;
+  const userDetails: UserDetail = useSelector((state: any) => state.userDetail);
+  console.log("User Details in AuthProvider:", userDetails);
+  if (userDetails?.oidc_user?.access_token === "") {
+    redirect("/");
+  }
+  return <>{children}</>;
 }

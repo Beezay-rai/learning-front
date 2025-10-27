@@ -2,6 +2,9 @@
 
 import { apiService } from "@/api/api-gateway/apiService";
 import { Cluster } from "@/api/api-gateway/interfaces/cluster";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+
 import {
   Table,
   TableBody,
@@ -16,39 +19,30 @@ import {
   Typography,
   CircularProgress,
   Button,
+  Box,
+  Chip,
+  Stack,
 } from "@mui/material";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { routes } from "@/app/routes.generated";
 
-function ClusterPage() {
-  const [clusters, setClusters] = useState<Cluster[]>([]);
+const ClusterPage = () => {
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
-  const [totalCount, setTotalCount] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  // const router = useRouter();
+  const [openRows, setOpenRows] = useState<Record<string, boolean>>({});
+  const {
+    data: clustersData,
+    isLoading,
+    error,
+  } = apiService.useGetClusters(rowsPerPage);
+  const clusters = clustersData?.items ?? [];
+  const totalCount = clustersData?.total ?? 0;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const result = await apiService.getAllClusters();
-        setClusters(result.items);
-        setTotalCount(result.total);
-      } catch (err) {
-        setError("Failed to load clusters");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [page, rowsPerPage]);
+  const handlePageChange = (_event: unknown, newPage: number) =>
+    setPage(newPage);
 
-  const handlePageChange = (_event: any, newPage: number) => setPage(newPage);
   const handleRowsPerPageChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -56,17 +50,25 @@ function ClusterPage() {
     setPage(0);
   };
 
-  const [openRows, setOpenRows] = useState<Record<string, boolean>>({});
+  const toggleRow = (clusterId: string) =>
+    setOpenRows((prev) => ({ ...prev, [clusterId]: !prev[clusterId] }));
+
   return (
     <Paper sx={{ width: "100%", overflow: "hidden", padding: 2 }}>
-      <Typography variant="h6" gutterBottom>
-        Clusters
-      </Typography>
-      <Link href={"/api-gateway/cluster/add"}>
-        <Button variant="contained" color="primary" sx={{ mb: 2 }}>
-          Add Cluster Destination
-        </Button>
-      </Link>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          mb: 2,
+        }}
+      >
+        <Typography variant="h6">Clusters</Typography>
+        <Link href="/api-gateway/cluster/add">
+          <Button variant="contained" color="primary">
+            Add Cluster
+          </Button>
+        </Link>
+      </Box>
 
       <TableContainer sx={{ maxHeight: 600 }}>
         <Table stickyHeader>
@@ -77,10 +79,11 @@ function ClusterPage() {
               <TableCell>Status</TableCell>
               <TableCell>Created Date</TableCell>
               <TableCell>Created By</TableCell>
+              <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {loading ? (
+            {isLoading ? (
               <TableRow>
                 <TableCell colSpan={5} align="center">
                   <CircularProgress size={24} />
@@ -89,7 +92,7 @@ function ClusterPage() {
             ) : error ? (
               <TableRow>
                 <TableCell colSpan={5} align="center">
-                  {error}
+                  {error.message}
                 </TableCell>
               </TableRow>
             ) : clusters.length === 0 ? (
@@ -102,18 +105,18 @@ function ClusterPage() {
               clusters
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((cluster) => (
-                  <>
-                    <TableRow hover>
+                  <React.Fragment key={cluster.id}>
+                    <TableRow
+                      hover
+                      onClick={() =>
+                        setOpenRows((prev) => ({
+                          ...prev,
+                          [cluster.id]: !prev[cluster.id],
+                        }))
+                      }
+                    >
                       <TableCell>
-                        <IconButton
-                          size="small"
-                          onClick={() =>
-                            setOpenRows((prev) => ({
-                              ...prev,
-                              [cluster.id]: !prev[cluster.id],
-                            }))
-                          }
-                        >
+                        <IconButton size="small">
                           {openRows[cluster.id] ? (
                             <ChevronUp />
                           ) : (
@@ -123,12 +126,41 @@ function ClusterPage() {
                       </TableCell>
                       <TableCell>{cluster.name}</TableCell>
                       <TableCell>
-                        {cluster.deleted_Status ? "Deleted" : "Active"}
+                        <Chip
+                          label={cluster.deleted_Status ? "Deleted" : "Active"}
+                          color={cluster.deleted_Status ? "error" : "success"}
+                        ></Chip>
                       </TableCell>
                       <TableCell>
-                        {new Date(cluster.created_date).toLocaleDateString()}
+                        {new Date(cluster.created_date).toLocaleDateString(
+                          "en-CA"
+                        )}
                       </TableCell>
                       <TableCell>{cluster.created_By || "N/A"}</TableCell>
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        <Stack direction="row" spacing={1}>
+                          <Link
+                            href={
+                              routes["(protected)"]["api-gateway"].cluster.edit
+                                .index + cluster.id
+                            }
+                          >
+                            <IconButton color="primary" size="small">
+                              <EditIcon />
+                            </IconButton>
+                          </Link>
+
+                          {/* <IconButton
+                            color="error"
+                            size="small"
+                            onClick={() => {
+                              // handle delete logic here (e.g., open confirm dialog)
+                            }}
+                          >
+                            <DeleteIcon />
+                          </IconButton> */}
+                        </Stack>
+                      </TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell
@@ -138,7 +170,7 @@ function ClusterPage() {
                         <Collapse
                           in={openRows[cluster.id]}
                           timeout="auto"
-                          unmountOnExit
+                          // unmountOnExit
                         >
                           <Table size="small">
                             <TableHead>
@@ -159,12 +191,23 @@ function ClusterPage() {
                                     {dest.destinationAddress}
                                   </TableCell>
                                   <TableCell>
-                                    {dest.deleted_Status ? "Deleted" : "Active"}
+                                    <Chip
+                                      label={
+                                        dest.deleted_Status
+                                          ? "Deleted"
+                                          : "Active"
+                                      }
+                                      color={
+                                        dest.deleted_Status
+                                          ? "error"
+                                          : "success"
+                                      }
+                                    ></Chip>
                                   </TableCell>
                                   <TableCell>
                                     {new Date(
                                       dest.created_date
-                                    ).toLocaleDateString()}
+                                    ).toLocaleDateString("en-CA")}
                                   </TableCell>
                                 </TableRow>
                               ))}
@@ -173,7 +216,7 @@ function ClusterPage() {
                         </Collapse>
                       </TableCell>
                     </TableRow>
-                  </>
+                  </React.Fragment>
                 ))
             )}
           </TableBody>
@@ -190,6 +233,6 @@ function ClusterPage() {
       />
     </Paper>
   );
-}
+};
 
 export default ClusterPage;

@@ -44,7 +44,7 @@ export default function LoginPage() {
     const { email, password } = data;
 
     if (email === "admin@example.com" && password === "123456") {
-      router.push("/");
+      router.push("/dashboard");
     } else {
       setError("Invalid email or password");
     }

@@ -1,33 +1,22 @@
 import { string } from "yup";
 
-export interface ClusterDestination {
+export interface AddClusterDestination {
+  name: string;
+  destinationAddress: string;
+}
+
+export interface ClusterDestination extends BaseEntity {
   clusterId: string;
   name: string;
   destinationAddress: string;
-  id: string;
-  deleted_Status: boolean;
-  deleted_date: string;
-  deleted_By?: string | null;
-  created_By?: string | null;
-  created_date: string;
-  updated_By?: string | null;
-  updated_Date: string;
 }
 
-export interface Cluster {
-  id: string;
+export interface Cluster extends BaseEntity {
   name: string;
-  deleted_Status: boolean;
-  deleted_date: string;
-  deleted_By?: string | null;
-  created_By?: string | null;
-  created_date: string;
-  updated_By?: string | null;
-  updated_Date: string;
   clusterDestination: ClusterDestination[];
 }
 
-export interface AddClusterRequest {
+export interface ClusterRequest {
   name: string;
-  destinationAddress: Record<string, string>;
+  clusterDestination: AddClusterDestination[];
 }

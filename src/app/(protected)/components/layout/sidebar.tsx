@@ -10,6 +10,9 @@ import {
   Database,
   Layers,
   House,
+  Activity,
+  CornerDownRight,
+  SmileIcon,
 } from "lucide-react";
 import {
   Button,
@@ -37,16 +40,39 @@ const menuItems: MenuItem[] = [
     label: "API Gateway",
     icon: Layers,
     subItems: [
-      { id: "route", label: "Route", link: "/api-gateway/route", icon: Layers },
+      {
+        id: "route",
+        label: "Route",
+        link: "/api-gateway/route",
+        icon: CornerDownRight,
+      },
       {
         id: "cluster",
         label: "Cluster",
         link: "/api-gateway/cluster",
-        icon: Layers,
+        icon: CornerDownRight,
       },
     ],
   },
-  { id: "webSocket", label: "Web Socket", icon: Layers },
+  {
+    id: "webSocket",
+    label: "Sockets",
+    icon: Activity,
+    subItems: [
+      {
+        id: "signalR",
+        label: "SignalR Hubs",
+        link: "/sockets/signalR",
+        icon: CornerDownRight,
+      },
+      {
+        id: "webSocket",
+        label: "Web Sockets",
+        link: "/sockets/web-socket",
+        icon: CornerDownRight,
+      },
+    ],
+  },
 ];
 
 export function SideBar() {
@@ -77,10 +103,10 @@ export function SideBar() {
         {!isCollapsed && (
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 bg-primary rounded-sm flex items-center justify-center">
-              <Database className="w-4 h-4 text-primary-foreground" />
+              <SmileIcon></SmileIcon>
             </div>
             <span className="font-semibold text-sidebar-foreground">
-              Dashboard
+              Tee Hee
             </span>
           </div>
         )}

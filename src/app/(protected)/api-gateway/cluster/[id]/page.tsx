@@ -10,6 +10,7 @@ import {
   Typography,
   IconButton,
   Grid,
+  CircularProgress,
 } from "@mui/material";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -17,11 +18,12 @@ import * as yup from "yup";
 import { apiService } from "@/api/api-gateway/apiService";
 import { Minus, Plus } from "lucide-react";
 import { ClusterRequest } from "@/api/api-gateway/interfaces/cluster";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import { routes } from "@/app/routes.generated";
-import ClusterForm from "@/app/(protected)/api-gateway/cluster/ClusterForm";
+import ClusterForm from "../ClusterForm";
+import NotFound from "@/app/(protected)/not-found";
 
 const schema = yup.object({
   name: yup
@@ -48,45 +50,59 @@ const schema = yup.object({
     .min(1, "At least one destination is required"),
 });
 
-export default function AddCluster() {
+export default function UpdateCluster() {
   const router = useRouter();
-  const { control, handleSubmit, formState, reset } = useForm<ClusterRequest>({
-    resolver: yupResolver(schema),
-    defaultValues: {
-      name: "",
-      clusterDestination: [],
-    },
-  });
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "clusterDestination",
-  });
+  const params = useParams();
+  const idParam = params?.id;
 
-  const {
-    mutateAsync,
-    isPending: isSubmitting,
-    isSuccess,
-  } = apiService.useAddCluster();
+  const id = idParam ? Number(idParam) : 0;
+
+  const { data: cluster, isLoading: clusterLoading } =
+    apiService.useGetClusterById(id, {
+      enabled: !!id,
+    });
+
+  const { mutateAsync, isPending: isSubmitting } =
+    apiService.useUpdateCluster();
+
   const onSubmit = async (data: ClusterRequest) => {
     try {
-      await mutateAsync(data, {
-        onSuccess: () => {
-          toast.success("Cluster Created Sucessfully !");
-          router.push(routes["(protected)"]["api-gateway"].cluster.index);
+      await mutateAsync(
+        {
+          clusterId: id,
+          data: data,
         },
-      });
+        {
+          onSuccess: () => {
+            toast.success("Cluster Updated Sucessfully !");
+            router.push(routes["(protected)"]["api-gateway"].cluster.index);
+          },
+        }
+      );
     } catch (err) {
       console.error("Failed to add cluster:", err);
     }
   };
+  if (cluster === undefined) {
+    return <NotFound />;
+  }
 
   return (
     <Paper sx={{ p: 4 }}>
       <Typography variant="h5" gutterBottom>
-        Add Cluster
+        Update Cluster
       </Typography>
-      <ClusterForm onSubmit={onSubmit} loading={isSubmitting}></ClusterForm>
+      {clusterLoading ? (
+        <CircularProgress color="inherit" />
+      ) : (
+        <ClusterForm
+          isAdd={false}
+          onSubmit={onSubmit}
+          defaultValue={cluster}
+          loading={isSubmitting}
+        ></ClusterForm>
+      )}
     </Paper>
   );
 }
