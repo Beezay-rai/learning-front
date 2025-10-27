@@ -19,13 +19,13 @@ import {
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { apiService } from "@/api/api-gateway/apiService";
-import DataTable from "@/components/dataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { Route } from "@/api/api-gateway/interfaces/route";
 import Link from "next/link";
 import { routes } from "@/app/routes.generated";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import DataTable from "@/components/DataTable";
 
 function RoutePage() {
   const [page, setPage] = useState<number>(0);

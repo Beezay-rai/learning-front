@@ -12,6 +12,7 @@ import {
   House,
   Activity,
   CornerDownRight,
+  SmileIcon,
 } from "lucide-react";
 import {
   Button,
@@ -102,10 +103,10 @@ export function SideBar() {
         {!isCollapsed && (
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 bg-primary rounded-sm flex items-center justify-center">
-              <Database className="w-4 h-4 text-primary-foreground" />
+              <SmileIcon></SmileIcon>
             </div>
             <span className="font-semibold text-sidebar-foreground">
-              Dashboard
+              Tee Hee
             </span>
           </div>
         )}

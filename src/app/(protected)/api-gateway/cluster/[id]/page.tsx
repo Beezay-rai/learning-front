@@ -23,6 +23,7 @@ import { toast } from "react-toastify";
 import Link from "next/link";
 import { routes } from "@/app/routes.generated";
 import ClusterForm from "../ClusterForm";
+import NotFound from "@/app/(protected)/not-found";
 
 const schema = yup.object({
   name: yup
@@ -51,18 +52,6 @@ const schema = yup.object({
 
 export default function UpdateCluster() {
   const router = useRouter();
-  const { control, handleSubmit, formState, reset } = useForm<ClusterRequest>({
-    resolver: yupResolver(schema),
-    defaultValues: {
-      name: "",
-      clusterDestination: [],
-    },
-  });
-
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "clusterDestination",
-  });
 
   const params = useParams();
   const idParam = params?.id;
@@ -95,6 +84,9 @@ export default function UpdateCluster() {
       console.error("Failed to add cluster:", err);
     }
   };
+  if (cluster === undefined) {
+    return <NotFound />;
+  }
 
   return (
     <Paper sx={{ p: 4 }}>

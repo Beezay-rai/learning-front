@@ -30,6 +30,7 @@ import { routes } from "@/app/routes.generated";
 import { RouteRequest } from "@/api/api-gateway/interfaces/route"; // You’ll define this interface
 import { SearchableSelect } from "@/components/molecules/SearchableSelect";
 import RouteForm from "../RouteForm";
+import NotFound from "@/app/(protected)/not-found";
 
 const schema = yup.object({
   name: yup.string().required("Name is Required"),
@@ -80,6 +81,9 @@ export default function EditRoutePage() {
       toast.error("Failed to Update route");
     }
   };
+  if (route === undefined) {
+    return <NotFound />;
+  }
 
   return (
     <Paper sx={{ p: 4 }}>

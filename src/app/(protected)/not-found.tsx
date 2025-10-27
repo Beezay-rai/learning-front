@@ -7,7 +7,6 @@ export default function NotFound() {
   return (
     <Box
       sx={{
-        height: "100vh",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",

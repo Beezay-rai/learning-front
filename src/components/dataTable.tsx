@@ -70,6 +70,15 @@ export default function DataTable<TData>(props: DataTableProp<TData>) {
         </TableRow>
       ));
     }
+    if (memoizedData == null || memoizedData.length === 0) {
+      return (
+        <TableRow>
+          <TableCell colSpan={columnsCount} align="center">
+            {props.noDataText || "No data available"}
+          </TableCell>
+        </TableRow>
+      );
+    }
     return table.getRowModel().rows.map((row, index) => (
       <TableRow key={row.id}>
         <TableCell>{index + 1}</TableCell>

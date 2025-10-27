@@ -31,6 +31,7 @@ import useSignalR from "@/hooks/useSignalR";
 
 export default function SignalRPage() {
   const [url, setUrl] = useState("");
+  const [authToken, setAuthToken] = useState("");
   const [message, setMessage] = useState("");
   const messageInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -93,7 +94,7 @@ export default function SignalRPage() {
           </>
         ) : (
           <>
-            <WifiOffIcon sx={{ fontSize: 18 }} />
+            <WifiOffIcon sx={{ fontSize: 18, color: "red" }} />
             <Typography variant="body2">Disconnected</Typography>
           </>
         )}

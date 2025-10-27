@@ -1,5 +1,4 @@
 "use client";
-
 import {
   Box,
   Button,
@@ -11,12 +10,13 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { LogIn } from "lucide-react";
+import { signinRedirect } from "@/services/authService";
 
 export default function HomePage() {
   const router = useRouter();
 
   const handleLogin = () => {
-    router.push("/login");
+   signinRedirect();
   };
 
   return (
