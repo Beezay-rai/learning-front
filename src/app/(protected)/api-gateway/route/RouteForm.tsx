@@ -1,5 +1,5 @@
-import { apiService } from "@/api/api-gateway/apiService";
-import { RouteRequest } from "@/api/api-gateway/interfaces/route";
+import { apiService } from "@/services/apiServices/api-gateway/apiService";
+import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/route";
 import { routes } from "@/app/routes.generated";
 import { SearchableSelect } from "@/components/molecules/SearchableSelect";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -22,6 +22,7 @@ import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 
 const methodOptions = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+
 const schema = yup.object({
   name: yup.string().required("Name is Required"),
   clusterId: yup.string().required("Cluster ID is required"),
@@ -49,7 +50,11 @@ export default function RouteForm({
   const { control, handleSubmit, formState, reset } = useForm<RouteRequest>({
     resolver: yupResolver(schema),
     defaultValues: {
-      ...defaultValue,
+      ...(defaultValue ?? {
+        name: "",
+        clusterId: "",
+        path: "",
+      }),
       methods: defaultValue?.methods || [],
     },
   });

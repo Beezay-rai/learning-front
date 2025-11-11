@@ -9,7 +9,6 @@ export default function AuthProvider({
   children: React.ReactNode;
 }) {
   const userDetails: UserDetail = useSelector((state: any) => state.userDetail);
-  console.log("User Details in AuthProvider:", userDetails);
   if (userDetails?.oidc_user?.access_token === "") {
     redirect("/");
   }

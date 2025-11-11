@@ -14,9 +14,9 @@ import {
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { apiService } from "@/api/api-gateway/apiService";
+import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { Minus, Plus } from "lucide-react";
-import { ClusterRequest } from "@/api/api-gateway/interfaces/cluster";
+import { ClusterRequest } from "@/services/apiServices/api-gateway/interfaces/cluster";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Link from "next/link";
@@ -63,7 +63,10 @@ export default function ClusterForm({
   const router = useRouter();
   const { control, handleSubmit, formState, reset } = useForm<ClusterRequest>({
     resolver: yupResolver(schema),
-    defaultValues: defaultValue,
+    defaultValues: defaultValue ?? {
+      name: "",
+      clusterDestination: [],
+    },
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -89,7 +92,6 @@ export default function ClusterForm({
                 error={!!formState.errors.name}
                 helperText={formState.errors.name?.message}
                 fullWidth
-                inputProps={{ maxLength: 50 }}
               />
             )}
           />
@@ -162,6 +164,7 @@ export default function ClusterForm({
           color={isAdd ? "primary" : "warning"}
           disabled={loading}
           sx={{ minWidth: 120 }}
+          
         >
           {loading
             ? isAdd

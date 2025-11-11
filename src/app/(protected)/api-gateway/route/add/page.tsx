@@ -2,11 +2,11 @@
 
 import React from "react";
 import { Paper, Typography } from "@mui/material";
-import { apiService } from "@/api/api-gateway/apiService";
+import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { routes } from "@/app/routes.generated";
-import { RouteRequest } from "@/api/api-gateway/interfaces/route"; // You’ll define this interface
+import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/route"; // You’ll define this interface
 import RouteForm from "../RouteForm";
 export default function AddRoutePage() {
   const router = useRouter();

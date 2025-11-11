@@ -26,13 +26,19 @@ import { routes } from "@/app/routes.generated";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DataTable from "@/components/DataTable";
+import coreApiService from "@/services/apiServices/core/coreApiService";
+import { RestApiBuilderModel } from "@/services/apiServices/core/interface/restApiBuilderModel";
 
-function RoutePage() {
+function RestApiBuilderList() {
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [totalCount, setTotalCount] = useState<number>(0);
 
-  const { data: routeList, isLoading, error } = apiService.useGetRoutes();
+  const {
+    data: restApiList,
+    isLoading,
+    error,
+  } = coreApiService.useGetRestApiBuilder();
 
   const handlePageChange = (e: unknown, newPage: number) => setPage(newPage);
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,74 +46,52 @@ function RoutePage() {
     setPage(0);
   };
 
-  const routeColumns: ColumnDef<Route>[] = [
+  const routeColumns: ColumnDef<RestApiBuilderModel>[] = [
     {
       accessorKey: "name",
       header: "Name",
     },
     {
-      accessorKey: "clusterId",
-      header: "Cluster ID",
+      accessorKey: "url",
+      header: "url",
     },
     {
-      accessorKey: "methods",
-      header: "Methods",
+      accessorKey: "method",
+      header: "Method",
       cell: (info) => {
-        const methods = info.getValue() as string[];
-
-        if (!methods?.length) return "N/A";
-
-        return (
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: "repeat(2, max-content)",
-              gap: 0.5,
-            }}
-          >
-            {methods.map((method) => {
-              let color:
-                | "primary"
-                | "secondary"
-                | "success"
-                | "error"
-                | "warning"
-                | "info" = "primary";
-
-              switch (method.toUpperCase()) {
-                case "GET":
-                  color = "success";
-                  break;
-                case "POST":
-                  color = "primary";
-                  break;
-                case "PUT":
-                  color = "warning";
-                  break;
-                case "PATCH":
-                  color = "warning";
-                  break;
-                case "DELETE":
-                  color = "error";
-                  break;
-                default:
-                  color = "info";
-              }
-
-              return (
-                <Chip key={method} label={method} color={color} size="small" />
-              );
-            })}
-          </Box>
-        );
+        const method = info.getValue() as string;
+        let color:
+          | "primary"
+          | "secondary"
+          | "success"
+          | "error"
+          | "warning"
+          | "info" = "primary";
+        switch (method.toUpperCase()) {
+          case "GET":
+            color = "success";
+            break;
+          case "POST":
+            color = "primary";
+            break;
+          case "PUT":
+            color = "warning";
+            break;
+          case "PATCH":
+            color = "warning";
+            break;
+          case "DELETE":
+            color = "error";
+            break;
+          default:
+            color = "info";
+        }
+        return <Chip key={method} label={method} color={color} size="small" />;
       },
     },
+
     {
-      accessorKey: "path",
-      header: "Path",
-    },
-    {
-      accessorKey: "deleted_Status",
+      accessorKey: "isDeleted",
       header: "Status",
       cell: (info) =>
         info.getValue() ? (
@@ -117,56 +101,57 @@ function RoutePage() {
         ),
     },
     {
-      accessorKey: "deleted_date",
+      accessorKey: "deletedDate",
       header: "Deleted Date",
       cell: (info) => {
         const value = info.getValue() as string;
         return value === "0001-01-01T00:00:00"
-          ? "N/A"
+          ? "-"
           : new Date(value).toLocaleDateString("en-CA");
       },
     },
     {
-      accessorKey: "deleted_By",
+      accessorKey: "deletedBy",
       header: "Deleted By",
-      cell: (info) => info.getValue() || "N/A",
+      cell: (info) => info.getValue() || "-",
     },
     {
-      accessorKey: "created_By",
+      accessorKey: "createdBy",
       header: "Created By",
-      cell: (info) => info.getValue() || "N/A",
+      cell: (info) => info.getValue() || "-",
     },
     {
-      accessorKey: "created_date",
+      accessorKey: "createdDate",
       header: "Created Date",
-      cell: (info) =>
-        new Date(info.getValue() as string).toLocaleDateString("en-CA"),
+      cell: (info) => {
+        const value = info.getValue() as string;
+        return value === "0001-01-01T00:00:00"
+          ? "-"
+          : new Date(value).toLocaleDateString("en-CA");
+      },
     },
     {
-      accessorKey: "updated_By",
+      accessorKey: "updatedBy",
       header: "Updated By",
-      cell: (info) => info.getValue() || "N/A",
+      cell: (info) => info.getValue() || "-",
     },
     {
-      accessorKey: "updated_Date",
-
+      accessorKey: "updatedDate",
       header: "Updated Date",
       cell: (info) => {
         const value = info.getValue() as string;
         return value === "0001-01-01T00:00:00"
-          ? "N/A"
+          ? "-"
           : new Date(value).toLocaleDateString("en-CA");
       },
     },
-
     {
       header: "Action",
       cell: ({ row }) => (
         <Stack direction="row" spacing={1}>
           <Link
             href={
-              routes["(protected)"]["api-gateway"].route.edit.index +
-              row.original.id
+              routes["(protected)"]["api-gateway"].route.edit + row.original.id
             }
           >
             <IconButton color="primary" size="small">
@@ -174,13 +159,7 @@ function RoutePage() {
             </IconButton>
           </Link>
 
-          <IconButton
-            color="error"
-            size="small"
-            onClick={() => {
-              // handle delete logic here (e.g., open confirm dialog)
-            }}
-          >
+          <IconButton color="error" size="small" onClick={() => {}}>
             <DeleteIcon />
           </IconButton>
         </Stack>
@@ -197,11 +176,11 @@ function RoutePage() {
         }}
       >
         <Typography variant="h6" gutterBottom>
-          Routes
+          Rest Api Builder
         </Typography>
-        <Link href={routes["(protected)"]["api-gateway"].route.add.index}>
+        <Link href={routes["(protected)"].proxy["rest-builder"].add.index}>
           <Button variant="contained" color="primary">
-            Add Route
+            Add Rest Api
           </Button>
         </Link>
       </Box>
@@ -209,7 +188,7 @@ function RoutePage() {
       <DataTable
         isLoading={isLoading}
         columns={routeColumns}
-        data={routeList?.items || []}
+        data={restApiList?.items || []}
       />
 
       <TablePagination
@@ -225,4 +204,4 @@ function RoutePage() {
   );
 }
 
-export default RoutePage;
+export default RestApiBuilderList;

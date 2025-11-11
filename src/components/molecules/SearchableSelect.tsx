@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import { Autocomplete, TextField, Chip, Box } from "@mui/material";
 import { Controller } from "react-hook-form";
 
-export interface Option {
+interface Option {
   label: string;
   value: string | number;
 }

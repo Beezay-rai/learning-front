@@ -14,6 +14,8 @@ import {
   CornerDownRight,
   SmileIcon,
 } from "lucide-react";
+import SettingsInputCompositeIcon from "@mui/icons-material/SettingsInputComposite";
+import ElectricalServicesIcon from "@mui/icons-material/ElectricalServices";
 import {
   Button,
   Drawer,
@@ -57,7 +59,7 @@ const menuItems: MenuItem[] = [
   {
     id: "webSocket",
     label: "Sockets",
-    icon: Activity,
+    icon: ElectricalServicesIcon,
     subItems: [
       {
         id: "signalR",
@@ -69,6 +71,26 @@ const menuItems: MenuItem[] = [
         id: "webSocket",
         label: "Web Sockets",
         link: "/sockets/web-socket",
+        icon: CornerDownRight,
+      },
+    ],
+  },
+
+  {
+    id: "httpProxy",
+    label: "Http Proxy",
+    icon: SettingsInputCompositeIcon,
+    subItems: [
+      {
+        id: "restBuilder",
+        label: "Rest Builder",
+        link: "/proxy/rest-builder",
+        icon: CornerDownRight,
+      },
+      {
+        id: "soapBuilder",
+        label: "Soap Builder",
+        link: "/proxy/soap-builder",
         icon: CornerDownRight,
       },
     ],

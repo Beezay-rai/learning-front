@@ -22,12 +22,12 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { apiService } from "@/api/api-gateway/apiService";
+import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import { routes } from "@/app/routes.generated";
-import { RouteRequest } from "@/api/api-gateway/interfaces/route"; // You’ll define this interface
+import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/route"; // You’ll define this interface
 import { SearchableSelect } from "@/components/molecules/SearchableSelect";
 import RouteForm from "../RouteForm";
 import NotFound from "@/app/(protected)/not-found";
