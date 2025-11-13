@@ -14,21 +14,23 @@ export const coreApiSchema = {
         .array()
         .of(
           yup.object({
-            key: yup.string(),
-            value: yup.string(),
+            key: yup.string().optional(),
+            value: yup.string().optional(),
           })
         )
-        .optional(),
+        .optional()
+        .nullable(),
       headers: yup
         .array()
         .of(
           yup.object({
-            key: yup.string(),
-            value: yup.string(),
-            type: yup.string(),
+            key: yup.string().optional(),
+            value: yup.string().optional(),
+            type: yup.string().optional(),
           })
         )
-        .optional(),
+        .optional()
+        .nullable(),
     }),
   },
 };

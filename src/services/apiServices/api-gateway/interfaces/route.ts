@@ -1,3 +1,5 @@
+import { BaseEntity } from "./common/baseEntitiy";
+
 export interface Route extends BaseEntity {
   name: string;
   clusterId: string;

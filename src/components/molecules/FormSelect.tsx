@@ -56,11 +56,11 @@ function FormSelect(props: FormSelectProps) {
       control={control}
       render={({ field }) => (
         <FormControl size="small" fullWidth sx={{ minWidth: 120 }}>
-          <InputLabel>Method</InputLabel>
+          <InputLabel>{label}</InputLabel>
           <Select
             value={value}
-            name="method"
-            label="Method"
+            name={name}
+            label={label}
             onChange={(e) => {
               console.log(e);
               field.onChange(e);

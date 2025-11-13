@@ -1,0 +1,107 @@
+"use client";
+
+import React from "react";
+import {
+  Box,
+  Button,
+  Container,
+  TextField,
+  Paper,
+  Typography,
+  IconButton,
+  Grid,
+  Menu,
+  Select,
+  InputLabel,
+  FormControl,
+  Chip,
+  OutlinedInput,
+  MenuItem,
+  CircularProgress,
+} from "@mui/material";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { apiService } from "@/services/apiServices/api-gateway/apiService";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { toast } from "react-toastify";
+import Link from "next/link";
+import { routes } from "@/app/routes.generated";
+import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/route"; // You’ll define this interface
+import { SearchableSelect } from "@/components/molecules/SearchableSelect";
+import NotFound from "@/app/(protected)/not-found";
+import RestBuilderForm from "../../RestBuilderForm";
+import { RestApiBuilderRequest } from "@/services/apiServices/core/interface/restApiBuilderModel";
+import coreApiService from "@/services/apiServices/core/coreApiService";
+
+const schema = yup.object({
+  name: yup.string().required("Name is Required"),
+  clusterId: yup.string().required("Cluster ID is required"),
+  path: yup.string().required("Path is required"),
+  methods: yup
+    .array()
+    .of(yup.string().defined())
+    .min(1, "At least one method is required")
+    .required("Select at least one method"),
+});
+
+const methodOptions = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+
+export default function EditRoutePage() {
+  const router = useRouter();
+
+  const params = useParams();
+  const idParam = params?.id;
+
+  const id = idParam ? Number(idParam) : 0;
+
+  const { data: restApiBuilder, isLoading: restApiBuilderLoading } =
+    coreApiService.useGetRestApiBuilderById(id, {
+      enabled: !!id,
+    });
+
+  const { mutateAsync, isPending: isSubmitting } =
+    coreApiService.useUpdateRestApiBuilder();
+
+  const onSubmit = async (data: RestApiBuilderRequest) => {
+    try {
+      await mutateAsync(
+        {
+          id: id,
+          payload: data,
+        },
+        {
+          onSuccess: () => {
+            toast.success("Route Updated successfully!");
+            router.push(routes["(protected)"].proxy["rest-builder"].index);
+          },
+        }
+      );
+    } catch (err) {
+      console.error("Failed to add route:", err);
+      toast.error("Failed to Update route");
+    }
+  };
+  if (restApiBuilder === undefined) {
+    return <NotFound />;
+  }
+
+  return (
+    <Paper sx={{ p: 4 }}>
+      <Typography sx={{ my: 3 }} variant="h5">
+        Update Route
+      </Typography>
+
+      {restApiBuilderLoading ? (
+        <CircularProgress color="inherit" />
+      ) : (
+        <RestBuilderForm
+          isAdd={false}
+          onSubmit={onSubmit}
+          loading={isSubmitting}
+          defaultValue={restApiBuilder}
+        ></RestBuilderForm>
+      )}
+    </Paper>
+  );
+}

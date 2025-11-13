@@ -38,7 +38,7 @@ function RestApiBuilderList() {
     data: restApiList,
     isLoading,
     error,
-  } = coreApiService.useGetRestApiBuilder();
+  } = coreApiService.useGetRestApiBuilders();
 
   const handlePageChange = (e: unknown, newPage: number) => setPage(newPage);
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,8 +48,8 @@ function RestApiBuilderList() {
 
   const routeColumns: ColumnDef<RestApiBuilderModel>[] = [
     {
-      accessorKey: "name",
       header: "Name",
+      accessorKey: "name",
     },
     {
       accessorKey: "url",
@@ -151,7 +151,8 @@ function RestApiBuilderList() {
         <Stack direction="row" spacing={1}>
           <Link
             href={
-              routes["(protected)"]["api-gateway"].route.edit + row.original.id
+              routes["(protected)"].proxy["rest-builder"].edit.index +
+              row.original.id
             }
           >
             <IconButton color="primary" size="small">

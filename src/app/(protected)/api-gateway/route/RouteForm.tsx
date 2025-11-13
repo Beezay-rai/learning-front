@@ -66,14 +66,6 @@ export default function RouteForm({
       value: item.id,
     };
   });
-  useEffect(() => {
-    if (defaultValue) {
-      reset({
-        ...defaultValue,
-        methods: defaultValue.methods || [],
-      });
-    }
-  }, [defaultValue, reset]);
 
   return (
     <Box

@@ -13,25 +13,21 @@ export const routes = {
   "(protected)": {
     "api-gateway": {
       cluster: {
-        index: "/api-gateway/cluster",
+        index: "/api-gateway/cluster/",
         add: {
           index: "/api-gateway/cluster/add",
         },
-        edit: "/api-gateway/cluster/Edit/:id",
-        detail: "/api-gateway/cluster/Detail/:id",
-        "[id]": {
-          index: "/api-gateway/cluster/[id]",
+        edit: {
+          index: "/api-gateway/cluster/edit/",
         },
       },
       route: {
-        index: "/api-gateway/route",
+        index: "/api-gateway/route/",
         add: {
           index: "/api-gateway/route/add",
         },
-        edit: "/api-gateway/route/Edit/:id",
-        detail: "/api-gateway/route/Detail/:id",
-        "[id]": {
-          index: "/api-gateway/route/[id]",
+        edit: {
+          index: "/api-gateway/route/edit/",
         },
       },
     },
@@ -44,6 +40,9 @@ export const routes = {
         add: {
           index: "/proxy/rest-builder/add",
         },
+        edit: {
+          index: "/proxy/rest-builder/edit/",
+        },
       },
       "soap-builder": {
         index: "/proxy/soap-builder",
@@ -51,7 +50,7 @@ export const routes = {
     },
     sockets: {
       signalR: {
-        index: "/sockets/signalR",
+        index: "/sockets/signalr",
       },
       "web-socket": {
         index: "/sockets/web-socket",

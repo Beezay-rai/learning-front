@@ -10,7 +10,7 @@ import {
 } from "react-hook-form";
 
 type FormTextFieldProps = TextFieldProps & {
-  maxLength?: number;
+  name: string;
 };
 
 function FormTextField(props: FormTextFieldProps) {
@@ -50,7 +50,7 @@ function FormTextField(props: FormTextFieldProps) {
         <TextField
           {...field}
           {...props}
-          value={value}
+          value={value ?? ""}
           name={name}
           label={label}
           error={isError}

@@ -49,7 +49,7 @@ import {
 } from "@/common/types/authConfig";
 import { HttpMethod } from "@/common/types/httpmethod";
 import { RestApiBuilderRequest } from "@/services/apiServices/core/interface/restApiBuilderModel";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { coreApiSchema } from "@/services/apiServices/core/schema/apiSchema";
 import FormTextField from "@/components/molecules/FormTextField";
@@ -81,11 +81,9 @@ export default function RestBuilderForm({
   defaultValue,
   isAdd = true,
 }: RestBuilderFormProps) {
-  const [method, setMethod] = useState<HttpMethod>("GET");
-  const [rawUrl, setRawUrl] = useState("");
   const [activeReqTab, setActiveReqTab] = useState(0);
   const [body, setBody] = useState("");
-  const methods = useForm<RestApiBuilderRequest>({
+  const formMethods = useForm<RestApiBuilderRequest>({
     resolver: yupResolver(coreApiSchema.RestBuilder.Add as any),
     defaultValues: {
       ...(defaultValue ?? {
@@ -99,9 +97,26 @@ export default function RestBuilderForm({
     },
   });
 
-  const [params, setParams] = useState<KeyValuePair<string, string>[]>([]);
+  const rawUrl = formMethods.watch("url");
+  const method = formMethods.watch("method");
+  const {
+    fields: headerFields,
+    append: addHeader,
+    remove: removeHeader,
+  } = useFieldArray({
+    control: formMethods.control,
+    name: "headers",
+  });
 
-  const [headers, setHeaders] = useState<KeyValuePair<string, string>[]>([]);
+  const {
+    fields: paramFields,
+    append: addParam,
+    remove: removeParam,
+  } = useFieldArray({
+    control: formMethods.control,
+    name: "params",
+  });
+  const params = formMethods.watch("params");
 
   const [contentType, setContentType] = useState("application/json");
 
@@ -111,12 +126,15 @@ export default function RestBuilderForm({
   const [apiLoading, setApiLoading] = useState(false);
 
   const finalUrl = useMemo(() => {
-    const enabled = params.filter((p) => p.enabled && p.key.trim());
-    if (enabled.length === 0) return rawUrl;
+    // const enabled = params.filter((p) => p.enabled && p.key.trim());
+    // if (enabled.length === 0) return rawUrl;
 
     try {
       const u = new URL(rawUrl);
-      enabled.forEach((p) => {
+      // enabled.forEach((p) => {
+      //   u.searchParams.set(p.key.trim(), p.value.trim());
+      // });
+      paramFields.forEach((p) => {
         u.searchParams.set(p.key.trim(), p.value.trim());
       });
       return u.toString();
@@ -142,7 +160,7 @@ export default function RestBuilderForm({
     }
 
     return h;
-  }, [headers, contentType, auth]);
+  }, [headerFields, contentType, auth]);
 
   const sendRequest = useCallback(async () => {
     setApiLoading(true);
@@ -220,8 +238,19 @@ export default function RestBuilderForm({
       elevation={3}
       sx={{ borderRadius: 2, overflow: "hidden", height: "100%" }}
     >
-      <FormProvider {...methods}>
-        <form onSubmit={methods.handleSubmit(onSubmit)}>
+      <FormProvider {...formMethods}>
+        <form
+          onSubmit={formMethods.handleSubmit(
+            (data) => {
+              // called if form is valid
+              onSubmit(data);
+            },
+            (errors) => {
+              // called if form has validation errors
+              console.log("Form validation errors:", errors);
+            }
+          )}
+        >
           <Grid
             container
             spacing={2}
@@ -287,8 +316,6 @@ export default function RestBuilderForm({
                 fullWidth
                 size="small"
                 placeholder="Enter request URL"
-                value={rawUrl}
-                onChange={(e) => setRawUrl(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && sendRequest()}
               ></FormTextField>
             </Grid>
@@ -331,7 +358,12 @@ export default function RestBuilderForm({
                       <TableCell width={200}>
                         <Button
                           startIcon={<AddIcon />}
-                          onClick={() => addKeyValuePair(params, setParams)}
+                          onClick={() =>
+                            addParam({
+                              key: "",
+                              value: "",
+                            })
+                          }
                           // size="small"
                           sx={{ mt: 1 }}
                         >
@@ -341,42 +373,37 @@ export default function RestBuilderForm({
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {params.map((row) => (
+                    {paramFields.map((row, index) => (
                       <TableRow key={row.id}>
                         <TableCell padding="checkbox">
-                          <input
+                          {/* <input
                             type="checkbox"
-                            checked={row.enabled}
-                            onChange={(e) =>
-                              updateKeyValuePair(
-                                params,
-                                setParams,
-                                row.id,
-                                "enabled",
-                                e.target.checked
-                              )
-                            }
-                          />
+                            checked={false}
+                            // onChange={(e) =>
+                            //   updateKeyValuePair(
+                            //     params,
+                            //     setParams,
+                            //     row.id,
+                            //     "enabled",
+                            //     e.target.checked
+                            //   )
+                            // }
+                          /> */}
                         </TableCell>
                         <TableCell>
-                          <TextField
+                          <FormTextField
+                            name={`params.${index}.key`}
                             size="small"
-                            value={row.key}
-                            onChange={(e) =>
-                              updateKeyValuePair(
-                                params,
-                                setParams,
-                                row.id,
-                                "key",
-                                e.target.value
-                              )
-                            }
-                            disabled={!row.enabled}
                             fullWidth
-                          />
+                          ></FormTextField>
                         </TableCell>
                         <TableCell>
-                          <TextField
+                          <FormTextField
+                            name={`params.${index}.value`}
+                            size="small"
+                            fullWidth
+                          ></FormTextField>
+                          {/* <TextField
                             size="small"
                             value={row.value}
                             onChange={(e) =>
@@ -390,14 +417,12 @@ export default function RestBuilderForm({
                             }
                             disabled={!row.enabled}
                             fullWidth
-                          />
+                          /> */}
                         </TableCell>
                         <TableCell>
                           <IconButton
                             size="small"
-                            onClick={() =>
-                              deleteKeyValuePair(params, setParams, row.id)
-                            }
+                            onClick={() => removeParam(index)}
                           >
                             <DeleteIcon fontSize="small" />
                           </IconButton>
@@ -520,11 +545,18 @@ export default function RestBuilderForm({
                       <TableRow>
                         <TableCell width={40}></TableCell>
                         <TableCell>Key</TableCell>
+                        <TableCell>Type</TableCell>
                         <TableCell>Value</TableCell>
                         <TableCell width={250}>
                           <Button
                             startIcon={<AddIcon />}
-                            onClick={() => addKeyValuePair(headers, setHeaders)}
+                            onClick={() =>
+                              addHeader({
+                                key: "",
+                                type: "",
+                                value: "",
+                              })
+                            }
                             size="small"
                             sx={{ mt: 1 }}
                           >
@@ -534,68 +566,60 @@ export default function RestBuilderForm({
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {headers.map((row) => (
-                        <TableRow key={row.id}>
+                      {headerFields.map((header, index) => (
+                        <TableRow key={header.id}>
                           <TableCell padding="checkbox">
                             <input
                               type="checkbox"
-                              checked={row.enabled}
-                              onChange={(e) =>
-                                updateKeyValuePair(
-                                  headers,
-                                  setHeaders,
-                                  row.id,
-                                  "enabled",
-                                  e.target.checked
-                                )
-                              }
+                              // checked={row.enabled}
+                              // onChange={(e) =>
+                              //   updateKeyValuePair(
+                              //     headers,
+                              //     setHeaders,
+                              //     row.id,
+                              //     "enabled",
+                              //     e.target.checked
+                              //   )
+                              // }
                             />
                           </TableCell>
                           <TableCell>
-                            <TextField
+                            <FormTextField
+                              name={`headers.${index}.key`}
                               size="small"
-                              value={row.key}
-                              onChange={(e) =>
-                                updateKeyValuePair(
-                                  headers,
-                                  setHeaders,
-                                  row.id,
-                                  "key",
-                                  e.target.value
-                                )
-                              }
-                              disabled={
-                                !row.enabled || row.key === "Content-Type"
-                              }
                               fullWidth
-                            />
+                            ></FormTextField>
                           </TableCell>
                           <TableCell>
-                            <TextField
+                            <FormSelect
+                              name={`headers.${index}.type`}
+                              options={[
+                                {
+                                  label: "number",
+                                  value: "number",
+                                },
+                                {
+                                  label: "string",
+                                  value: "string",
+                                },
+                              ]}
                               size="small"
-                              value={row.value}
-                              onChange={(e) =>
-                                updateKeyValuePair(
-                                  headers,
-                                  setHeaders,
-                                  row.id,
-                                  "value",
-                                  e.target.value
-                                )
-                              }
-                              disabled={
-                                !row.enabled || row.key === "Content-Type"
-                              }
                               fullWidth
-                            />
+                            ></FormSelect>
+                          </TableCell>
+
+                          <TableCell>
+                            <FormTextField
+                              name={`headers.${index}.value`}
+                              size="small"
+                              fullWidth
+                            ></FormTextField>
                           </TableCell>
                           <TableCell>
                             <IconButton
                               size="small"
-                              onClick={() =>
-                                deleteKeyValuePair(headers, setHeaders, row.id)
-                              }
-                              disabled={row.key === "Content-Type"}
+                              onClick={() => removeHeader(index)}
+                              disabled={header.key === "Content-Type"}
                             >
                               <DeleteIcon fontSize="small" />
                             </IconButton>
@@ -620,11 +644,11 @@ export default function RestBuilderForm({
                   onChange={(e) => {
                     const val = e.target.value;
                     setContentType(val);
-                    setHeaders((prev) =>
-                      prev.map((h) =>
-                        h.key === "Content-Type" ? { ...h, value: val } : h
-                      )
-                    );
+                    // setHeaders((prev) =>
+                    //   prev.map((h) =>
+                    //     h.key === "Content-Type" ? { ...h, value: val } : h
+                    //   )
+                    // );
                   }}
                 >
                   <FormControlLabel value="" control={<Radio />} label="none" />
@@ -669,7 +693,7 @@ export default function RestBuilderForm({
                   </>
                 )}
 
-                {contentType === "multipart/form-data" && (
+                {/* {contentType === "multipart/form-data" && (
                   <TableContainer>
                     <Table size="small">
                       <TableHead>
@@ -757,7 +781,7 @@ export default function RestBuilderForm({
                       </TableBody>
                     </Table>
                   </TableContainer>
-                )}
+                )} */}
               </Stack>
             )}
           </Box>

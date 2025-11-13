@@ -1,61 +1,60 @@
 export const routes = {
   "(guest)": {
-    "callback": {
-      "index": "/callback"
+    callback: {
+      index: "/callback",
     },
-    "login": {
-      "index": "/login"
+    login: {
+      index: "/login",
     },
-    "signup": {
-      "index": "/signup"
-    }
+    signup: {
+      index: "/signup",
+    },
   },
   "(protected)": {
     "api-gateway": {
-      "cluster": {
-        "index": "/api-gateway/cluster",
-        "add": {
-          "index": "/api-gateway/cluster/add"
+      cluster: {
+        index: "/api-gateway/cluster/",
+        add: {
+          index: "/api-gateway/cluster/add",
         },
-        "edit": "/api-gateway/cluster/Edit/:id",
-        "detail": "/api-gateway/cluster/Detail/:id",
-        "[id]": {
-          "index": "/api-gateway/cluster/[id]"
-        }
+        edit: {
+          index: "/api-gateway/cluster/edit/",
+        },
       },
-      "route": {
-        "index": "/api-gateway/route",
-        "add": {
-          "index": "/api-gateway/route/add"
+      route: {
+        index: "/api-gateway/route/",
+        add: {
+          index: "/api-gateway/route/add",
         },
-        "edit": "/api-gateway/route/Edit/:id",
-        "detail": "/api-gateway/route/Detail/:id",
-        "[id]": {
-          "index": "/api-gateway/route/[id]"
-        }
-      }
+        edit: {
+          index: "/api-gateway/route/edit/",
+        },
+      },
     },
-    "dashboard": {
-      "index": "/dashboard"
+    dashboard: {
+      index: "/dashboard",
     },
-    "proxy": {
+    proxy: {
       "rest-builder": {
-        "index": "/proxy/rest-builder",
-        "add": {
-          "index": "/proxy/rest-builder/add"
-        }
+        index: "/proxy/rest-builder",
+        add: {
+          index: "/proxy/rest-builder/add",
+        },
+        edit: {
+          index: "/proxy/rest-builder/edit/",
+        },
       },
       "soap-builder": {
-        "index": "/proxy/soap-builder"
-      }
+        index: "/proxy/soap-builder",
+      },
     },
-    "sockets": {
-      "signalR": {
-        "index": "/sockets/signalR"
+    sockets: {
+      signalR: {
+        index: "/sockets/signalr",
       },
       "web-socket": {
-        "index": "/sockets/web-socket"
-      }
-    }
-  }
+        index: "/sockets/web-socket",
+      },
+    },
+  },
 };
