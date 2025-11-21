@@ -1,9 +1,9 @@
 import "../globals.css";
 import { SideBar } from "@/app/(protected)/components/layout/sidebar";
 import Breadcrumbs from "./components/layout/breadcrumb";
-import MyQueryClientProvider from "@/providers/queryClientProvider";
+import MyQueryClientProvider from "@/providers/MyQueryClientProvider";
 import { ToastContainer } from "react-toastify";
-import AuthProvider from "@/providers/authProvider";
+import AuthProvider from "@/providers/AuthProvider";
 
 export default function ProtectedLayout({
   children,

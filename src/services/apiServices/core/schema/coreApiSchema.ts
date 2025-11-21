@@ -6,10 +6,12 @@ export const coreApiSchema = {
       name: yup.string().required("Name is required"),
       url: yup.string().required("URL is required"),
       description: yup.string().optional(),
+
       method: yup
         .string()
         .oneOf(["GET", "POST", "PUT", "DELETE", "PATCH"], "Invalid HTTP method")
         .required("HTTP method is required"),
+
       params: yup
         .array()
         .of(
@@ -20,6 +22,7 @@ export const coreApiSchema = {
         )
         .optional()
         .nullable(),
+
       headers: yup
         .array()
         .of(

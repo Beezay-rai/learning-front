@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { ReduxProvider } from "@/providers/reduxProvider";
+import { ReduxProvider } from "@/providers/ReduxProvider";
+import CommonProvider from "@/providers/commonProvider";
 
 export const metadata: Metadata = {
   title: "Learning",
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="root">
-        <ReduxProvider>{children}</ReduxProvider>
+        <CommonProvider>
+          <ReduxProvider>{children}</ReduxProvider>
+        </CommonProvider>
       </body>
     </html>
   );

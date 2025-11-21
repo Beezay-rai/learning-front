@@ -34,19 +34,6 @@ import RestBuilderForm from "../../RestBuilderForm";
 import { RestApiBuilderRequest } from "@/services/apiServices/core/interface/restApiBuilderModel";
 import coreApiService from "@/services/apiServices/core/coreApiService";
 
-const schema = yup.object({
-  name: yup.string().required("Name is Required"),
-  clusterId: yup.string().required("Cluster ID is required"),
-  path: yup.string().required("Path is required"),
-  methods: yup
-    .array()
-    .of(yup.string().defined())
-    .min(1, "At least one method is required")
-    .required("Select at least one method"),
-});
-
-const methodOptions = ["GET", "POST", "PUT", "DELETE", "PATCH"];
-
 export default function EditRoutePage() {
   const router = useRouter();
 
@@ -57,7 +44,7 @@ export default function EditRoutePage() {
 
   const { data: restApiBuilder, isLoading: restApiBuilderLoading } =
     coreApiService.useGetRestApiBuilderById(id, {
-      enabled: !!id,
+      enabled: id > 0,
     });
 
   const { mutateAsync, isPending: isSubmitting } =
@@ -82,14 +69,15 @@ export default function EditRoutePage() {
       toast.error("Failed to Update route");
     }
   };
-  if (restApiBuilder === undefined) {
+
+  if (restApiBuilder === undefined && !restApiBuilderLoading) {
     return <NotFound />;
   }
 
   return (
     <Paper sx={{ p: 4 }}>
-      <Typography sx={{ my: 3 }} variant="h5">
-        Update Route
+      <Typography sx={{ mb: 3 }} variant="h5">
+        Update Api
       </Typography>
 
       {restApiBuilderLoading ? (
@@ -99,7 +87,7 @@ export default function EditRoutePage() {
           isAdd={false}
           onSubmit={onSubmit}
           loading={isSubmitting}
-          defaultValue={restApiBuilder}
+          defaultValue={restApiBuilder?.data}
         ></RestBuilderForm>
       )}
     </Paper>

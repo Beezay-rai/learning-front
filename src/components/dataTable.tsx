@@ -1,4 +1,6 @@
 import {
+  Box,
+  Button,
   Collapse,
   Table,
   TableBody,
@@ -23,6 +25,7 @@ import {
 } from "@tanstack/react-table";
 import { useMemo } from "react";
 import TableBodySkeleton from "./molecules/TableBodySkeleton";
+import ReloadIconButton from "./ui/button/RefetchIconButton";
 
 interface DataTableProp<TData extends RowData>
   extends Omit<TableOptions<TData>, "getCoreRowModel"> {
@@ -30,10 +33,11 @@ interface DataTableProp<TData extends RowData>
   noDataText?: React.ReactNode;
   enablePagination?: boolean;
   subItem?: any;
+  refetchData?: () => void;
 }
 
 export default function DataTable<TData>(props: DataTableProp<TData>) {
-  const { isLoading, data, subItem, ...tableOptions } = props;
+  const { isLoading, data, subItem, refetchData, ...tableOptions } = props;
   const table = useReactTable({
     getCoreRowModel: getCoreRowModel(),
     ...props,
@@ -101,6 +105,19 @@ export default function DataTable<TData>(props: DataTableProp<TData>) {
   return (
     <>
       <TableContainer>
+        <Box
+          sx={{
+            float: "right",
+          }}
+        >
+          {refetchData && (
+            <ReloadIconButton
+              size="small"
+              color="info"
+              onClick={refetchData}
+            ></ReloadIconButton>
+          )}
+        </Box>
         <Table>
           <TableHead>
             {table.getHeaderGroups().map((headerGroup, index) => (

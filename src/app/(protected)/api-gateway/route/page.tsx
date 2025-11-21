@@ -26,8 +26,10 @@ import { routes } from "@/app/routes.generated";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DataTable from "@/components/DataTable";
+import useConfirm from "@/hooks/useConfirm";
 
 function RoutePage() {
+  const confirm = useConfirm();
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [totalCount, setTotalCount] = useState<number>(0);

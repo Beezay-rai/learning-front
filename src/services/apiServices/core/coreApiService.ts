@@ -12,6 +12,7 @@ import {
   RestApiBuilderRequest,
 } from "./interface/restApiBuilderModel";
 import { CoreApiDataResponse, CoreApiResponse } from "./common/coreApiResponse";
+import { AxiosResponse } from "axios";
 
 /**
  * Query Keys
@@ -35,11 +36,11 @@ const fetchRestApiBuilders = async (): Promise<
 
 const fetchRestApiBuilderById = async (
   id: number
-): CoreApiDataResponse<RestApiBuilderModel> => {
+): Promise<AxiosResponse<CoreApiDataResponse<RestApiBuilderModel>>> => {
   const response = await coreApiClient.get<
     CoreApiDataResponse<RestApiBuilderModel>
   >(`${coreAPIRoutes.builder.restApi}/${id}`);
-  return response.data;
+  return response;
 };
 
 const createRestApiBuilder = async (
@@ -63,13 +64,15 @@ const updateRestApiBuilder = async ({
   >(coreAPIRoutes.builder.restApi + "/" + id, payload);
   return data;
 };
-/**
- * Core API Service Hooks
- */
+
+const deleteRestApiBuilder = async (id: number): Promise<CoreApiResponse> => {
+  const { data } = await coreApiClient.delete<CoreApiResponse>(
+    coreAPIRoutes.builder.restApi + "/" + id
+  );
+  return data;
+};
+
 const coreApiService = {
-  /**
-   * Get all REST API builders (paginated)
-   */
   useGetRestApiBuilders: (
     options?: Omit<
       UseQueryOptions<PaginatedResponse<RestApiBuilderModel>, Error>,
@@ -94,10 +97,13 @@ const coreApiService = {
       >,
       "queryKey" | "queryFn"
     >
-  ): UseQueryResult<CoreApiDataResponse<RestApiBuilderModel>, Error> => {
+  ) => {
     return useQuery({
       queryKey: QUERY_KEYS.restApiBuilderById(id),
-      queryFn: () => fetchRestApiBuilderById(id),
+      queryFn: async () => {
+        const data = await fetchRestApiBuilderById(id);
+        return data as unknown as CoreApiDataResponse<RestApiBuilderModel>;
+      },
       enabled: !!id && id > 0,
       ...options,
     });
@@ -117,6 +123,16 @@ const coreApiService = {
     const queryClient = useQueryClient();
     return useMutation({
       mutationFn: updateRestApiBuilder,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.restApiBuilders });
+      },
+    });
+  },
+
+  useDeleteRestApiBuilder: () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationFn: deleteRestApiBuilder,
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: QUERY_KEYS.restApiBuilders });
       },

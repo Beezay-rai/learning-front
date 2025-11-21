@@ -48,16 +48,24 @@ import {
   AuthConfig,
 } from "@/common/types/authConfig";
 import { HttpMethod } from "@/common/types/httpmethod";
-import { RestApiBuilderRequest } from "@/services/apiServices/core/interface/restApiBuilderModel";
+import {
+  RestApiBuilderModel,
+  RestApiBuilderRequest,
+} from "@/services/apiServices/core/interface/restApiBuilderModel";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { coreApiSchema } from "@/services/apiServices/core/schema/apiSchema";
+import { coreApiSchema } from "@/services/apiServices/core/schema/coreApiSchema";
 import FormTextField from "@/components/molecules/FormTextField";
 import Link from "next/link";
 import { routes } from "@/app/routes.generated";
 import FormSelect, {
   FormSelectOption,
 } from "@/components/molecules/FormSelect";
+import * as yup from "yup";
+import {
+  GenericKeyValuePair,
+  TypeGenericKeyValuePair,
+} from "@/services/apiServices/common/GenericKeyValuePair";
 
 interface ResponseData {
   status: number;
@@ -71,7 +79,7 @@ interface ResponseData {
 interface RestBuilderFormProps {
   onSubmit: (data: RestApiBuilderRequest) => void;
   loading?: boolean;
-  defaultValue?: RestApiBuilderRequest;
+  defaultValue?: RestApiBuilderModel;
   isAdd?: boolean;
 }
 
@@ -85,18 +93,8 @@ export default function RestBuilderForm({
   const [body, setBody] = useState("");
   const formMethods = useForm<RestApiBuilderRequest>({
     resolver: yupResolver(coreApiSchema.RestBuilder.Add as any),
-    defaultValues: {
-      ...(defaultValue ?? {
-        name: "",
-        description: "",
-        url: "",
-        headers: [],
-        method: "GET",
-        params: [],
-      }),
-    },
+    defaultValues: defaultValue,
   });
-
   const rawUrl = formMethods.watch("url");
   const method = formMethods.watch("method");
   const {
@@ -117,6 +115,7 @@ export default function RestBuilderForm({
     name: "params",
   });
   const params = formMethods.watch("params");
+  const headers = formMethods.watch("headers");
 
   const [contentType, setContentType] = useState("application/json");
 
@@ -173,7 +172,7 @@ export default function RestBuilderForm({
         body: JSON.stringify({
           url: finalUrl,
           method: method,
-          headers: { ...requestHeaders },
+          headers: { ...requestHeaders, ...headers },
         }),
       });
 
@@ -242,11 +241,13 @@ export default function RestBuilderForm({
         <form
           onSubmit={formMethods.handleSubmit(
             (data) => {
-              // called if form is valid
-              onSubmit(data);
+              const payload = coreApiSchema.RestBuilder.Add.cast(data, {
+                stripUnknown: true,
+              });
+              console.log(payload);
+              onSubmit(payload as RestApiBuilderRequest);
             },
             (errors) => {
-              // called if form has validation errors
               console.log("Form validation errors:", errors);
             }
           )}
@@ -262,7 +263,7 @@ export default function RestBuilderForm({
               <FormTextField fullWidth label="Name" name="name" />
             </Grid>
             <Grid size={8}>
-              <FormTextField fullWidth label="Description" name="description" />
+              {/* <FormTextField fullWidth label="Description" name="description" /> */}
             </Grid>
 
             <Grid size={1}>

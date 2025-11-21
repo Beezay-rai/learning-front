@@ -27,6 +27,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
 import { routes } from "@/app/routes.generated";
+import ReloadIconButton from "@/components/ui/button/RefetchIconButton";
 
 const ClusterPage = () => {
   const [page, setPage] = useState<number>(0);
@@ -36,6 +37,7 @@ const ClusterPage = () => {
     data: clustersData,
     isLoading,
     error,
+    refetch: refetchClusterList,
   } = apiService.useGetClusters(rowsPerPage);
   const clusters = clustersData?.items ?? [];
   const totalCount = clustersData?.total ?? 0;
@@ -71,6 +73,17 @@ const ClusterPage = () => {
       </Box>
 
       <TableContainer sx={{ maxHeight: 600 }}>
+        <Box
+          sx={{
+            float: "right",
+          }}
+        >
+          <ReloadIconButton
+            size="small"
+            color="info"
+            onClick={() => refetchClusterList()}
+          ></ReloadIconButton>
+        </Box>
         <Table stickyHeader>
           <TableHead>
             <TableRow>

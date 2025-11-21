@@ -28,8 +28,11 @@ import EditIcon from "@mui/icons-material/Edit";
 import DataTable from "@/components/DataTable";
 import coreApiService from "@/services/apiServices/core/coreApiService";
 import { RestApiBuilderModel } from "@/services/apiServices/core/interface/restApiBuilderModel";
+import useConfirm from "@/hooks/useConfirm";
+import { toast } from "react-toastify";
 
 function RestApiBuilderList() {
+  const confirm = useConfirm();
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [totalCount, setTotalCount] = useState<number>(0);
@@ -37,13 +40,32 @@ function RestApiBuilderList() {
   const {
     data: restApiList,
     isLoading,
+    isFetching,
     error,
+    refetch: refetchApiList,
   } = coreApiService.useGetRestApiBuilders();
 
   const handlePageChange = (e: unknown, newPage: number) => setPage(newPage);
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(e.target.value, 10));
     setPage(0);
+  };
+  const { mutateAsync } = coreApiService.useDeleteRestApiBuilder();
+
+  const handleDelete = (id: number) => {
+    confirm({
+      onConfirm: async () => {
+        await mutateAsync(id, {
+          onSuccess: () => {
+            toast.error("API Deleted Sucessfully !");
+            refetchApiList();
+          },
+          onError: () => {
+            toast.error("Error Occured  !");
+          },
+        });
+      },
+    });
   };
 
   const routeColumns: ColumnDef<RestApiBuilderModel>[] = [
@@ -101,21 +123,6 @@ function RestApiBuilderList() {
         ),
     },
     {
-      accessorKey: "deletedDate",
-      header: "Deleted Date",
-      cell: (info) => {
-        const value = info.getValue() as string;
-        return value === "0001-01-01T00:00:00"
-          ? "-"
-          : new Date(value).toLocaleDateString("en-CA");
-      },
-    },
-    {
-      accessorKey: "deletedBy",
-      header: "Deleted By",
-      cell: (info) => info.getValue() || "-",
-    },
-    {
       accessorKey: "createdBy",
       header: "Created By",
       cell: (info) => info.getValue() || "-",
@@ -160,7 +167,11 @@ function RestApiBuilderList() {
             </IconButton>
           </Link>
 
-          <IconButton color="error" size="small" onClick={() => {}}>
+          <IconButton
+            color="error"
+            size="small"
+            onClick={() => handleDelete(row.original.id)}
+          >
             <DeleteIcon />
           </IconButton>
         </Stack>
@@ -187,8 +198,9 @@ function RestApiBuilderList() {
       </Box>
 
       <DataTable
-        isLoading={isLoading}
+        isLoading={isLoading || isFetching}
         columns={routeColumns}
+        refetchData={refetchApiList}
         data={restApiList?.items || []}
       />
 

@@ -51,7 +51,7 @@ import { HttpMethod } from "@/common/types/httpmethod";
 import { RestApiBuilderRequest } from "@/services/apiServices/core/interface/restApiBuilderModel";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { coreApiSchema } from "@/services/apiServices/core/schema/apiSchema";
+import { coreApiSchema } from "@/services/apiServices/core/schema/coreApiSchema";
 import RestBuilderForm from "../RestBuilderForm";
 import coreApiService from "@/services/apiServices/core/coreApiService";
 import { useRouter } from "next/navigation";

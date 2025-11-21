@@ -26,7 +26,6 @@ function FormTextField(props: FormTextFieldProps) {
     label,
     error,
     helperText,
-    maxLength,
     disabled,
     required,
     ...rest
