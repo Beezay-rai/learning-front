@@ -7,6 +7,7 @@ import {
 import myApiClient from "./apiClient";
 import { ClusterRequest, Cluster } from "./interfaces/cluster";
 import { RouteRequest, Route } from "./interfaces/route";
+import { PaginatedResponse } from "./interfaces/common/paginatedResponse";
 
 const getAllRoutes = async (): Promise<PaginatedResponse<Route>> => {
   const response = await myApiClient.get(`/v1/routes`);

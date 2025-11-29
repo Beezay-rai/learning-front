@@ -26,7 +26,8 @@ import {
   ListItemText,
   ListSubheader,
 } from "@mui/material";
-
+import SettingsIcon from "@mui/icons-material/Settings";
+import { routes } from "@/app/routes.generated";
 interface MenuItem {
   id: string;
   label: string;
@@ -75,7 +76,6 @@ const menuItems: MenuItem[] = [
       },
     ],
   },
-
   {
     id: "httpProxy",
     label: "Http Proxy",
@@ -91,6 +91,45 @@ const menuItems: MenuItem[] = [
         id: "soapBuilder",
         label: "Soap Builder",
         link: "/proxy/soap-builder",
+        icon: CornerDownRight,
+      },
+    ],
+  },
+
+  {
+    id: "config",
+    label: "Configure",
+    icon: SettingsIcon,
+    subItems: [
+      {
+        id: "ssl-certificate",
+        label: "SSL Certificate",
+        link: "/proxy/rest-builder",
+        icon: CornerDownRight,
+      },
+      {
+        id: "ca-certificate",
+        label: "CA Certificate",
+        link: "/configure/ca-certificate",
+        icon: CornerDownRight,
+      },
+    ],
+  },
+  {
+    id: "user-management",
+    label: "User Management",
+    icon: SettingsIcon,
+    subItems: [
+      {
+        id: "api-user",
+        label: "API Users",
+        link: `${routes["(protected)"]["user-management"]["api-user"].index}`,
+        icon: CornerDownRight,
+      },
+      {
+        id: "app-user",
+        label: "System Users",
+        link: "/configure/ca-certificate",
         icon: CornerDownRight,
       },
     ],

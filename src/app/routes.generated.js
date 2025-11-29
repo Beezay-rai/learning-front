@@ -31,8 +31,19 @@ export const routes = {
         },
       },
     },
+    configure: {
+      "ca-certificate": {
+        index: "/configure/ca-certificate",
+      },
+      "ssl-certificate": {
+        index: "/configure/ssl-certificate",
+      },
+    },
     dashboard: {
       index: "/dashboard",
+    },
+    "dll-manager": {
+      index: "/dll-manager",
     },
     proxy: {
       "rest-builder": {
@@ -54,6 +65,20 @@ export const routes = {
       },
       "web-socket": {
         index: "/sockets/web-socket",
+      },
+    },
+    "user-management": {
+      "api-user": {
+        index: "/user-management/api-user",
+        add: {
+          index: "/user-management/api-user/add",
+        },
+        edit: {
+          index: "/user-management/api-user/edit",
+        },
+      },
+      "app-user": {
+        index: "/user-management/app-user",
       },
     },
   },

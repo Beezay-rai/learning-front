@@ -7,6 +7,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
 } from "@mui/material";
 import {
@@ -27,25 +28,38 @@ import { useMemo } from "react";
 import TableBodySkeleton from "./molecules/TableBodySkeleton";
 import ReloadIconButton from "./ui/button/RefetchIconButton";
 
+interface PaginationConfig {
+  page: number;
+  totalCount: number;
+  rowsPerPage: number;
+  handlePageChange: (event: unknown, newPage: number) => void;
+  handleRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
 interface DataTableProp<TData extends RowData>
   extends Omit<TableOptions<TData>, "getCoreRowModel"> {
   isLoading: boolean;
   noDataText?: React.ReactNode;
-  enablePagination?: boolean;
   subItem?: any;
   refetchData?: () => void;
+
+  paginationConfig?: PaginationConfig;
 }
 
 export default function DataTable<TData>(props: DataTableProp<TData>) {
-  const { isLoading, data, subItem, refetchData, ...tableOptions } = props;
+  const {
+    isLoading,
+    data,
+    subItem,
+    refetchData,
+    paginationConfig,
+    ...tableOptions
+  } = props;
   const table = useReactTable({
     getCoreRowModel: getCoreRowModel(),
     ...props,
   });
-  const columnsCount = useMemo(
-    () => table.getVisibleFlatColumns().length,
-    [table]
-  );
+  const columnsCount = useMemo(() => table.getAllColumns().length, [table]);
 
   const memoizedData = useMemo(() => data, [data]);
 
@@ -122,7 +136,7 @@ export default function DataTable<TData>(props: DataTableProp<TData>) {
           <TableHead>
             {table.getHeaderGroups().map((headerGroup, index) => (
               <TableRow key={headerGroup.id}>
-                <TableCell>S.N</TableCell>
+                <TableCell width={1}>S.N</TableCell>
 
                 {headerGroup.headers.map((header, index) => {
                   return (
@@ -145,6 +159,17 @@ export default function DataTable<TData>(props: DataTableProp<TData>) {
           </TableHead>
           <TableBody>{renderTableBody()}</TableBody>
         </Table>
+        {paginationConfig && (
+          <TablePagination
+            component="div"
+            count={paginationConfig.totalCount}
+            page={paginationConfig.page}
+            onPageChange={paginationConfig.handlePageChange}
+            rowsPerPage={paginationConfig.rowsPerPage}
+            onRowsPerPageChange={paginationConfig.handleRowsPerPageChange}
+            rowsPerPageOptions={[10, 25, 50]}
+          />
+        )}
       </TableContainer>
     </>
   );

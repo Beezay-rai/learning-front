@@ -6,3 +6,4 @@ export interface CoreApiResponse {
 export interface CoreApiDataResponse<T> extends CoreApiResponse {
   data: T;
 }
+

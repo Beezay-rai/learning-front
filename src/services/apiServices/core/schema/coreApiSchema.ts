@@ -6,7 +6,6 @@ export const coreApiSchema = {
       name: yup.string().required("Name is required"),
       url: yup.string().required("URL is required"),
       description: yup.string().optional(),
-
       method: yup
         .string()
         .oneOf(["GET", "POST", "PUT", "DELETE", "PATCH"], "Invalid HTTP method")
@@ -34,6 +33,14 @@ export const coreApiSchema = {
         )
         .optional()
         .nullable(),
+    }),
+  },
+  ApiUser: {
+    Add: yup.object({
+      name: yup.string().required("Name is required"),
+    }),
+    Update: yup.object({
+      name: yup.string().required("Name is required"),
     }),
   },
 };

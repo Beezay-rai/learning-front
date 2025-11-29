@@ -64,7 +64,7 @@ export default function ApiConfigPage() {
                   label="Select Certificate"
                   onChange={(e) => setCert(e.target.value)}
                 >
-                  <MenuItem value="-">Select</MenuItem>
+                  <MenuItem value="">Select</MenuItem>
                   <MenuItem value="cert1">Certificate 1</MenuItem>
                   <MenuItem value="cert2">Certificate 2</MenuItem>
                   <MenuItem value="cert3">Certificate 3</MenuItem>
