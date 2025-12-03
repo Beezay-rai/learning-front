@@ -20,14 +20,14 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { ColumnDef } from "@tanstack/react-table";
-import { Route } from "@/services/apiServices/api-gateway/interfaces/route";
+import { Route } from "@/services/apiServices/api-gateway/interfaces/Route";
 import Link from "next/link";
 import { routes } from "@/app/routes.generated";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import DataTable from "@/components/DataTable";
+import DataTable from "@/components/ui/table/DataTable";
 import coreApiService from "@/services/apiServices/core/coreApiService";
-import { RestApiBuilderModel } from "@/services/apiServices/core/interface/restApiBuilderModel";
+import { RestApiBuilderModel } from "@/services/apiServices/core/interface/RestApiBuilderModel";
 import useConfirm from "@/hooks/useConfirm";
 import { toast } from "react-toastify";
 

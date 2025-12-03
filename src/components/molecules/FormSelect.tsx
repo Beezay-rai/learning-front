@@ -1,20 +1,13 @@
 "use client";
 
 import React, { memo, ReactNode } from "react";
-import TextField, { TextFieldProps } from "@mui/material/TextField";
-import {
-  Controller,
-  get,
-  useController,
-  useFormContext,
-} from "react-hook-form";
+import { Controller, get, useFormContext } from "react-hook-form";
 import {
   FormControl,
   InputLabel,
   MenuItem,
   Select,
   SelectProps,
-  Typography,
 } from "@mui/material";
 
 export interface FormSelectOption {
@@ -31,40 +24,27 @@ function FormSelect(props: FormSelectProps) {
     control,
     watch,
     formState: { errors },
-    clearErrors,
   } = useFormContext();
 
-  const {
-    name = "",
-    label,
-    error,
-    disabled,
-    required,
-    options,
-    ...rest
-  } = props;
+  const { name = "", label, error, options } = props;
 
   const value = watch(name);
   const isFieldError = get(errors, name);
-
-  const isError = !!error || !!isFieldError;
-  const errorMessage = isFieldError?.message;
 
   return (
     <Controller
       name={name}
       control={control}
       render={({ field }) => (
-        <FormControl size="small" fullWidth sx={{ minWidth: 120 }}>
+        <FormControl fullWidth sx={{ minWidth: 120 }}>
           <InputLabel>{label}</InputLabel>
           <Select
-            value={value}
+            value={value ?? ""}
             name={name}
             label={label}
             onChange={(e) => {
               console.log(e);
               field.onChange(e);
-              //   setMethod(e.target.value as HttpMethod);
             }}
           >
             {Array.isArray(options)

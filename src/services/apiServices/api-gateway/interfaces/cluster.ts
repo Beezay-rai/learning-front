@@ -1,5 +1,4 @@
-import { string } from "yup";
-import { BaseEntity } from "./common/baseEntitiy";
+import { BaseEntity } from "./common/BaseEntitiy";
 
 export interface AddClusterDestination {
   name: string;

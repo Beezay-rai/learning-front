@@ -13,10 +13,8 @@ import { LogIn } from "lucide-react";
 import { signinRedirect } from "@/services/authService";
 
 export default function HomePage() {
-  const router = useRouter();
-
   const handleLogin = () => {
-   signinRedirect();
+    signinRedirect();
   };
 
   return (

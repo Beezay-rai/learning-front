@@ -1,7 +1,7 @@
 "use client";
 import ConfirmDialog, {
   ConfirmDialogProps,
-} from "@/components/ui/ConfirmDialog";
+} from "@/components/ui/dialog/ConfirmDialog";
 import ConfirmContext from "@/context/ConfirmContext";
 import React, { useCallback, useState } from "react";
 import { createContext } from "react";

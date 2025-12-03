@@ -18,18 +18,9 @@ function FormTextField(props: FormTextFieldProps) {
     control,
     watch,
     formState: { errors },
-    clearErrors,
   } = useFormContext();
 
-  const {
-    name = "",
-    label,
-    error,
-    helperText,
-    disabled,
-    required,
-    ...rest
-  } = props;
+  const { name = "", label, error, helperText } = props;
 
   const {
     field: { ref, onChange, onBlur },

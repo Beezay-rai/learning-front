@@ -74,11 +74,26 @@ export const routes = {
           index: "/user-management/api-user/add",
         },
         edit: {
-          index: "/user-management/api-user/edit",
+          index: "/user-management/api-user/edit/",
         },
       },
-      "app-user": {
-        index: "/user-management/app-user",
+      role: {
+        index: "/user-management/role",
+        add: {
+          index: "/user-management/role/add",
+        },
+        edit: {
+          index: "/user-management/role/edit/",
+        },
+      },
+      user: {
+        index: "/user-management/user",
+        add: {
+          index: "/user-management/user/add",
+        },
+        edit: {
+          index: "/user-management/user/edit/",
+        },
       },
     },
   },

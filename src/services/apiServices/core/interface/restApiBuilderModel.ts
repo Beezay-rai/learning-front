@@ -1,5 +1,5 @@
 import { HttpMethod } from "@/common/types/httpmethod";
-import { BaseEntity } from "../../api-gateway/interfaces/common/baseEntitiy";
+import { BaseEntity } from "../../api-gateway/interfaces/common/BaseEntitiy";
 import {
   GenericKeyValuePair,
   TypeGenericKeyValuePair,

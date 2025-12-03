@@ -1,7 +1,5 @@
 import {
   Box,
-  Button,
-  Collapse,
   Table,
   TableBody,
   TableCell,
@@ -11,22 +9,15 @@ import {
   TableRow,
 } from "@mui/material";
 import {
-  ColumnResizeDirection,
-  ColumnResizeMode,
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  OnChangeFn,
   RowData,
-  SortingState,
   TableOptions,
   useReactTable,
 } from "@tanstack/react-table";
 import { useMemo } from "react";
-import TableBodySkeleton from "./molecules/TableBodySkeleton";
-import ReloadIconButton from "./ui/button/RefetchIconButton";
+import TableBodySkeleton from "../../molecules/TableBodySkeleton";
+import ReloadIconButton from "../button/RefetchIconButton";
 
 interface PaginationConfig {
   page: number;
@@ -100,7 +91,7 @@ export default function DataTable<TData>(props: DataTableProp<TData>) {
     return table.getRowModel().rows.map((row, index) => (
       <TableRow key={row.id}>
         <TableCell>{index + 1}</TableCell>
-        {row.getVisibleCells().map((cell, index) => {
+        {row.getVisibleCells().map((cell) => {
           return (
             <TableCell
               key={cell.id}

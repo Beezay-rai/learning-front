@@ -5,9 +5,9 @@ import {
   UseQueryOptions,
 } from "@tanstack/react-query";
 import myApiClient from "./apiClient";
-import { ClusterRequest, Cluster } from "./interfaces/cluster";
-import { RouteRequest, Route } from "./interfaces/route";
-import { PaginatedResponse } from "./interfaces/common/paginatedResponse";
+import { ClusterRequest, Cluster } from "./interfaces/Cluster";
+import { RouteRequest, Route } from "./interfaces/Route";
+import { PaginatedResponse } from "./interfaces/common/PaginatedResponse";
 
 const getAllRoutes = async (): Promise<PaginatedResponse<Route>> => {
   const response = await myApiClient.get(`/v1/routes`);

@@ -27,7 +27,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import { routes } from "@/app/routes.generated";
-import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/route"; // You’ll define this interface
+import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/Route"; // You’ll define this interface
 import { SearchableSelect } from "@/components/molecules/SearchableSelect";
 import RouteForm from "../RouteForm";
 import NotFound from "@/app/(protected)/not-found";

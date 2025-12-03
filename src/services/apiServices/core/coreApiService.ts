@@ -12,13 +12,13 @@ import { coreAPIRoutes } from "./coreApiRoutes";
 import {
   RestApiBuilderModel,
   RestApiBuilderRequest,
-} from "./interface/restApiBuilderModel";
+} from "./interface/RestApiBuilderModel";
 
-import { ApiUserModel, ApiUserRequest } from "./interface/apiUserModel";
+import { ApiUserModel, ApiUserRequest } from "./interface/ApiUserModel";
 
-import { CoreApiDataResponse, CoreApiResponse } from "./common/coreApiResponse";
+import { CoreApiDataResponse, CoreApiResponse } from "./common/CoreApiResponse";
 
-import { PaginationRequest, PaginatedResponse } from "./common/paginationModel";
+import { PaginationRequest, PaginatedResponse } from "./common/PaginationModel";
 
 const QUERY_KEYS = {
   restApiBuilders: ["core", "restApiBuilders"] as const,

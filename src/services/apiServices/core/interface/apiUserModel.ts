@@ -1,4 +1,4 @@
-import { BaseEntity } from "./baseEntity";
+import { BaseEntity } from "./BaseEntity";
 
 export interface ApiUserModel extends BaseEntity {
   name: string;

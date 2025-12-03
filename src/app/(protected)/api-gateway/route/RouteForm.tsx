@@ -1,5 +1,5 @@
 import { apiService } from "@/services/apiServices/api-gateway/apiService";
-import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/route";
+import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/Route";
 import { routes } from "@/app/routes.generated";
 import { SearchableSelect } from "@/components/molecules/SearchableSelect";
 import { yupResolver } from "@hookform/resolvers/yup";

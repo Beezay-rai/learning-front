@@ -6,7 +6,7 @@ import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { routes } from "@/app/routes.generated";
-import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/route"; // You’ll define this interface
+import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/Route"; // You’ll define this interface
 import RouteForm from "../RouteForm";
 export default function AddRoutePage() {
   const router = useRouter();
@@ -33,7 +33,7 @@ export default function AddRoutePage() {
         Add Route
       </Typography>
 
-      <RouteForm onSubmit={onSubmit}></RouteForm>
+      <RouteForm onSubmit={onSubmit} loading={isSubmitting}></RouteForm>
     </Paper>
   );
 }

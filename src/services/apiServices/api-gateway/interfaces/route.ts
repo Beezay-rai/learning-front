@@ -1,4 +1,4 @@
-import { BaseEntity } from "./common/baseEntitiy";
+import { BaseEntity } from "./common/BaseEntitiy";
 
 export interface Route extends BaseEntity {
   name: string;

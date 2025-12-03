@@ -1,21 +1,32 @@
 "use client";
 
-import { Box, Button, Grid, IconButton, TextField } from "@mui/material";
-import { Controller, useForm, useFieldArray } from "react-hook-form";
+import { Box, Button, Grid, IconButton, Paper, TextField } from "@mui/material";
+import {
+  Controller,
+  useForm,
+  useFieldArray,
+  FormProvider,
+} from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Minus, Plus } from "lucide-react";
 import Link from "next/link";
 import * as yup from "yup";
+import { routes } from "@/app/routes.generated";
+import FormTextField from "@/components/molecules/FormTextField";
+import { AddUserRequest } from "@/services/apiServices/idsrv/interface/UserModel";
 
 const userSchema = yup.object({
-  name: yup.string().required("Name is required").max(50, "Max 50 characters"),
+  first_name: yup
+    .string()
+    .required("Name is required")
+    .max(50, "Max 50 characters"),
 
   email: yup.string().required("Email is required").email("Invalid email"),
 
-  roles: yup
-    .array()
-    .of(yup.string().required())
-    .min(1, "At least one role is required"),
+  // roles: yup
+  //   .array()
+  //   .of(yup.string().required())
+  //   .min(1, "At least one role is required"),
 });
 interface UserFormProps {
   onSubmit: (data: any) => void;
@@ -32,115 +43,69 @@ export default function UserForm({
   isAdd = true,
   cancelUrl,
 }: UserFormProps) {
-  const { control, handleSubmit, formState } = useForm({
+  const formMethods = useForm<AddUserRequest>({
     resolver: yupResolver(userSchema),
-    defaultValues: defaultValue ?? {
-      name: "",
-      email: "",
-      roles: [],
-    },
+    defaultValues: defaultValue,
   });
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "roles",
-  });
+  // const { fields, append, remove } = useFieldArray({
+  //   control,
+  //   name: "roles",
+  // });
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit(onSubmit)}
-      sx={{ display: "flex", flexDirection: "column", gap: 3 }}
+    <Paper
+      elevation={3}
+      sx={{ borderRadius: 2, overflow: "hidden", height: "100%" }}
     >
-      {/* TOP INPUTS */}
-      <Grid container spacing={2}>
-        {/* NAME */}
-        <Grid size={5}>
-          <Controller
-            name="name"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Name"
-                error={!!formState.errors.name}
-                // helperText={formState.errors.name?.message}
-                fullWidth
-              />
-            )}
-          />
-        </Grid>
-
-        {/* ADD ROLE BUTTON */}
-        <Grid size={2}>
-          <Button
-            type="button"
-            variant="outlined"
-            startIcon={<Plus />}
-            onClick={() => append("")}
+      <FormProvider {...formMethods}>
+        <form onSubmit={formMethods.handleSubmit(onSubmit)}>
+          <Grid
+            container
+            spacing={2}
+            sx={{
+              p: 2,
+            }}
           >
-            Add Role
-          </Button>
-        </Grid>
-      </Grid>
-
-      {/* DYNAMIC ROLES */}
-      {fields.map((field, index) => (
-        <Grid container key={field.id} spacing={2} alignItems="center">
-          <Grid size={11}>
-            <Controller
-              name={`roles.${index}`}
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label={`Role #${index + 1}`}
-                  // error={!!formState.errors.roles?.[index]}
-                  // helperText={formState.errors.roles?.[index]?.message}
-                  fullWidth
-                />
-              )}
-            />
+            <Grid size={4}>
+              <FormTextField fullWidth label="Name" name="first_name" />
+            </Grid>
+            <Grid size={8}>
+              <FormTextField fullWidth label="Description" name="email" />
+            </Grid>
           </Grid>
 
-          <Grid size={1}>
-            <IconButton color="error" onClick={() => remove(index)}>
-              <Minus />
-            </IconButton>
-          </Grid>
-        </Grid>
-      ))}
+          <Box sx={{ display: "flex", gap: 2, m: 3 }}>
+            <Button
+              type="submit"
+              variant="contained"
+              color={isAdd ? "primary" : "warning"}
+              disabled={loading}
+              sx={{ minWidth: 120 }}
+            >
+              {loading
+                ? isAdd
+                  ? "Adding..."
+                  : "Updating..."
+                : isAdd
+                ? "Add Api"
+                : "Update"}
+            </Button>
 
-      {/* ACTION BUTTONS */}
-      <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
-        <Button
-          type="submit"
-          variant="contained"
-          color={isAdd ? "primary" : "warning"}
-          disabled={loading}
-          sx={{ minWidth: 120 }}
-        >
-          {loading
-            ? isAdd
-              ? "Adding..."
-              : "Updating..."
-            : isAdd
-            ? "Add User"
-            : "Update"}
-        </Button>
-
-        <Link href={cancelUrl}>
-          <Button
-            type="button"
-            variant="outlined"
-            color="error"
-            disabled={loading}
-            sx={{ minWidth: 120 }}
-          >
-            Cancel
-          </Button>
-        </Link>
-      </Box>
-    </Box>
+            <Link href={routes["(protected)"]["user-management"].user.index}>
+              <Button
+                type="button"
+                variant="outlined"
+                color="error"
+                disabled={loading}
+                sx={{ minWidth: 120 }}
+              >
+                Cancel
+              </Button>
+            </Link>
+          </Box>
+        </form>
+      </FormProvider>
+    </Paper>
   );
 }

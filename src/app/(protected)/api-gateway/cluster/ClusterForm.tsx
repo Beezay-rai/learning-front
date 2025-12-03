@@ -16,7 +16,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { Minus, Plus } from "lucide-react";
-import { ClusterRequest } from "@/services/apiServices/api-gateway/interfaces/cluster";
+import { ClusterRequest } from "@/services/apiServices/api-gateway/interfaces/Cluster";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Link from "next/link";
@@ -164,7 +164,6 @@ export default function ClusterForm({
           color={isAdd ? "primary" : "warning"}
           disabled={loading}
           sx={{ minWidth: 120 }}
-          
         >
           {loading
             ? isAdd

@@ -27,7 +27,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import { routes } from "@/app/routes.generated";
-import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/route"; // You’ll define this interface
+import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/Route"; // You’ll define this interface
 import { SearchableSelect } from "@/components/molecules/SearchableSelect";
 import NotFound from "@/app/(protected)/not-found";
 import RouteForm from "../../RouteForm";
@@ -56,8 +56,7 @@ export default function EditRoutePage() {
   const { data: route, isLoading: routeLoading } = apiService.useGetRouteById(
     id,
     {
-      enabled: !!id,
-      // placeholderData: undefined, // never use cached null
+      enabled: !!id && id > 0,
     }
   );
 
@@ -85,7 +84,7 @@ export default function EditRoutePage() {
   if (routeLoading) {
     return <CircularProgress size={24} />;
   }
-  if (route === undefined) {
+  if (route === undefined && !routeLoading) {
     return <NotFound />;
   }
 

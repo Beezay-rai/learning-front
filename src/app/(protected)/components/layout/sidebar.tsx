@@ -129,7 +129,13 @@ const menuItems: MenuItem[] = [
       {
         id: "app-user",
         label: "System Users",
-        link: "/configure/ca-certificate",
+        link: `${routes["(protected)"]["user-management"].user.index}`,
+        icon: CornerDownRight,
+      },
+      {
+        id: "app-user-roles",
+        label: "Roles",
+        link: `${routes["(protected)"]["user-management"].role.index}`,
         icon: CornerDownRight,
       },
     ],

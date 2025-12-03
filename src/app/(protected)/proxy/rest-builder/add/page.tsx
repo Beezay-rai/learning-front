@@ -48,7 +48,7 @@ import {
   AuthConfig,
 } from "@/common/types/authConfig";
 import { HttpMethod } from "@/common/types/httpmethod";
-import { RestApiBuilderRequest } from "@/services/apiServices/core/interface/restApiBuilderModel";
+import { RestApiBuilderRequest } from "@/services/apiServices/core/interface/RestApiBuilderModel";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { coreApiSchema } from "@/services/apiServices/core/schema/coreApiSchema";
@@ -88,6 +88,9 @@ export default function AddRestApi() {
   };
   return (
     <Paper sx={{ p: 4 }}>
+      <Typography sx={{ mb: 3 }} variant="h5">
+        Add Api
+      </Typography>
       <RestBuilderForm onSubmit={onSubmit}></RestBuilderForm>
     </Paper>
   );

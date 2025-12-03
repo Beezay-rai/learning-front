@@ -27,11 +27,11 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import { routes } from "@/app/routes.generated";
-import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/route"; // You’ll define this interface
+import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/Route"; // You’ll define this interface
 import { SearchableSelect } from "@/components/molecules/SearchableSelect";
 import NotFound from "@/app/(protected)/not-found";
 import RestBuilderForm from "../../RestBuilderForm";
-import { RestApiBuilderRequest } from "@/services/apiServices/core/interface/restApiBuilderModel";
+import { RestApiBuilderRequest } from "@/services/apiServices/core/interface/RestApiBuilderModel";
 import coreApiService from "@/services/apiServices/core/coreApiService";
 
 export default function EditRoutePage() {

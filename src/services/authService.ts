@@ -1,9 +1,5 @@
 "use client";
-import {
-  UserManager,
-  UserManagerSettings,
-  WebStorageStateStore,
-} from "oidc-client-ts";
+import { UserManager, UserManagerSettings } from "oidc-client-ts";
 
 const config: UserManagerSettings = {
   authority: process.env.IDENTITY_SERVER_URL_DEV ?? "https://localhost:5082",

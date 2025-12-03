@@ -51,7 +51,7 @@ import { HttpMethod } from "@/common/types/httpmethod";
 import {
   RestApiBuilderModel,
   RestApiBuilderRequest,
-} from "@/services/apiServices/core/interface/restApiBuilderModel";
+} from "@/services/apiServices/core/interface/RestApiBuilderModel";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { coreApiSchema } from "@/services/apiServices/core/schema/coreApiSchema";
