@@ -7,6 +7,10 @@ export interface UserDetail {
   };
   oidc_user: {
     access_token: string;
+    profile: {
+      name: string;
+      email: string;
+    };
   };
 }
 
@@ -17,6 +21,10 @@ const userState: UserDetail = {
   },
   oidc_user: {
     access_token: "",
+    profile: {
+      name: "",
+      email: ""
+    },
   },
 };
 

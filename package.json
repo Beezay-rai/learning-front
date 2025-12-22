@@ -24,6 +24,7 @@
     "@tanstack/react-table": "^8.10.7",
     "@uiw/react-codemirror": "^4.25.2",
     "axios": "^1.12.2",
+    "dayjs": "^1.11.19",
     "fast-xml-parser": "^5.3.0",
     "framer-motion": "^12.23.24",
     "husky": "^9.1.7",

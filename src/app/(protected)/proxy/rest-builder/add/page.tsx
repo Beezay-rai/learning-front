@@ -53,10 +53,10 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { coreApiSchema } from "@/services/apiServices/core/schema/coreApiSchema";
 import RestBuilderForm from "../RestBuilderForm";
-import coreApiService from "@/services/apiServices/core/coreApiService";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { routes } from "@/app/routes.generated";
+import useCoreApiService from "@/services/apiServices/core/useCoreApiService";
 
 interface ResponseData {
   status: number;
@@ -69,9 +69,9 @@ interface ResponseData {
 
 export default function AddRestApi() {
   const router = useRouter();
-
+  const{useAddRestApiBuilder} =useCoreApiService();
   const { mutateAsync, isPending: isSubmitting } =
-    coreApiService.useAddRestApiBuilder();
+    useAddRestApiBuilder();
 
   const onSubmit = async (data: RestApiBuilderRequest) => {
     try {

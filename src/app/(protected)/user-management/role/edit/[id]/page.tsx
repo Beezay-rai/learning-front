@@ -5,14 +5,13 @@ import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { toast } from "react-toastify";
 import { useParams, useRouter } from "next/navigation";
 import { routes } from "@/app/routes.generated";
-import coreApiService from "@/services/apiServices/core/coreApiService";
 import RoleForm from "../../RoleForm";
-import idsrvApiService from "@/services/apiServices/idsrv/idsrvApiService";
 import {
   UpdateRoleRequest,
   RoleModel,
 } from "@/services/apiServices/idsrv/interface/RoleModel";
 import NotFound from "@/app/not-found";
+import useIdsrvService from "@/services/apiServices/idsrv/useIdsrvService";
 
 export default function AddAppRole() {
   const router = useRouter();
@@ -21,14 +20,13 @@ export default function AddAppRole() {
   const idParam = params?.id;
 
   const id = idParam ? String(idParam) : "";
+  const { useGetRoleById, useUpdateRole } = useIdsrvService();
 
-  const { data: role, isLoading: isRoleLoading } =
-    idsrvApiService.useGetRoleById(id, {
-      enabled: !!id,
-    });
+  const { data: role, isLoading: isRoleLoading } = useGetRoleById(id, {
+    enabled: !!id,
+  });
 
-  const { mutateAsync, isPending: isSubmitting } =
-    idsrvApiService.useUpdateRole();
+  const { mutateAsync, isPending: isSubmitting } = useUpdateRole();
 
   const onSubmit = async (data: UpdateRoleRequest) => {
     try {
@@ -65,7 +63,7 @@ export default function AddAppRole() {
       ) : (
         <RoleForm
           onSubmit={onSubmit}
-          defaultValue={role.data}
+          defaultValue={role?.data}
           loading={isSubmitting}
           isAdd={false}
         />

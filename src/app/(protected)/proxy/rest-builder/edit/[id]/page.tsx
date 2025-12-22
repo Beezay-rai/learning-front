@@ -32,7 +32,7 @@ import { SearchableSelect } from "@/components/molecules/SearchableSelect";
 import NotFound from "@/app/(protected)/not-found";
 import RestBuilderForm from "../../RestBuilderForm";
 import { RestApiBuilderRequest } from "@/services/apiServices/core/interface/RestApiBuilderModel";
-import coreApiService from "@/services/apiServices/core/coreApiService";
+import useCoreApiService from "@/services/apiServices/core/useCoreApiService";
 
 export default function EditRoutePage() {
   const router = useRouter();
@@ -40,15 +40,16 @@ export default function EditRoutePage() {
   const params = useParams();
   const idParam = params?.id;
 
+  const { useGetRestApiBuilderById, useUpdateRestApiBuilder } =
+    useCoreApiService();
   const id = idParam ? Number(idParam) : 0;
 
   const { data: restApiBuilder, isLoading: restApiBuilderLoading } =
-    coreApiService.useGetRestApiBuilderById(id, {
+    useGetRestApiBuilderById(id, {
       enabled: id > 0,
     });
 
-  const { mutateAsync, isPending: isSubmitting } =
-    coreApiService.useUpdateRestApiBuilder();
+  const { mutateAsync, isPending: isSubmitting } = useUpdateRestApiBuilder();
 
   const onSubmit = async (data: RestApiBuilderRequest) => {
     try {

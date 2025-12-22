@@ -1,19 +1,20 @@
 "use client";
 
-import { Paper, Typography } from "@mui/material";
+import { CircularProgress, Paper, Typography } from "@mui/material";
 import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { toast } from "react-toastify";
 import { useParams, useRouter } from "next/navigation";
 import { routes } from "@/app/routes.generated";
-import coreApiService from "@/services/apiServices/core/coreApiService";
 import { ApiUserRequest } from "@/services/apiServices/core/interface/ApiUserModel";
-import UserForm from "../../UserForm";
-import idsrvApiService from "@/services/apiServices/idsrv/idsrvApiService";
+import ApiUserForm from "../../ApiUserForm";
 import {
   UpdateUserRequest,
   UserModel,
 } from "@/services/apiServices/idsrv/interface/UserModel";
 import NotFound from "@/app/not-found";
+import useIdsrvService from "@/services/apiServices/idsrv/useIdsrvService";
+import useCoreApiService from "@/services/apiServices/core/useCoreApiService";
+import { use } from "react";
 
 export default function AddAppUser() {
   const router = useRouter();
@@ -21,16 +22,16 @@ export default function AddAppUser() {
   const params = useParams();
   const idParam = params?.id;
 
-  const id = idParam ? String(idParam) : "";
-  console.log("Editing user with id:", id);
+  const id = idParam ? Number(idParam) : 0;
+  const { useGetApiUserById, useUpdateApiUser } = useCoreApiService();
 
   const { data: user, isLoading: restApiBuilderLoading } =
-    idsrvApiService.useGetUserById(id);
+    useGetApiUserById(id);
+  console.log(user, "User Fetched !");
 
-  const { mutateAsync, isPending: isSubmitting } =
-    idsrvApiService.useUpdateUser();
+  const { mutateAsync, isPending: isSubmitting } = useUpdateApiUser();
 
-  const onSubmit = async (data: UpdateUserRequest) => {
+  const onSubmit = async (data: ApiUserRequest) => {
     try {
       await mutateAsync(
         {
@@ -50,6 +51,8 @@ export default function AddAppUser() {
     }
   };
 
+  if (restApiBuilderLoading) return <CircularProgress></CircularProgress>;
+
   if (user === undefined && !restApiBuilderLoading) {
     return <NotFound />;
   }
@@ -57,15 +60,15 @@ export default function AddAppUser() {
   return (
     <Paper sx={{ p: 4 }}>
       <Typography variant="h5" gutterBottom>
-        Update User
+        Update Api User
       </Typography>
 
-      <UserForm
+      <ApiUserForm
         onSubmit={onSubmit}
-        defaultValue={user}
+        defaultValue={user?.data}
         loading={isSubmitting}
         isAdd={false}
-        cancelUrl={routes["(protected)"]["user-management"]["user"].index}
+        cancelUrl={routes["(protected)"]["user-management"]["api-user"].index}
       />
     </Paper>
   );

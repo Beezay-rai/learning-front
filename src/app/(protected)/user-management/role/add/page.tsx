@@ -5,14 +5,14 @@ import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { routes } from "@/app/routes.generated";
-import coreApiService from "@/services/apiServices/core/coreApiService";
 import RoleForm from "../RoleForm";
 import { AddRoleRequest } from "@/services/apiServices/idsrv/interface/RoleModel";
-import idsrvApiService from "@/services/apiServices/idsrv/idsrvApiService";
+import useIdsrvService from "@/services/apiServices/idsrv/useIdsrvService";
 
 export default function AddAppRole() {
   const router = useRouter();
-  const { mutateAsync, isPending } = idsrvApiService.useAddRole();
+  const { useAddRole } = useIdsrvService();
+  const { mutateAsync, isPending } = useAddRole();
 
   const submit = async (data: AddRoleRequest) => {
     await mutateAsync(data, {

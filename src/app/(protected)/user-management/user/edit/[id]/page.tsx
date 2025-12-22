@@ -5,31 +5,31 @@ import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { toast } from "react-toastify";
 import { useParams, useRouter } from "next/navigation";
 import { routes } from "@/app/routes.generated";
-import coreApiService from "@/services/apiServices/core/coreApiService";
 import { ApiUserRequest } from "@/services/apiServices/core/interface/ApiUserModel";
 import UserForm from "../../UserForm";
-import idsrvApiService from "@/services/apiServices/idsrv/idsrvApiService";
 import {
   UpdateUserRequest,
   UserModel,
 } from "@/services/apiServices/idsrv/interface/UserModel";
 import NotFound from "@/app/not-found";
+import useIdsrvService from "@/services/apiServices/idsrv/useIdsrvService";
+import { use } from "react";
 
 export default function AddAppUser() {
   const router = useRouter();
 
+  const { useGetUserById, useUpdateUser } = useIdsrvService();
   const params = useParams();
   const idParam = params?.id;
 
   const id = idParam ? String(idParam) : "";
 
-  const { data: user, isLoading: isUserLoading } =
-    idsrvApiService.useGetUserById(id, {
-      enabled: !!id,
-    });
+  const { data: user, isLoading: isUserLoading } = useGetUserById(id, {
+    enabled: !!id,
+  });
 
-  const { mutateAsync, isPending: isSubmitting } =
-    idsrvApiService.useUpdateUser();
+  console.log(user);
+  const { mutateAsync, isPending: isSubmitting } = useUpdateUser();
 
   const onSubmit = async (data: UpdateUserRequest) => {
     try {
@@ -55,6 +55,10 @@ export default function AddAppUser() {
     return <NotFound />;
   }
 
+  if (isUserLoading) {
+    <CircularProgress size={24} />;
+  }
+
   return (
     <Paper sx={{ p: 4 }}>
       <Typography variant="h5" gutterBottom>
@@ -66,7 +70,7 @@ export default function AddAppUser() {
       ) : (
         <UserForm
           onSubmit={onSubmit}
-          defaultValue={user}
+          defaultValue={user?.data}
           loading={isSubmitting}
           isAdd={false}
           cancelUrl={routes["(protected)"]["user-management"]["user"].index}

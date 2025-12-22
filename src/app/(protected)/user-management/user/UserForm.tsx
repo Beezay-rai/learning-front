@@ -17,13 +17,18 @@ import FormTextField from "@/components/molecules/FormTextField";
 import {
   AddUserRequest,
   UpdateUserRequest,
+  UserModel,
 } from "@/services/apiServices/idsrv/interface/UserModel";
 import { idsrvApiSchema } from "@/services/apiServices/idsrv/schema/idsrvApiSchema";
+import FormSelect from "@/components/molecules/FormSelect";
+import FormUtility from "@/utils/formUtility";
+import { UserType } from "@/services/apiServices/idsrv/enums/UserType";
+import FormRoleSelect from "@/components/molecules/FormRoleSelect";
 
 interface UserFormProps {
-  onSubmit: (data: any) => void;
+  onSubmit: (data: AddUserRequest | UpdateUserRequest) => void;
   loading?: boolean;
-  defaultValue?: any;
+  defaultValue?: UserModel;
   isAdd?: boolean;
   cancelUrl: string;
 }
@@ -38,13 +43,17 @@ export default function UserForm({
   const formMethods = useForm<AddUserRequest | UpdateUserRequest>({
     resolver: yupResolver(
       isAdd ? idsrvApiSchema.users.Add : idsrvApiSchema.users.Update
-    ) as Resolver<AddUserRequest | UpdateUserRequest>,
+    ) as unknown as Resolver<AddUserRequest | UpdateUserRequest>,
     defaultValues: defaultValue,
   });
 
   return (
     <FormProvider {...formMethods}>
-      <form onSubmit={formMethods.handleSubmit(onSubmit)}>
+      <form
+        onSubmit={formMethods.handleSubmit(onSubmit, (errors) => {
+          console.log("❌ Form Submission Errors:", errors);
+        })}
+      >
         <Grid
           container
           spacing={2}
@@ -52,6 +61,21 @@ export default function UserForm({
             p: 2,
           }}
         >
+          <Grid size={4}>
+            <FormSelect
+              label="User Type"
+              name="user_type_id"
+              options={FormUtility.enumToSelectOptions(UserType)}
+            />
+          </Grid>
+
+          <Grid size={4}>
+            <FormRoleSelect
+              label="Role"
+              name="role_id"
+              user_type_id_name="user_type_id"
+            />
+          </Grid>
           <Grid size={4}>
             <FormTextField fullWidth label="First Name" name="first_name" />
           </Grid>

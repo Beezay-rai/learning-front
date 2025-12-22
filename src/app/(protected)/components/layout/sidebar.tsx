@@ -25,9 +25,20 @@ import {
   ListItemIcon,
   ListItemText,
   ListSubheader,
+  Dialog,
+  DialogTitle,
+  DialogActions,
+  DialogContent,
+  Box,
+  Avatar,
+  Typography,
+  Stack,
 } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { routes } from "@/app/routes.generated";
+import { useDispatch, useSelector } from "react-redux";
+import { signoutRedirect } from "@/services/authService";
+import { setOIDCUser, UserDetail } from "@/common/store/appSlices";
 interface MenuItem {
   id: string;
   label: string;
@@ -146,11 +157,31 @@ export function SideBar() {
   const [isCollapsed, setIsCollapsed] = React.useState(false);
   const [activeItem, setActiveItem] = React.useState("home");
   const [openItem, setOpenItem] = React.useState<string | null>(null);
-
+  const [logoutOpen, setLogoutOpen] = React.useState(false);
+  const dispatch = useDispatch();
   const handleItemClick = (itemId: string, hasSubItems: boolean) => {
     setActiveItem(itemId);
     if (hasSubItems) {
       setOpenItem(openItem === itemId ? null : itemId);
+    }
+  };
+
+  const oidc_user: UserDetail = useSelector((state: any) => state.userDetail);
+  const name = oidc_user?.oidc_user?.profile?.name ?? "User";
+  const email = oidc_user?.oidc_user?.profile?.email ?? "";
+  const initials = name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .substring(0, 2)
+    .toUpperCase();
+
+  const handleLogout = async () => {
+    try {
+      await signoutRedirect();
+      dispatch(setOIDCUser(null));
+    } catch (ex) {
+      console.log(ex);
     }
   };
 
@@ -256,24 +287,52 @@ export function SideBar() {
       </List>
 
       {!isCollapsed && (
-        <div className="p-4 border-t border-sidebar-border">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-              <span className="text-xs font-medium text-primary-foreground">
-                JD
-              </span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-sidebar-foreground truncate">
-                John Doe
-              </p>
-              <p className="text-xs text-muted-foreground truncate">
-                john@example.com
-              </p>
-            </div>
-          </div>
-        </div>
+        <Box
+          sx={{
+            p: 2,
+            borderTop: "1px solid",
+            borderColor: "divider",
+            cursor: "pointer",
+            "&:hover": {
+              backgroundColor: "action.hover",
+            },
+          }}
+          onClick={() => setLogoutOpen(true)}
+        >
+          <Stack direction="row" spacing={2} alignItems="center">
+            <Avatar
+              sx={{
+                width: 32,
+                height: 32,
+                bgcolor: "primary.main",
+                color: "primary.contrastText",
+                fontSize: "0.75rem",
+              }}
+            >
+              {initials}
+            </Avatar>
+
+            <Box sx={{ minWidth: 0 }}>
+              <Typography variant="body2" noWrap fontWeight={500}>
+                {name}
+              </Typography>
+              <Typography variant="caption" color="text.secondary" noWrap>
+                {email}
+              </Typography>
+            </Box>
+          </Stack>
+        </Box>
       )}
+      <Dialog open={logoutOpen} onClose={() => setLogoutOpen(false)}>
+        <DialogTitle>Confirm Logout</DialogTitle>
+        <DialogContent>Are you sure you want to log out?</DialogContent>
+        <DialogActions>
+          <Button onClick={() => setLogoutOpen(false)}>Cancel</Button>
+          <Button color="error" onClick={handleLogout}>
+            Logout
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Drawer>
   );
 }

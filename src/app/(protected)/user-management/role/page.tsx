@@ -26,23 +26,24 @@ import DataTable from "@/components/ui/table/DataTable";
 import { RestApiBuilderModel } from "@/services/apiServices/core/interface/RestApiBuilderModel";
 import useConfirm from "@/hooks/useConfirm";
 import { toast } from "react-toastify";
-import idsrvApiService from "@/services/apiServices/idsrv/idsrvApiService";
 import { RoleModel } from "@/services/apiServices/idsrv/interface/RoleModel";
 import { useState } from "react";
 import { CORE_ADMIN } from "@/services/apiServices/idsrv/constants/core-admin";
+import useIdsrvService from "@/services/apiServices/idsrv/useIdsrvService";
 
 function RoleList() {
   const confirm = useConfirm();
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const { useGetRoles, useDeleteRole } = useIdsrvService();
   const {
     data: roleList,
     isLoading,
     isFetching,
     error,
     refetch: refetchRoles,
-  } = idsrvApiService.useGetRoles({
+  } = useGetRoles({
     page: page + 1,
     pageSize: rowsPerPage,
   });
@@ -57,7 +58,7 @@ function RoleList() {
     setPage(0);
   };
 
-  const { mutateAsync } = idsrvApiService.useDeleteRole();
+  const { mutateAsync } = useDeleteRole();
 
   const handleDelete = (id: string) => {
     confirm({
@@ -139,12 +140,12 @@ function RoleList() {
       <DataTable
         isLoading={isLoading || isFetching}
         columns={roleColumns}
-        data={roleList?.items || []}
+        data={roleList?.data?.items || []}
         refetchData={refetchRoles}
         paginationConfig={{
           page,
           rowsPerPage,
-          totalCount: roleList?.totalCount || 0,
+          totalCount: roleList?.data?.totalCount || 0,
           handlePageChange,
           handleRowsPerPageChange,
         }}

@@ -30,28 +30,26 @@ import { RestApiBuilderModel } from "@/services/apiServices/core/interface/RestA
 import useConfirm from "@/hooks/useConfirm";
 import { toast } from "react-toastify";
 import { ApiUserModel } from "@/services/apiServices/core/interface/ApiUserModel";
-import { UserModel } from "@/services/apiServices/idsrv/interface/UserModel";
-import CheckIcon from "@mui/icons-material/Check";
-import CloseIcon from "@mui/icons-material/Close";
-import useIdsrvService from "@/services/apiServices/idsrv/useIdsrvService";
-function UserList() {
+import useCoreApiService from "@/services/apiServices/core/useCoreApiService";
+
+function ApiUserInfoList() {
   const confirm = useConfirm();
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-
-  const { useGetUsers, useDeleteUser } = useIdsrvService();
+  const { useGetApiUsers, useDeleteRestApiBuilder } = useCoreApiService();
   const {
-    data: userList,
+    data: apiUserList,
     isLoading,
     isFetching,
     error,
-    refetch: refetchUsers,
-  } = useGetUsers({
+    refetch: refetchApiUsers,
+  } = useGetApiUsers({
     page: page + 1,
     pageSize: rowsPerPage,
   });
 
+  console.log(apiUserList, "User List");
   const handlePageChange = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
@@ -63,15 +61,15 @@ function UserList() {
     setPage(0);
   };
 
-  const { mutateAsync } = useDeleteUser();
+  const { mutateAsync } = useDeleteRestApiBuilder();
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: number) => {
     confirm({
       onConfirm: async () => {
         await mutateAsync(id, {
           onSuccess: () => {
-            toast.error("User Deleted Sucessfully !");
-            refetchUsers();
+            toast.error("API Deleted Sucessfully !");
+            refetchApiUsers();
           },
           onError: () => {
             toast.error("Error Occured  !");
@@ -81,40 +79,10 @@ function UserList() {
     });
   };
 
-  const userColumns: ColumnDef<UserModel>[] = [
+  const apiUserColumns: ColumnDef<ApiUserModel>[] = [
     {
       header: "Name",
-      cell: ({ row }) => (
-        <>{row.original.first_name + " " + row.original.last_name}</>
-      ),
-    },
-    {
-      header: "User Type",
-      accessorKey: "user_type",
-    },
-    {
-      header: "Role",
-      accessorKey: "role_name",
-    },
-    {
-      header: "Email",
-      accessorKey: "email",
-    },
-    {
-      header: "Phone Number",
-      accessorKey: "phone_number",
-    },
-    {
-      header: "Email Confirmed",
-      accessorKey: "email_confirmed",
-      cell: ({ getValue }) => {
-        const confirmed = getValue<boolean>();
-        return confirmed ? (
-          <CheckIcon color="success" fontSize="small" />
-        ) : (
-          <CloseIcon color="error" fontSize="small" />
-        );
-      },
+      accessorKey: "name",
     },
 
     {
@@ -123,8 +91,7 @@ function UserList() {
         <Stack direction="row" spacing={1}>
           <Link
             href={
-              routes["(protected)"]["user-management"].user.edit.index +
-              "/" +
+              routes["(protected)"]["user-management"]["api-user"].edit.index +
               row.original.id
             }
           >
@@ -145,7 +112,7 @@ function UserList() {
     },
   ];
   return (
-    <Paper sx={{ width: "100%", overflow: "hidden", padding: 4 }}>
+    <Paper sx={{ width: "100%", overflow: "hidden", padding: 2 }}>
       <Box
         sx={{
           display: "flex",
@@ -154,24 +121,26 @@ function UserList() {
         }}
       >
         <Typography variant="h6" gutterBottom>
-          Users
+          API Users
         </Typography>
-        <Link href={routes["(protected)"]["user-management"]["user"].add.index}>
+        <Link
+          href={routes["(protected)"]["user-management"]["api-user"].add.index}
+        >
           <Button variant="contained" color="primary">
-            Add User
+            Add Api User
           </Button>
         </Link>
       </Box>
 
       <DataTable
         isLoading={isLoading || isFetching}
-        columns={userColumns}
-        data={userList?.data?.items || []}
-        refetchData={refetchUsers}
+        columns={apiUserColumns}
+        data={apiUserList?.data?.items || []}
+        refetchData={refetchApiUsers}
         paginationConfig={{
           page,
           rowsPerPage,
-          totalCount: userList?.data?.totalCount || 0,
+          totalCount: apiUserList?.data?.totalCount || 0,
           handlePageChange,
           handleRowsPerPageChange,
         }}
@@ -180,4 +149,4 @@ function UserList() {
   );
 }
 
-export default UserList;
+export default ApiUserInfoList;

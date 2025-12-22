@@ -16,6 +16,10 @@ import {
   Chip,
   Stack,
   IconButton,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { apiService } from "@/services/apiServices/api-gateway/apiService";
@@ -26,16 +30,22 @@ import { routes } from "@/app/routes.generated";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DataTable from "@/components/ui/table/DataTable";
-import coreApiService from "@/services/apiServices/core/coreApiService";
 import { RestApiBuilderModel } from "@/services/apiServices/core/interface/RestApiBuilderModel";
 import useConfirm from "@/hooks/useConfirm";
 import { toast } from "react-toastify";
+import useCoreApiService from "@/services/apiServices/core/useCoreApiService";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import SettingsIcon from "@mui/icons-material/Settings";
+import ConfigureModal from "./ConfigureModal";
 
 function RestApiBuilderList() {
   const confirm = useConfirm();
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [totalCount, setTotalCount] = useState<number>(0);
+  const { useGetRestApiBuilders, useDeleteRestApiBuilder } =
+    useCoreApiService();
+  const [configureModalOpen, setConfigureModalOpen] = useState(false);
 
   const {
     data: restApiList,
@@ -43,14 +53,14 @@ function RestApiBuilderList() {
     isFetching,
     error,
     refetch: refetchApiList,
-  } = coreApiService.useGetRestApiBuilders();
+  } = useGetRestApiBuilders();
 
   const handlePageChange = (e: unknown, newPage: number) => setPage(newPage);
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(e.target.value, 10));
     setPage(0);
   };
-  const { mutateAsync } = coreApiService.useDeleteRestApiBuilder();
+  const { mutateAsync } = useDeleteRestApiBuilder();
 
   const handleDelete = (id: number) => {
     confirm({
@@ -67,6 +77,8 @@ function RestApiBuilderList() {
       },
     });
   };
+
+  const handleConfigure = (id: number) => {};
 
   const routeColumns: ColumnDef<RestApiBuilderModel>[] = [
     {
@@ -154,32 +166,95 @@ function RestApiBuilderList() {
     },
     {
       header: "Action",
-      cell: ({ row }) => (
-        <Stack direction="row" spacing={1}>
-          <Link
-            href={
-              routes["(protected)"].proxy["rest-builder"].edit.index +
-              row.original.id
-            }
-          >
-            <IconButton color="primary" size="small">
-              <EditIcon />
-            </IconButton>
-          </Link>
+      cell: ({ row }) => {
+        const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+        const open = Boolean(anchorEl);
 
-          <IconButton
-            color="error"
-            size="small"
-            onClick={() => handleDelete(row.original.id)}
-          >
-            <DeleteIcon />
-          </IconButton>
-        </Stack>
-      ),
+        const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
+          setAnchorEl(event.currentTarget);
+        };
+
+        const handleClose = () => {
+          setAnchorEl(null);
+        };
+
+        const id = row.original.id;
+
+        return (
+          <>
+            <IconButton size="small" onClick={handleOpen}>
+              <MoreVertIcon />
+            </IconButton>
+
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              transformOrigin={{ vertical: "top", horizontal: "right" }}
+            >
+              {/* Edit */}
+              <MenuItem onClick={handleClose}>
+                <Link
+                  href={
+                    routes["(protected)"].proxy["rest-builder"].edit.index + id
+                  }
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "100%",
+                  }}
+                >
+                  <ListItemIcon>
+                    <EditIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Edit</ListItemText>
+                </Link>
+              </MenuItem>
+
+              {/* Configure */}
+              <MenuItem
+                onClick={() => {
+                  handleClose();
+                  handleConfigure(id);
+                  setConfigureModalOpen(true);
+                }}
+              >
+                <ListItemIcon>
+                  <SettingsIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>Configure</ListItemText>
+              </MenuItem>
+
+              {/* Delete */}
+              <MenuItem
+                onClick={() => {
+                  handleClose();
+                  handleDelete(id);
+                }}
+              >
+                <ListItemIcon>
+                  <DeleteIcon fontSize="small" color="error" />
+                </ListItemIcon>
+                <ListItemText sx={{ color: "error.main" }}>Delete</ListItemText>
+              </MenuItem>
+            </Menu>
+          </>
+        );
+      },
     },
   ];
   return (
     <Paper sx={{ width: "100%", overflow: "hidden", padding: 2 }}>
+      <ConfigureModal
+        open={configureModalOpen}
+        onClose={() => setConfigureModalOpen(false)}
+        onUpdate={(data) => {
+          // Handle configuration update
+          console.log("Configuration updated:", data);
+        }}
+      />
+
       <Box
         sx={{
           display: "flex",
@@ -201,7 +276,7 @@ function RestApiBuilderList() {
         isLoading={isLoading || isFetching}
         columns={routeColumns}
         refetchData={refetchApiList}
-        data={restApiList?.items || []}
+        data={restApiList?.data.items || []}
       />
 
       <TablePagination

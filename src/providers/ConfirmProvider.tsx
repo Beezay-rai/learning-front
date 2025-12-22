@@ -4,7 +4,6 @@ import ConfirmDialog, {
 } from "@/components/ui/dialog/ConfirmDialog";
 import ConfirmContext from "@/context/ConfirmContext";
 import React, { useCallback, useState } from "react";
-import { createContext } from "react";
 
 const DefaultConfirmProps: ConfirmDialogProps = {
   title: "Are you sure you want to perform this action ?",
@@ -19,6 +18,7 @@ export default function ConfirmProvider({
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const confirm = useCallback((options?: ConfirmDialogProps) => {
     setConfirmOptions({
       ...DefaultConfirmProps,
@@ -30,9 +30,16 @@ export default function ConfirmProvider({
   const [confirmOptions, setConfirmOptions] =
     useState<ConfirmDialogProps>(DefaultConfirmProps);
 
-  const handleConfirm = useCallback(() => {
-    confirmOptions.onConfirm?.();
-    setOpen(false);
+  const handleConfirm = useCallback(async () => {
+    if (!confirmOptions.onConfirm) return;
+
+    try {
+      setLoading(true);
+      await confirmOptions.onConfirm();
+      setOpen(false);
+    } finally {
+      setLoading(false);
+    }
   }, [confirmOptions]);
 
   const handleCancel = useCallback(() => {
@@ -49,6 +56,7 @@ export default function ConfirmProvider({
             ...confirmOptions,
             onConfirm: handleConfirm,
             onCancel: handleCancel,
+            pending: loading,
           }}
           open={open}
         ></ConfirmDialog>

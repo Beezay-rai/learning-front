@@ -22,7 +22,7 @@ interface RoleFormProps {
   isAdd?: boolean;
 }
 const userTypeOptions = [
-  { label: "Developer", value: UserType.DEVELOPER },
+  { label: "Developer", value: UserType.Developer },
   { label: "QA", value: UserType.QA },
 ];
 export default function RoleForm({

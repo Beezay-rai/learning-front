@@ -1,3 +1,5 @@
+import { PaginationRequest } from "./PaginationModel";
+
 export interface RoleModel {
   id: string;
   name: string;
@@ -14,5 +16,9 @@ export interface AddRoleRequest {
 export interface UpdateRoleRequest {
   name: string;
   description: string;
-  userTypeId: number;
+  userTypeId?: number;
+}
+
+export interface GetAllRoleFilterModel extends PaginationRequest {
+  userTypeId?: number;
 }

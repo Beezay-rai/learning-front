@@ -34,6 +34,7 @@ export interface ConfirmDialogProps {
   onCancel?: () => void;
   onClose?: () => void;
   showIcon?: boolean;
+  pending?: boolean;
   icon?: "success" | "error" | "warning" | "info" | "question";
 }
 
@@ -53,6 +54,7 @@ export default function ConfirmDialog({
     confirmText,
     cancellationText,
     icon = "info",
+    pending,
   } = props;
   const renderIcon = (
     icon: "success" | "error" | "warning" | "info" | "question"
@@ -71,7 +73,7 @@ export default function ConfirmDialog({
   };
 
   return (
-    <Dialog open={open} onClose={onClose ? onClose : undefined}>
+    <Dialog open={open} onClose={props.pending ? undefined : props.onCancel}>
       <Box sx={{ padding: "20px", maxWidth: "330px" }}>
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           {renderIcon(icon)}
@@ -91,7 +93,12 @@ export default function ConfirmDialog({
           <Button variant="outlined" color="error" onClick={onCancel}>
             {cancellationText}
           </Button>
-          <Button variant="contained" color="warning" onClick={onConfirm}>
+          <Button
+            variant="contained"
+            disabled={pending}
+            color="warning"
+            onClick={onConfirm}
+          >
             {confirmText}
           </Button>
         </DialogActions>

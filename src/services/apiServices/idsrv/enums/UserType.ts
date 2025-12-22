@@ -1,4 +1,4 @@
 export enum UserType {
-  DEVELOPER = 1,
+  Developer = 1,
   QA = 2,
 }

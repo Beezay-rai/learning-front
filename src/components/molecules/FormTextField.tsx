@@ -22,10 +22,6 @@ function FormTextField(props: FormTextFieldProps) {
 
   const { name = "", label, error, helperText } = props;
 
-  const {
-    field: { ref, onChange, onBlur },
-  } = useController({ name, control });
-
   const value = watch(name);
   const isFieldError = get(errors, name);
 

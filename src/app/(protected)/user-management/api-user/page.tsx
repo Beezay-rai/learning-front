@@ -26,27 +26,30 @@ import { routes } from "@/app/routes.generated";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DataTable from "@/components/ui/table/DataTable";
-import coreApiService from "@/services/apiServices/core/coreApiService";
 import { RestApiBuilderModel } from "@/services/apiServices/core/interface/RestApiBuilderModel";
 import useConfirm from "@/hooks/useConfirm";
 import { toast } from "react-toastify";
 import { ApiUserModel } from "@/services/apiServices/core/interface/ApiUserModel";
+import useCoreApiService from "@/services/apiServices/core/useCoreApiService";
 
 function ApiUserList() {
   const confirm = useConfirm();
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const { useGetApiUsers, useDeleteRestApiBuilder } = useCoreApiService();
   const {
     data: apiUserList,
     isLoading,
     isFetching,
     error,
     refetch: refetchApiUsers,
-  } = coreApiService.useGetApiUsers({
+  } = useGetApiUsers({
     page: page + 1,
     pageSize: rowsPerPage,
   });
+
+  console.log(apiUserList, "User List");
   const handlePageChange = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
@@ -58,7 +61,7 @@ function ApiUserList() {
     setPage(0);
   };
 
-  const { mutateAsync } = coreApiService.useDeleteRestApiBuilder();
+  const { mutateAsync } = useDeleteRestApiBuilder();
 
   const handleDelete = (id: number) => {
     confirm({
@@ -88,7 +91,7 @@ function ApiUserList() {
         <Stack direction="row" spacing={1}>
           <Link
             href={
-              routes["(protected)"].proxy["rest-builder"].edit.index +
+              routes["(protected)"]["user-management"]["api-user"].edit.index +
               row.original.id
             }
           >
@@ -132,12 +135,12 @@ function ApiUserList() {
       <DataTable
         isLoading={isLoading || isFetching}
         columns={apiUserColumns}
-        data={apiUserList?.items || []}
+        data={apiUserList?.data?.items || []}
         refetchData={refetchApiUsers}
         paginationConfig={{
           page,
           rowsPerPage,
-          totalCount: apiUserList?.totalCount || 0,
+          totalCount: apiUserList?.data?.totalCount || 0,
           handlePageChange,
           handleRowsPerPageChange,
         }}
