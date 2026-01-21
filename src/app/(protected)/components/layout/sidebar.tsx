@@ -38,7 +38,8 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import { routes } from "@/app/routes.generated";
 import { useDispatch, useSelector } from "react-redux";
 import { signoutRedirect } from "@/services/authService";
-import { setOIDCUser, UserDetail } from "@/common/store/appSlices";
+import { useGetUserInfo } from "@/hooks/useGetUserInfo";
+import { useAuth } from "@/lib/auth/useAuth";
 interface MenuItem {
   id: string;
   label: string;
@@ -115,13 +116,13 @@ const menuItems: MenuItem[] = [
       {
         id: "ssl-certificate",
         label: "SSL Certificate",
-        link: "/proxy/rest-builder",
+        link: `${routes["(protected)"].configure["ssl-certificate"].index}`,
         icon: CornerDownRight,
       },
       {
         id: "ca-certificate",
         label: "CA Certificate",
-        link: "/configure/ca-certificate",
+        link: `${routes["(protected)"].configure["ca-certificate"].index}`,
         icon: CornerDownRight,
       },
     ],
@@ -165,25 +166,15 @@ export function SideBar() {
       setOpenItem(openItem === itemId ? null : itemId);
     }
   };
+  const { logout } = useAuth();
 
-  const oidc_user: UserDetail = useSelector((state: any) => state.userDetail);
-  const name = oidc_user?.oidc_user?.profile?.name ?? "User";
-  const email = oidc_user?.oidc_user?.profile?.email ?? "";
-  const initials = name
+  const { fullName, email } = useGetUserInfo();
+  const initials = fullName
     .split(" ")
     .map((n) => n[0])
     .join("")
     .substring(0, 2)
     .toUpperCase();
-
-  const handleLogout = async () => {
-    try {
-      await signoutRedirect();
-      dispatch(setOIDCUser(null));
-    } catch (ex) {
-      console.log(ex);
-    }
-  };
 
   return (
     <Drawer
@@ -314,7 +305,7 @@ export function SideBar() {
 
             <Box sx={{ minWidth: 0 }}>
               <Typography variant="body2" noWrap fontWeight={500}>
-                {name}
+                {fullName}
               </Typography>
               <Typography variant="caption" color="text.secondary" noWrap>
                 {email}
@@ -328,7 +319,7 @@ export function SideBar() {
         <DialogContent>Are you sure you want to log out?</DialogContent>
         <DialogActions>
           <Button onClick={() => setLogoutOpen(false)}>Cancel</Button>
-          <Button color="error" onClick={handleLogout}>
+          <Button color="error" onClick={logout}>
             Logout
           </Button>
         </DialogActions>

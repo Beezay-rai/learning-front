@@ -37,6 +37,7 @@ const ClusterPage = () => {
     data: clustersData,
     isLoading,
     error,
+    isRefetching,
     refetch: refetchClusterList,
   } = apiService.useGetClusters(rowsPerPage);
   const clusters = clustersData?.items ?? [];
@@ -88,6 +89,7 @@ const ClusterPage = () => {
           <TableHead>
             <TableRow>
               <TableCell />
+              <TableCell>ID</TableCell>
               <TableCell>Cluster Name</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Created Date</TableCell>
@@ -96,7 +98,7 @@ const ClusterPage = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {isLoading ? (
+            {isLoading || isRefetching ? (
               <TableRow>
                 <TableCell colSpan={5} align="center">
                   <CircularProgress size={24} />
@@ -137,6 +139,7 @@ const ClusterPage = () => {
                           )}
                         </IconButton>
                       </TableCell>
+                      <TableCell>{cluster.id}</TableCell>
                       <TableCell>{cluster.name}</TableCell>
                       <TableCell>
                         <Chip

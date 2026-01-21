@@ -18,6 +18,14 @@ import { ApiUserRequest } from "@/services/apiServices/core/interface/ApiUserMod
 
 const userSchema = yup.object({
   name: yup.string().required("Name is required").max(50, "Max 50 characters"),
+  userName: yup
+    .string()
+    .required("Username is required")
+    .max(50, "Max 50 characters"),
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(6, "Min 6 characters"),
 
   // email: yup.string().required("Email is required").email("Invalid email"),
 
@@ -66,6 +74,17 @@ export default function ApiUserForm({
           </Grid>
           <Grid size={8}>
             <FormTextField fullWidth label="Description" name="description" />
+          </Grid>
+          <Grid size={4}>
+            <FormTextField fullWidth label="Username" name="userName" />
+          </Grid>
+          <Grid size={4}>
+            <FormTextField
+              fullWidth
+              type="password"
+              label="Password"
+              name="password"
+            />
           </Grid>
         </Grid>
 

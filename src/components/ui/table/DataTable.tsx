@@ -33,7 +33,6 @@ interface DataTableProp<TData extends RowData>
   noDataText?: React.ReactNode;
   subItem?: any;
   refetchData?: () => void;
-
   paginationConfig?: PaginationConfig;
 }
 
@@ -60,7 +59,7 @@ export default function DataTable<TData>(props: DataTableProp<TData>) {
         <TableBodySkeleton
           columnCount={
             // tableOptions.enableRowSelection ? columnsCount : columnsCount - 1
-            columnsCount
+            table.getVisibleLeafColumns().length
           }
           rowCount={5}
         />
@@ -93,12 +92,7 @@ export default function DataTable<TData>(props: DataTableProp<TData>) {
         <TableCell>{index + 1}</TableCell>
         {row.getVisibleCells().map((cell) => {
           return (
-            <TableCell
-              key={cell.id}
-              style={{
-                width: `calc(var(--col-${cell.column.id}-size) * 1px)`,
-              }}
-            >
+            <TableCell key={cell.id}>
               {flexRender(cell.column.columnDef.cell, cell.getContext())}
             </TableCell>
           );

@@ -1,6 +1,5 @@
 // lib/apiClient.ts
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
-import { store } from "@/common/store/store";
 
 export interface ApiClientOptions {
   baseURL: string;
@@ -77,21 +76,11 @@ export class ApiClient {
     return this.client.get<T>(url, this.buildConfig(apiConfig));
   }
 
-  post<T>(
-    url: string,
-    data?: any,
-    apiConfig?: ApiConfig,
-    config?: AxiosRequestConfig
-  ) {
+  post<T>(url: string, data?: any, apiConfig?: ApiConfig) {
     return this.client.post<T>(url, data, this.buildConfig(apiConfig));
   }
 
-  put<T>(
-    url: string,
-    data?: any,
-    apiConfig?: ApiConfig,
-    config?: AxiosRequestConfig
-  ) {
+  put<T>(url: string, data?: any, apiConfig?: ApiConfig) {
     return this.client.put<T>(url, data, this.buildConfig(apiConfig));
   }
 

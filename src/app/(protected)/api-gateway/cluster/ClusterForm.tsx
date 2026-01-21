@@ -10,6 +10,7 @@ import {
   Typography,
   IconButton,
   Grid,
+  Tooltip,
 } from "@mui/material";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -65,7 +66,12 @@ export default function ClusterForm({
     resolver: yupResolver(schema),
     defaultValues: defaultValue ?? {
       name: "",
-      clusterDestination: [],
+      clusterDestination: [
+        {
+          name: "",
+          destinationAddress: "",
+        },
+      ],
     },
   });
 
@@ -150,9 +156,22 @@ export default function ClusterForm({
             />
           </Grid>
           <Grid size={1}>
-            <IconButton color="error" onClick={() => remove(index)}>
-              <Minus />
-            </IconButton>
+            <Tooltip
+              title="At least one destination is required"
+              disableHoverListener={fields.length !== 1}
+              disableFocusListener={fields.length !== 1}
+              disableTouchListener={fields.length !== 1}
+            >
+              <span>
+                <IconButton
+                  disabled={fields.length === 1}
+                  color="error"
+                  onClick={() => remove(index)}
+                >
+                  <Minus />
+                </IconButton>
+              </span>
+            </Tooltip>
           </Grid>
         </Grid>
       ))}

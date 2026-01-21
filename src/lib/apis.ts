@@ -10,6 +10,6 @@ export const coreApi = new ApiClient({
   baseURL: (process.env.CORE_URL_DEV || "http://localhost:5196") + "/api/v1",
 });
 
-export const myApi = new ApiClient({
+export const gatewayApi = new ApiClient({
   baseURL: process.env.API_GATEWAY_URL_DEV || "http://localhost:5274/api",
 });

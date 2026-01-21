@@ -13,6 +13,7 @@ import {
 export interface FormSelectOption {
   label: string | ReactNode;
   value: string | number;
+  default?: string | number;
 }
 type FormSelectProps = SelectProps & {
   name: string;
@@ -26,7 +27,7 @@ function FormSelect(props: FormSelectProps) {
     formState: { errors },
   } = useFormContext();
 
-  const { name = "", label, error, options } = props;
+  const { name = "", label, error, options, size, ...rest } = props;
 
   const value = watch(name);
   const isFieldError = get(errors, name);
@@ -35,9 +36,10 @@ function FormSelect(props: FormSelectProps) {
     <Controller
       name={name}
       control={control}
+      {...rest}
       render={({ field }) => (
         <FormControl fullWidth sx={{ minWidth: 120 }}>
-          <InputLabel>{label}</InputLabel>
+          <InputLabel size={size}>{label}</InputLabel>
           <Select
             value={value ?? ""}
             name={name}
@@ -46,6 +48,8 @@ function FormSelect(props: FormSelectProps) {
               console.log(e);
               field.onChange(e);
             }}
+            size={size}
+            {...rest}
           >
             {Array.isArray(options)
               ? options.map((opt) => (

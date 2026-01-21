@@ -49,7 +49,6 @@ function ApiUserList() {
     pageSize: rowsPerPage,
   });
 
-  console.log(apiUserList, "User List");
   const handlePageChange = (event: unknown, newPage: number) => {
     setPage(newPage);
   };

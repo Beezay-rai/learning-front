@@ -15,7 +15,10 @@ import { ApiUserModel, ApiUserRequest } from "./interface/ApiUserModel";
 import { CoreApiDataResponse, CoreApiResponse } from "./common/CoreApiResponse";
 
 import { PaginationRequest, PaginatedResponse } from "./common/PaginationModel";
-import { coreApi } from "@/lib/apis";
+import { coreApi, idsrvApi } from "@/lib/apis";
+import { ApiConfig } from "@/lib/apiClient";
+import { useGetUserInfo } from "@/hooks/useGetUserInfo";
+import { useAuth } from "@/lib/auth/useAuth";
 
 export default function useCoreApiService() {
   const queryClient = useQueryClient();
@@ -27,6 +30,13 @@ export default function useCoreApiService() {
     apiUsers: ["core", "apiUsers"] as const,
     apiUserById: (id: number) => ["core", "apiUser", id] as const,
   };
+  const { oidc_user } = useAuth();
+
+  const apiConfig: ApiConfig = {
+    auth_type: "Bearer",
+    auth_token: oidc_user?.access_token,
+  };
+  console.log(oidc_user, apiConfig);
 
   const getRestApiBuilders = async (
     pagination: PaginationRequest = new PaginationRequest()
@@ -148,7 +158,7 @@ export default function useCoreApiService() {
     (
       await coreApi.get<CoreApiDataResponse<PaginatedResponse<ApiUserModel>>>(
         coreAPIRoutes.api_users,
-        { axios_config: { params: pagination } }
+        { ...apiConfig, axios_config: { params: pagination } }
       )
     ).data;
 
@@ -163,7 +173,8 @@ export default function useCoreApiService() {
     (
       await coreApi.post<CoreApiDataResponse<ApiUserModel>>(
         coreAPIRoutes.api_users,
-        payload
+        payload,
+        apiConfig
       )
     ).data;
 

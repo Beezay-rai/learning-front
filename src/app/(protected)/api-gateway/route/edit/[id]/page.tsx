@@ -31,6 +31,7 @@ import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/Rout
 import { SearchableSelect } from "@/components/molecules/SearchableSelect";
 import NotFound from "@/app/(protected)/not-found";
 import RouteForm from "../../RouteForm";
+import useApiGatewayService from "@/services/apiServices/api-gateway/useApiGatewayService";
 
 const schema = yup.object({
   name: yup.string().required("Name is Required"),
@@ -53,21 +54,20 @@ export default function EditRoutePage() {
 
   const id = idParam ? Number(idParam) : 0;
 
-  const { data: route, isLoading: routeLoading } = apiService.useGetRouteById(
-    id,
-    {
-      enabled: !!id && id > 0,
-    }
-  );
+  const { useGetRouteById, useUpdateRoute } = useApiGatewayService();
 
-  const { mutateAsync, isPending: isSubmitting } = apiService.useUpdateRoute();
+  const { data: route, isLoading: routeLoading } = useGetRouteById(id, {
+    enabled: !!id && id > 0,
+  });
+
+  const { mutateAsync, isPending: isSubmitting } = useUpdateRoute();
 
   const onSubmit = async (data: RouteRequest) => {
     try {
       await mutateAsync(
         {
           routeId: id,
-          data: data,
+          payload: data,
         },
         {
           onSuccess: () => {
@@ -98,7 +98,7 @@ export default function EditRoutePage() {
         isAdd={false}
         onSubmit={onSubmit}
         loading={isSubmitting}
-        defaultValue={route}
+        defaultValue={route?.data}
       ></RouteForm>
     </Paper>
   );

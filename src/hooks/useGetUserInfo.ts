@@ -1,10 +1,11 @@
-import { UserDetail } from "@/common/store/appSlices";
+import { RootState } from "@/store/reduxStore";
 import { useSelector } from "react-redux";
 
-export default function useGetUserInfo() {
-  const userDetail: UserDetail = useSelector((state: any) => state.userDetail);
+export const useGetUserInfo = () => {
+  const user = useSelector((state: RootState) => state.userDetail.oidc_user);
+  const fullName = user?.profile?.name || "";
+  const email = user?.profile?.email || "";
+  const scopes = user?.scopes || [];  
 
-  return {
-    userDetail,
-  };
-}
+  return { fullName, email };
+};

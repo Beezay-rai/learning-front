@@ -10,7 +10,7 @@ import {
 } from "react-hook-form";
 
 type FormTextFieldProps = TextFieldProps & {
-  name: string;
+  name?: string;
 };
 
 function FormTextField(props: FormTextFieldProps) {

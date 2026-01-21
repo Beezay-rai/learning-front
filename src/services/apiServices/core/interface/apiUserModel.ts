@@ -6,4 +6,6 @@ export interface ApiUserModel extends BaseEntity {
 
 export interface ApiUserRequest {
   name: string;
+  userName: string;
+  password: string;
 }

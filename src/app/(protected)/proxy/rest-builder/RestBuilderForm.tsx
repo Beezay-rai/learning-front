@@ -66,6 +66,7 @@ import {
   GenericKeyValuePair,
   TypeGenericKeyValuePair,
 } from "@/services/apiServices/common/GenericKeyValuePair";
+import { methodColorMap } from "@/palette/HttpMethodColor";
 
 interface ResponseData {
   status: number;
@@ -167,12 +168,17 @@ export default function RestBuilderForm({
     const start = performance.now();
 
     try {
+      const test = headers?.reduce<Record<string, string>>((acc, x) => {
+        acc[x.key] = x.value;
+        return acc;
+      }, {});
+
       const res = await fetch("/api/proxy", {
         method: "POST",
         body: JSON.stringify({
           url: finalUrl,
           method: method,
-          headers: { ...requestHeaders, ...headers },
+          headers: { ...requestHeaders, ...test },
         }),
       });
 
@@ -224,7 +230,7 @@ export default function RestBuilderForm({
       <Typography
         sx={{
           fontWeight: "bold",
-          color: m === "GET" ? "#2ca" : m === "POST" ? "#fb3" : "#666",
+          color: methodColorMap[m] ?? "#666",
         }}
       >
         {m}
@@ -256,7 +262,7 @@ export default function RestBuilderForm({
             container
             spacing={2}
             sx={{
-              p: 2,
+              p: 3,
             }}
           >
             <Grid size={4}>
@@ -269,7 +275,9 @@ export default function RestBuilderForm({
             <Grid size={1}>
               <FormSelect
                 name="method"
+                size="small"
                 label="Method"
+                defaultValue="GET"
                 options={methodOptions}
               ></FormSelect>
 

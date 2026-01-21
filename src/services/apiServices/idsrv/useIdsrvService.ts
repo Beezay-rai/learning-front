@@ -25,16 +25,16 @@ import {
   RoleModel,
   UpdateRoleRequest,
 } from "./interface/RoleModel";
-import useGetUserInfo from "@/hooks/useGetUserInfo";
 import { ApiConfig } from "@/lib/apiClient";
+import { useAuth } from "@/lib/auth/useAuth";
 
 export default function useIdsrvService() {
   const queryClient = useQueryClient();
-  const { userDetail } = useGetUserInfo();
+  const { oidc_user } = useAuth();
 
   const apiConfig: ApiConfig = {
     auth_type: "Bearer",
-    auth_token: userDetail.oidc_user.access_token,
+    auth_token: oidc_user?.access_token,
   };
 
   // --- QUERY KEYS ---

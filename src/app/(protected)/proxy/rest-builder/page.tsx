@@ -36,7 +36,8 @@ import { toast } from "react-toastify";
 import useCoreApiService from "@/services/apiServices/core/useCoreApiService";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import SettingsIcon from "@mui/icons-material/Settings";
-import ConfigureModal from "./ConfigureModal";
+import ApiConfigPage from "../../api-gateway/route/config/[id]/page";
+import ApiConfigureModal from "../../components/ApiConfigureModal";
 
 function RestApiBuilderList() {
   const confirm = useConfirm();
@@ -246,7 +247,7 @@ function RestApiBuilderList() {
   ];
   return (
     <Paper sx={{ width: "100%", overflow: "hidden", padding: 2 }}>
-      <ConfigureModal
+      <ApiConfigureModal
         open={configureModalOpen}
         onClose={() => setConfigureModalOpen(false)}
         onUpdate={(data) => {
