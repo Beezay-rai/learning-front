@@ -34,7 +34,6 @@ import useCoreApiService from "@/services/apiServices/core/useCoreApiService";
 
 function ApiUserList() {
   const confirm = useConfirm();
-
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const { useGetApiUsers, useDeleteRestApiBuilder } = useCoreApiService();

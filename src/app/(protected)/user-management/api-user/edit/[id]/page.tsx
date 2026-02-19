@@ -27,7 +27,6 @@ export default function AddAppUser() {
 
   const { data: user, isLoading: restApiBuilderLoading } =
     useGetApiUserById(id);
-  console.log(user, "User Fetched !");
 
   const { mutateAsync, isPending: isSubmitting } = useUpdateApiUser();
 
@@ -43,7 +42,7 @@ export default function AddAppUser() {
             toast.success("Route Updated successfully!");
             router.push(routes["(protected)"].proxy["rest-builder"].index);
           },
-        }
+        },
       );
     } catch (err) {
       console.error("Failed to add route:", err);

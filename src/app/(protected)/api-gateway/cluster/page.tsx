@@ -28,20 +28,32 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { routes } from "@/app/routes.generated";
 import ReloadIconButton from "@/components/ui/button/RefetchIconButton";
+import useApiGatewayService from "@/services/apiServices/api-gateway/useApiGatewayService";
 
 const ClusterPage = () => {
   const [page, setPage] = useState<number>(0);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(5);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [openRows, setOpenRows] = useState<Record<string, boolean>>({});
+
+  const {
+    useGetClusters,
+    useDeleteCluster,
+  } = useApiGatewayService();
   const {
     data: clustersData,
     isLoading,
     error,
     isRefetching,
     refetch: refetchClusterList,
-  } = apiService.useGetClusters(rowsPerPage);
-  const clusters = clustersData?.items ?? [];
-  const totalCount = clustersData?.total ?? 0;
+  } = useGetClusters(
+    {
+      page: page + 1,
+      pageSize: rowsPerPage,
+    },
+  );
+
+  const clusters = clustersData?.data?.items ?? [];
+  const totalCount = clustersData?.data?.totalCount ?? 0;
 
   const handlePageChange = (_event: unknown, newPage: number) =>
     setPage(newPage);
@@ -50,7 +62,7 @@ const ClusterPage = () => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    setPage(1);
   };
 
   const toggleRow = (clusterId: string) =>
@@ -118,10 +130,10 @@ const ClusterPage = () => {
               </TableRow>
             ) : (
               clusters
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((cluster) => (
                   <React.Fragment key={cluster.id}>
                     <TableRow
+                      sx={{ cursor: "pointer" }}
                       hover
                       onClick={() =>
                         setOpenRows((prev) => ({
@@ -186,7 +198,7 @@ const ClusterPage = () => {
                         <Collapse
                           in={openRows[cluster.id]}
                           timeout="auto"
-                          // unmountOnExit
+                        // unmountOnExit
                         >
                           <Table size="small">
                             <TableHead>
@@ -245,7 +257,7 @@ const ClusterPage = () => {
         rowsPerPage={rowsPerPage}
         onPageChange={handlePageChange}
         onRowsPerPageChange={handleRowsPerPageChange}
-        rowsPerPageOptions={[5, 10, 25]}
+        rowsPerPageOptions={[10, 25, 50]}
       />
     </Paper>
   );

@@ -20,6 +20,7 @@ import Link from "next/link";
 import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
+import useApiGatewayService from "@/services/apiServices/api-gateway/useApiGatewayService";
 
 const methodOptions = ["GET", "POST", "PUT", "DELETE", "PATCH"];
 
@@ -58,9 +59,9 @@ export default function RouteForm({
       methods: defaultValue?.methods || [],
     },
   });
-
-  const { data: clusters } = apiService.useGetClusters();
-  const clusterOptions = clusters?.items.map((item, index) => {
+  const { useGetClusters } = useApiGatewayService()
+  const { data: clusters } = useGetClusters();
+  const clusterOptions = clusters?.data?.items.map((item, index) => {
     return {
       label: item.name,
       value: item.id,
@@ -181,8 +182,8 @@ export default function RouteForm({
               ? "Adding..."
               : "Updating..."
             : isAdd
-            ? "Add Route"
-            : "Update"}
+              ? "Add Route"
+              : "Update"}
         </Button>
 
         <Link href={routes["(protected)"]["api-gateway"].route.index}>

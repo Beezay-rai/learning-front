@@ -14,7 +14,7 @@ import { ApiUserModel, ApiUserRequest } from "./interface/ApiUserModel";
 
 import { CoreApiDataResponse, CoreApiResponse } from "./common/CoreApiResponse";
 
-import { PaginationRequest, PaginatedResponse } from "./common/PaginationModel";
+import { PaginationRequest, PaginatedResponse } from "../common/PaginationModel";
 import { coreApi, idsrvApi } from "@/lib/apis";
 import { ApiConfig } from "@/lib/apiClient";
 import { useGetUserInfo } from "@/hooks/useGetUserInfo";
@@ -36,10 +36,9 @@ export default function useCoreApiService() {
     auth_type: "Bearer",
     auth_token: oidc_user?.access_token,
   };
-  console.log(oidc_user, apiConfig);
 
   const getRestApiBuilders = async (
-    pagination: PaginationRequest = new PaginationRequest()
+    pagination: PaginationRequest = new PaginationRequest(),
   ) =>
     (
       await coreApi.get<
@@ -47,14 +46,14 @@ export default function useCoreApiService() {
       >(
         coreAPIRoutes.builder.restApi,
 
-        { axios_config: { params: pagination } }
+        { axios_config: { params: pagination } },
       )
     ).data;
 
   const getRestApiBuilderById = async (id: number) =>
     (
       await coreApi.get<CoreApiDataResponse<RestApiBuilderModel>>(
-        `${coreAPIRoutes.builder.restApi}/${id}`
+        `${coreAPIRoutes.builder.restApi}/${id}`,
       )
     ).data;
 
@@ -62,7 +61,7 @@ export default function useCoreApiService() {
     (
       await coreApi.post<CoreApiDataResponse<RestApiBuilderModel>>(
         coreAPIRoutes.builder.restApi,
-        payload
+        payload,
       )
     ).data;
 
@@ -76,14 +75,14 @@ export default function useCoreApiService() {
     (
       await coreApi.put<CoreApiDataResponse<RestApiBuilderModel>>(
         `${coreAPIRoutes.builder.restApi}/${id}`,
-        payload
+        payload,
       )
     ).data;
 
   const deleteRestApiBuilder = async (id: number) =>
     (
       await coreApi.delete<CoreApiResponse>(
-        `${coreAPIRoutes.builder.restApi}/${id}`
+        `${coreAPIRoutes.builder.restApi}/${id}`,
       )
     ).data;
 
@@ -95,7 +94,7 @@ export default function useCoreApiService() {
         Error
       >,
       "queryKey" | "queryFn"
-    >
+    >,
   ) =>
     useQuery({
       queryKey: [...CORE_QUERY_KEYS.restApiBuilders, pagination],
@@ -108,7 +107,7 @@ export default function useCoreApiService() {
     options?: Omit<
       UseQueryOptions<CoreApiDataResponse<RestApiBuilderModel>, Error>,
       "queryKey" | "queryFn"
-    >
+    >,
   ) =>
     useQuery({
       queryKey: CORE_QUERY_KEYS.restApiBuilderById(id),
@@ -153,19 +152,19 @@ export default function useCoreApiService() {
     });
 
   const getApiUsers = async (
-    pagination: PaginationRequest = new PaginationRequest()
+    pagination: PaginationRequest = new PaginationRequest(),
   ) =>
     (
       await coreApi.get<CoreApiDataResponse<PaginatedResponse<ApiUserModel>>>(
         coreAPIRoutes.api_users,
-        { ...apiConfig, axios_config: { params: pagination } }
+        { ...apiConfig, axios_config: { params: pagination } },
       )
     ).data;
 
   const getApiUserById = async (id: number) =>
     (
       await coreApi.get<CoreApiDataResponse<ApiUserModel>>(
-        `${coreAPIRoutes.api_users}/${id}`
+        `${coreAPIRoutes.api_users}/${id}`,
       )
     ).data;
 
@@ -174,7 +173,7 @@ export default function useCoreApiService() {
       await coreApi.post<CoreApiDataResponse<ApiUserModel>>(
         coreAPIRoutes.api_users,
         payload,
-        apiConfig
+        apiConfig,
       )
     ).data;
 
@@ -188,7 +187,7 @@ export default function useCoreApiService() {
     (
       await coreApi.put<CoreApiDataResponse<ApiUserModel>>(
         `${coreAPIRoutes.api_users}/${id}`,
-        payload
+        payload,
       )
     ).data;
 
@@ -204,7 +203,7 @@ export default function useCoreApiService() {
         Error
       >,
       "queryKey" | "queryFn"
-    >
+    >,
   ) =>
     useQuery({
       queryKey: [...CORE_QUERY_KEYS.apiUsers, pagination],
@@ -217,7 +216,7 @@ export default function useCoreApiService() {
     options?: Omit<
       UseQueryOptions<CoreApiDataResponse<ApiUserModel>, Error>,
       "queryKey" | "queryFn"
-    >
+    >,
   ) =>
     useQuery({
       queryKey: CORE_QUERY_KEYS.apiUserById(id),

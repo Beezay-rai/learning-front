@@ -20,6 +20,7 @@ import {
   GatewayApiDataResponse,
   GatewayApiResponse,
 } from "./interfaces/GatewayApiResponse";
+import { PaginationRequest } from "../common/PaginationModel";
 
 export default function useApiGatewayService() {
   const queryClient = useQueryClient();
@@ -191,11 +192,13 @@ export default function useApiGatewayService() {
   // ====================
   // CLUSTERS – API
   // ====================
-  const getAllClusters = async () =>
+  const getAllClusters = async (
+    pagination: PaginationRequest = new PaginationRequest(),
+  ) =>
     (
       await gatewayApi.get<GatewayApiDataResponse<PaginatedResponse<Cluster>>>(
         "/v1/clusters",
-        apiConfig
+        { ...apiConfig, axios_config: { params: pagination } },
       )
     ).data;
 
@@ -243,6 +246,7 @@ export default function useApiGatewayService() {
   // CLUSTERS – HOOKS
   // --------------------
   const useGetClusters = (
+    pagination: PaginationRequest = new PaginationRequest(),
     options?: Omit<
       UseQueryOptions<
         GatewayApiDataResponse<PaginatedResponse<Cluster>>,
@@ -253,7 +257,7 @@ export default function useApiGatewayService() {
   ) =>
     useQuery({
       queryKey: QUERY_KEYS.clusters,
-      queryFn: getAllClusters,
+      queryFn: () => getAllClusters(pagination),
       ...options,
     });
 

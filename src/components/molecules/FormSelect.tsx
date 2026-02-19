@@ -4,6 +4,7 @@ import React, { memo, ReactNode } from "react";
 import { Controller, get, useFormContext } from "react-hook-form";
 import {
   FormControl,
+  FormHelperText,
   InputLabel,
   MenuItem,
   Select,
@@ -39,8 +40,11 @@ function FormSelect(props: FormSelectProps) {
       {...rest}
       render={({ field }) => (
         <FormControl fullWidth sx={{ minWidth: 120 }}>
-          <InputLabel size={size}>{label}</InputLabel>
+          <InputLabel error={!!(error || isFieldError)} size={size}>
+            {label}
+          </InputLabel>
           <Select
+            error={!!(error || isFieldError)}
             value={value ?? ""}
             name={name}
             label={label}
@@ -51,6 +55,9 @@ function FormSelect(props: FormSelectProps) {
             size={size}
             {...rest}
           >
+            <MenuItem key={""} value="" disabled>
+              <em>Select</em>
+            </MenuItem>
             {Array.isArray(options)
               ? options.map((opt) => (
                   <MenuItem key={opt.value} value={opt.value}>
@@ -59,6 +66,9 @@ function FormSelect(props: FormSelectProps) {
                 ))
               : options}
           </Select>
+          <FormHelperText error={isFieldError}>
+            {isFieldError ? (isFieldError as any).message : null}
+          </FormHelperText>
         </FormControl>
       )}
     />

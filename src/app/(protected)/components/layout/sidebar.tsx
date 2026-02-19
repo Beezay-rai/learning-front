@@ -13,6 +13,7 @@ import {
   Activity,
   CornerDownRight,
   SmileIcon,
+  FlaskConical,
 } from "lucide-react";
 import SettingsInputCompositeIcon from "@mui/icons-material/SettingsInputComposite";
 import ElectricalServicesIcon from "@mui/icons-material/ElectricalServices";
@@ -148,6 +149,45 @@ const menuItems: MenuItem[] = [
         id: "app-user-roles",
         label: "Roles",
         link: `${routes["(protected)"]["user-management"].role.index}`,
+        icon: CornerDownRight,
+      },
+    ],
+  },
+  {
+    id: "product-management",
+    label: "Product Management",
+    icon: SettingsIcon,
+    subItems: [
+      {
+        id: "api-product",
+        label: "API Products",
+        link: `${routes["(protected)"]["product-management"]["api-product"].index}`,
+        icon: CornerDownRight,
+      },
+    ],
+  },
+  {
+    id: "playground",
+    label: "Playground",
+    icon: FlaskConical,
+    subItems: [
+      {
+        id: "code-editor",
+        label: "Code Editor",
+        link: "/playground/code-editor",
+        icon: CornerDownRight,
+      },
+
+      {
+        id: "json-formatter",
+        label: "JSON Formatter",
+        link: "/playground/json-formatter",
+        icon: CornerDownRight,
+      },
+      {
+        id: "api-tester",
+        label: "API Tester",
+        link: "/playground/api-tester",
         icon: CornerDownRight,
       },
     ],

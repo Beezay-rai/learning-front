@@ -384,7 +384,7 @@ function RoutePage() {
 
       <TablePagination
         component="div"
-        count={routeList?.data.total ?? 0}
+        count={routeList?.data.totalCount ?? 0}
         page={page}
         onPageChange={handlePageChange}
         rowsPerPage={rowsPerPage}

@@ -13,3 +13,7 @@ export const coreApi = new ApiClient({
 export const gatewayApi = new ApiClient({
   baseURL: process.env.API_GATEWAY_URL_DEV || "http://localhost:5274/api",
 });
+
+export const orchestratorApi = new ApiClient({
+  baseURL: process.env.ORCHESTRATOR_URL_DEV || "http://localhost:5264/api",
+});

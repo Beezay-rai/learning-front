@@ -2,8 +2,9 @@
 
 import { userManager } from "@/services/authService";
 import { setOIDCUser } from "@/store/appSlices";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import Loading from "@/app/loading";
 import { useRouter } from "next/navigation";
 import { User } from "oidc-client-ts";
 
@@ -12,6 +13,7 @@ export default function AuthProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const [isLoading, setIsLoading] = useState(true);
   const dispatch = useDispatch();
   const router = useRouter();
   const mapUser = (user: User) => ({
@@ -24,15 +26,24 @@ export default function AuthProvider({
     let isMounted = true;
 
     const loadUser = async () => {
-      const user = await userManager.getUser();
+      try {
+        const user = await userManager.getUser();
 
-      if (!isMounted) return;
+        if (!isMounted) return;
 
-      if (user && !user.expired) {
-        dispatch(setOIDCUser(mapUser(user)));
-      } else {
-        dispatch(setOIDCUser(null));
-        router.replace("/");
+        if (user && !user.expired) {
+          dispatch(setOIDCUser(mapUser(user)));
+          setIsLoading(false);
+        } else {
+          dispatch(setOIDCUser(null));
+          router.replace("/");
+        }
+      } catch (error) {
+        console.error("Error loading user:", error);
+        if (isMounted) {
+          dispatch(setOIDCUser(null));
+          router.replace("/");
+        }
       }
     };
 
@@ -55,6 +66,14 @@ export default function AuthProvider({
       userManager.events.removeUserUnloaded(onUserUnloaded);
     };
   }, [dispatch, router]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loading />
+      </div>
+    );
+  }
 
   return <>{children}</>;
 }

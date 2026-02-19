@@ -45,6 +45,17 @@ export const routes = {
     "dll-manager": {
       index: "/dll-manager",
     },
+    "product-management": {
+      "api-product": {
+        index: "/product-management/api-product/",
+        add: {
+          index: "/product-management/api-product/add",
+        },
+        edit: {
+          index: "/product-management/api-product/edit/",
+        },
+      },
+    },
     proxy: {
       "rest-builder": {
         index: "/proxy/rest-builder",
@@ -76,6 +87,9 @@ export const routes = {
         edit: {
           index: "/user-management/api-user/edit/",
         },
+        configure: {
+          index: "/user-management/api-user/configure",
+        },
       },
       role: {
         index: "/user-management/role",
@@ -95,6 +109,9 @@ export const routes = {
           index: "/user-management/user/edit/",
         },
       },
+    },
+    util: {
+      index: "/util",
     },
   },
 };

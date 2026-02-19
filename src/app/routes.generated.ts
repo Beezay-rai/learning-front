@@ -45,6 +45,17 @@ export const routes = {
     "dll-manager": {
       index: "/dll-manager",
     },
+    "product-management": {
+      "api-product": {
+        index: "/product-management/api-product/",
+        add: {
+          index: "/product-management/api-product/add",
+        },
+      },
+      "api-product-version": {
+        index: "/product-management/api-product-version",
+      },
+    },
     proxy: {
       "rest-builder": {
         index: "/proxy/rest-builder",
@@ -76,6 +87,9 @@ export const routes = {
         edit: {
           index: "/user-management/api-user/edit/",
         },
+        configure: {
+          index: "/user-management/api-user/configure",
+        },
       },
       role: {
         index: "/user-management/role",
@@ -94,6 +108,24 @@ export const routes = {
         edit: {
           index: "/user-management/user/edit/",
         },
+      },
+    },
+    util: {
+      index: "/util",
+    },
+    playground: {
+      index: "/playground",
+      "code-editor": {
+        index: "/playground/code-editor",
+      },
+      "page-checker": {
+        index: "/playground/page-checker",
+      },
+      "json-formatter": {
+        index: "/playground/json-formatter",
+      },
+      "api-tester": {
+        index: "/playground/api-tester",
       },
     },
   },

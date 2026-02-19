@@ -28,7 +28,7 @@ import useConfirm from "@/hooks/useConfirm";
 import { toast } from "react-toastify";
 import { RoleModel } from "@/services/apiServices/idsrv/interface/RoleModel";
 import { useState } from "react";
-import { CORE_ADMIN } from "@/services/apiServices/idsrv/constants/core-admin";
+import { CORE_ADMIN } from "@/common/constants/CORE_ADMIN_CRED";
 import useIdsrvService from "@/services/apiServices/idsrv/useIdsrvService";
 
 function RoleList() {
