@@ -27,7 +27,6 @@ interface ApiProductFormProps {
   loading?: boolean;
   defaultValue?: ApiProductRequest;
   isAdd?: boolean;
-  cancelUrl: string;
 }
 
 export default function ApiProductForm({
@@ -35,7 +34,6 @@ export default function ApiProductForm({
   loading = false,
   defaultValue,
   isAdd = true,
-  cancelUrl,
 }: ApiProductFormProps) {
   const formMethods = useForm<ApiProductRequest>({
     resolver: yupResolver(apiProductSchema),
@@ -91,7 +89,7 @@ export default function ApiProductForm({
                 : "Update"}
           </Button>
 
-          <Link href={cancelUrl}>
+          <Link href={routes["(protected)"]["product-management"]["api-product"].index}>
             <Button
               type="button"
               variant="outlined"

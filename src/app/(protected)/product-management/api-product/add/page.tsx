@@ -34,7 +34,6 @@ export default function AddProduct() {
         onSubmit={submit}
         loading={isPending}
         isAdd={true}
-        cancelUrl={routes["(protected)"]["user-management"]["api-user"].index}
       />
     </Paper>
   );

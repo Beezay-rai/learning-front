@@ -28,9 +28,13 @@ import useOrchestratorApiService, {
   ProductVersion,
 } from "@/services/apiServices/orchestrator/useOrchestratorApiService";
 import ApiProductVersionModal from "./ApiProductVersionModal";
+import Link from "next/link";
+import { routes } from "@/app/routes.generated";
+import { LayersIcon } from "lucide-react";
 
 function ApiProductVersionPage() {
-  const { id } = useParams<{ id: string }>();
+  const params = useParams();
+  console.log({ ...params })
   const confirm = useConfirm();
 
   const [modal, setModal] = useState<{
@@ -41,7 +45,7 @@ function ApiProductVersionPage() {
   const { useGetApiProductVersions, useDeleteApiProductVersion } =
     useOrchestratorApiService();
 
-  const { data, isLoading, refetch } = useGetApiProductVersions(Number(id));
+  const { data, isLoading, refetch } = useGetApiProductVersions(Number(params?.id));
 
   const { mutateAsync: deleteVersion } = useDeleteApiProductVersion();
 
@@ -85,19 +89,39 @@ function ApiProductVersionPage() {
                 </ListItemIcon>
                 <ListItemText>Edit</ListItemText>
               </MenuItem>
-
+              <MenuItem>
+                <Link
+                  href={
+                    routes["(protected)"]["product-management"]["api-product"]
+                      .index + row.original.id + "/versions/" + row.original.id + "/product-endpoints"
+                  }
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "100%",
+                  }}
+                >
+                  <ListItemIcon>
+                    <LayersIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>View Endpoints</ListItemText>
+                </Link>
+              </MenuItem>
               <MenuItem
                 onClick={() => {
                   setAnchorEl(null);
                   confirm({
-                    // onConfirm: async () => {
-                    //   await deleteVersion(row.original.id, {
-                    //     onSuccess: () => {
-                    //       toast.success("Version deleted");
-                    //       refetch();
-                    //     },
-                    //   });
-                    // },
+                    onConfirm: async () => {
+                      await deleteVersion({
+                        id: row.original.id,
+                        productId: row.original.productId
+                      }, {
+                        onSuccess: () => {
+                          toast.success("Version deleted");
+                          refetch();
+                        },
+                      });
+                    },
                   });
                 }}
               >
@@ -138,7 +162,7 @@ function ApiProductVersionPage() {
         <ApiProductVersionModal
           open={modal.open}
           defaultValue={modal.selected}
-          productId={Number(id)}
+          productId={Number(params?.id)}
           onClose={() => setModal({ open: false })}
           onSuccess={refetch}
         />

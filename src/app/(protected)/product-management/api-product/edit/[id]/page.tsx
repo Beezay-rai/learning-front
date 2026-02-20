@@ -58,10 +58,7 @@ export default function UpdateProduct() {
         onSubmit={submit}
         loading={isPending}
         isAdd={false}
-        defaultValue={apiProduct as unknown as ApiProductRequest}
-        cancelUrl={
-          routes["(protected)"]["product-management"]["api-product"].index
-        }
+        defaultValue={apiProduct?.data as unknown as ApiProductRequest}
       />
     </Paper>
   );

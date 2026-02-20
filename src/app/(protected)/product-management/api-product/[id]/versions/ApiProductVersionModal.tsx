@@ -79,9 +79,6 @@ export default function ApiProductVersionModal({
   const { mutateAsync: updateVersion, isPending: updating } =
     useUpdateApiProductVersion();
 
-  /* =======================
-     Populate form on edit
-  ======================= */
   useEffect(() => {
     if (defaultValue) {
       reset({
@@ -98,15 +95,13 @@ export default function ApiProductVersionModal({
     }
   }, [defaultValue, reset]);
 
-  /* =======================
-     Submit
-  ======================= */
+
   const onSubmit = async (data: ApiProductVersionFormValues) => {
     try {
       if (isEditMode && defaultValue) {
         await updateVersion({
           id: defaultValue.id,
-          productId: defaultValue.productId,
+          productId: productId,
           payload: data,
         });
         toast.success("Version updated");

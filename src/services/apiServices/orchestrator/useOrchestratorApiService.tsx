@@ -49,7 +49,7 @@ export interface ProductApiEndpoint {
   name: string;
   description: string;
   apiPath: string;
-  runtimeExecutor: string;
+  runTimeExecutioner: string;
   isEnabled: boolean;
   isDeprecated: boolean;
 }
@@ -64,16 +64,13 @@ const apiProductRoutes = {
   versionById: (productId: number, id: number) =>
     `/products/${productId}/versions/${id}`,
 
-  // 🔽 ENDPOINTS
   endpoints: (productId: number, versionId: number) =>
     `/products/${productId}/versions/${versionId}/endpoints`,
   endpointById: (productId: number, versionId: number, endpointId: number) =>
     `/products/${productId}/versions/${versionId}/endpoints/${endpointId}`,
 };
 
-/* =========================
-   Service Hook
-========================= */
+
 export default function useOrchestratorApiService() {
   const queryClient = useQueryClient();
   const { oidc_user } = useAuth();
@@ -83,23 +80,20 @@ export default function useOrchestratorApiService() {
     auth_token: oidc_user?.access_token,
   };
 
-  /* =========================
-     Query Keys
-  ========================= */
+
   const QUERY_KEYS = {
     products: ["products"] as const,
     productById: (id: number) => ["products", id] as const,
     versions: (productId: number) =>
       ["products", productId, "versions"] as const,
 
-    // 🔽 ENDPOINTS
     endpoints: (productId: number, versionId: number) =>
       ["products", productId, "versions", versionId, "endpoints"] as const,
+    endpointById: (productId: number, versionId: number, endpointId: number) =>
+      ["products", productId, "versions", versionId, "endpoints", endpointId] as const,
   };
 
-  /* =========================
-     API Calls – Products
-  ========================= */
+
   const getProducts = async (pagination?: PaginationRequest) =>
     (
       await orchestratorApi.get<ApiDataResponse<PaginatedResponse<Product>>>(
@@ -276,6 +270,18 @@ export default function useOrchestratorApiService() {
         apiConfig,
       )
     ).data;
+  // API Call
+  const getProductApiEndpointById = async (
+    productId: number,
+    versionId: number,
+    endpointId: number,
+  ) =>
+    (
+      await orchestratorApi.get<ApiDataResponse<ProductApiEndpoint>>(
+        apiProductRoutes.endpointById(productId, versionId, endpointId),
+        apiConfig,
+      )
+    ).data;
 
   /* =========================
      React Query Hooks
@@ -398,10 +404,18 @@ export default function useOrchestratorApiService() {
           queryKey: QUERY_KEYS.endpoints(vars.productId, vars.versionId),
         }),
     });
+  const useGetProductApiEndpointById = (
+    productId: number,
+    versionId: number,
+    endpointId: number,
+  ) =>
+    useQuery({
+      queryKey: QUERY_KEYS.endpointById(productId, versionId, endpointId),
+      queryFn: () => getProductApiEndpointById(productId, versionId, endpointId),
+      enabled: !!productId && !!versionId && !!endpointId,
+    });
 
-  /* =========================
-     Public API
-  ========================= */
+
   return {
     // Products
     useGetApiProducts,
@@ -421,5 +435,7 @@ export default function useOrchestratorApiService() {
     useAddProductApiEndpoint,
     useUpdateProductApiEndpoint,
     useDeleteProductApiEndpoint,
+    useGetProductApiEndpointById,
+
   };
 }

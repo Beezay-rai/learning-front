@@ -1,5 +1,6 @@
 // lib/apiClient.ts
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import { toast } from "react-toastify";
 
 export interface ApiClientOptions {
   baseURL: string;
@@ -33,11 +34,17 @@ export class ApiClient {
         };
 
         switch (customError.status) {
+          case 400:
+            toast.error("Invalid Data Provided ! ");
+            break;
           case 401:
             console.log("Unauthorized! redirect to login");
             break;
           case 403:
             console.log("Forbidden! show forbidden component");
+            break;
+          case 404:
+            console.log("Not Found  !");
             break;
           case 500:
             console.log("Server error! show server error component");

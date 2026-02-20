@@ -142,7 +142,9 @@ export default function DataTable<TData>(props: DataTableProp<TData>) {
               </TableRow>
             ))}
           </TableHead>
-          <TableBody>{renderTableBody()}</TableBody>
+          <TableBody sx={{
+            minHeight: "50vh",
+          }}>{renderTableBody()}</TableBody>
         </Table>
         {paginationConfig && (
           <TablePagination

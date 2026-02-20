@@ -100,7 +100,7 @@ function ApiProductPage() {
                 <Link
                   href={
                     routes["(protected)"]["product-management"]["api-product"]
-                      .index + row.original.id
+                      .edit.index + row.original.id
                   }
                   style={{
                     display: "flex",
@@ -120,7 +120,7 @@ function ApiProductPage() {
                 <Link
                   href={
                     routes["(protected)"]["product-management"]["api-product"]
-                      .index + row.original.id
+                      .index + row.original.id + "/versions"
                   }
                   style={{
                     display: "flex",
@@ -158,7 +158,6 @@ function ApiProductPage() {
     <Paper sx={{ p: 2 }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
         <Typography variant="h6">API Products</Typography>
-
         <Link
           href={
             routes["(protected)"]["product-management"]["api-product"].add.index

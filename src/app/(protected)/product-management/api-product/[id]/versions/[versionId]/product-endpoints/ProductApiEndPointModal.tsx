@@ -30,7 +30,7 @@ import { APP_RUNTIME_EXECUTOR } from "@/common/constants/APP_RUNTIME_EXECUTOR";
 const productApiEndpointSchema = yup.object({
   name: yup.string().required("Name is required").max(50),
   apiPath: yup.string().required("API Path is required").max(200),
-  runtimeExecutor: yup.string().required("Runtime Executor is required"),
+  runTimeExecutioner: yup.string().required("Runtime Executor is required"),
   description: yup.string().required("Description is required").max(200),
   isEnabled: yup.boolean().required(),
 });
@@ -41,7 +41,7 @@ const productApiEndpointSchema = yup.object({
 export interface ProductApiEndpointFormValues {
   name: string;
   apiPath: string;
-  runtimeExecutor: string;
+  runTimeExecutioner: string;
   description: string;
   isEnabled: boolean;
 }
@@ -73,7 +73,7 @@ export default function ProductApiEndpointModal({
     defaultValues: {
       name: "",
       apiPath: "",
-      runtimeExecutor: "",
+      runTimeExecutioner: "",
       description: "",
       isEnabled: true,
     },
@@ -98,7 +98,7 @@ export default function ProductApiEndpointModal({
       reset({
         name: defaultValue.name,
         apiPath: defaultValue.apiPath,
-        runtimeExecutor: defaultValue.runtimeExecutor,
+        runTimeExecutioner: defaultValue.runTimeExecutioner,
         description: defaultValue.description,
         isEnabled: defaultValue.isEnabled,
       });
@@ -106,7 +106,7 @@ export default function ProductApiEndpointModal({
       reset({
         name: "",
         apiPath: "",
-        runtimeExecutor: "",
+        runTimeExecutioner: "",
         description: "",
         isEnabled: true,
       });
@@ -138,7 +138,7 @@ export default function ProductApiEndpointModal({
       onSuccess();
       onClose();
     } catch {
-      toast.error("Something went wrong");
+
     }
   };
 
@@ -162,7 +162,7 @@ export default function ProductApiEndpointModal({
                 <FormSelect
                   size="small"
                   label="Runtime Executor"
-                  name="runtimeExecutor"
+                  name="runTimeExecutioner"
                   options={constantsToSelectOptions(APP_RUNTIME_EXECUTOR)}
                 ></FormSelect>
               </Grid>

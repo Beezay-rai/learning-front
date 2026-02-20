@@ -39,17 +39,23 @@ function ProductApiEndpointPage() {
 
   const [modal, setModal] = useState<{
     open: boolean;
-    selected?: ProductApiEndpoint | null;
-  }>({ open: false });
+    isAdd: boolean;
+  }>({ open: false, isAdd: true });
 
-  const { useGetProductApiEndpoints, useDeleteProductApiEndpoint } =
+  const { useGetProductApiEndpoints, useDeleteProductApiEndpoint, useGetProductApiEndpointById } =
     useOrchestratorApiService();
 
   const { data, isLoading, refetch } = useGetProductApiEndpoints(
     Number(productId),
     Number(versionId),
   );
+  const [selectedEndpointId, setSelectedEndpointId] = useState<number | null>(null);
 
+  const { data: endpointDetail } = useGetProductApiEndpointById(
+    Number(productId),
+    Number(versionId),
+    selectedEndpointId ?? 0,
+  );
   const { mutateAsync: deleteEndpoint } = useDeleteProductApiEndpoint();
 
   const columns: ColumnDef<ProductApiEndpoint>[] = [
@@ -94,7 +100,8 @@ function ProductApiEndpointPage() {
               <MenuItem
                 onClick={() => {
                   setAnchorEl(null);
-                  setModal({ open: true, selected: row.original });
+                  setSelectedEndpointId(row.original.id);
+                  setModal({ open: true, isAdd: false });
                 }}
               >
                 <ListItemIcon>
@@ -139,7 +146,7 @@ function ProductApiEndpointPage() {
         <Button
           startIcon={<AddIcon />}
           variant="contained"
-          onClick={() => setModal({ open: true })}
+          onClick={() => setModal({ open: true, isAdd: true })}
         >
           Add Endpoint
         </Button>
@@ -155,10 +162,10 @@ function ProductApiEndpointPage() {
       {modal.open && (
         <ProductApiEndpointModal
           open={modal.open}
-          defaultValue={modal.selected}
+          defaultValue={modal.isAdd ? undefined : endpointDetail?.data}
           productId={Number(productId)}
           versionId={Number(versionId)}
-          onClose={() => setModal({ open: false })}
+          onClose={() => setModal({ open: false, isAdd: true })}
           onSuccess={refetch}
         />
       )}
