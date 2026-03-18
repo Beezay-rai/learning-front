@@ -2,16 +2,17 @@
 
 import React from "react";
 import { Paper, Typography } from "@mui/material";
-import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { routes } from "@/app/routes.generated";
 import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/Route"; // You’ll define this interface
 import RouteForm from "../RouteForm";
+import useApiGatewayService from "@/services/apiServices/api-gateway/useApiGatewayService";
 export default function AddRoutePage() {
   const router = useRouter();
 
-  const { mutateAsync, isPending: isSubmitting } = apiService.useAddRoute();
+  const { useAddRoute } = useApiGatewayService()
+  const { mutateAsync, isPending: isSubmitting } = useAddRoute();
 
   const onSubmit = async (data: RouteRequest) => {
     try {

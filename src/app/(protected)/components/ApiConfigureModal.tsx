@@ -87,8 +87,14 @@ export default function ApiConfigureModal({
                   label: "Basic",
                   value: "Basic",
                 },
+                {
+                  label: "Bearer",
+                  value: "Bearer",
+                },
               ]}
-            ></FormSelect>
+            >
+
+            </FormSelect>
             {/* <FormControl fullWidth>
             <InputLabel>Auth</InputLabel>
             <Select

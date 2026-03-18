@@ -22,7 +22,6 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
 import Link from "next/link";
@@ -31,6 +30,7 @@ import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/Rout
 import { SearchableSelect } from "@/components/molecules/SearchableSelect";
 import RouteForm from "../RouteForm";
 import NotFound from "@/app/(protected)/not-found";
+import useApiGatewayService from "@/services/apiServices/api-gateway/useApiGatewayService";
 
 const schema = yup.object({
   name: yup.string().required("Name is Required"),
@@ -53,21 +53,23 @@ export default function EditRoutePage() {
 
   const id = idParam ? Number(idParam) : 0;
 
-  const { data: route, isLoading: routeLoading } = apiService.useGetRouteById(
+  const { useGetRouteById, useUpdateRoute } = useApiGatewayService();
+
+  const { data: route, isLoading: routeLoading } = useGetRouteById(
     id,
     {
       enabled: !!id,
     }
   );
 
-  const { mutateAsync, isPending: isSubmitting } = apiService.useUpdateRoute();
+  const { mutateAsync, isPending: isSubmitting } = useUpdateRoute();
 
   const onSubmit = async (data: RouteRequest) => {
     try {
       await mutateAsync(
         {
           routeId: id,
-          data: data,
+          payload: data,
         },
         {
           onSuccess: () => {
@@ -98,7 +100,7 @@ export default function EditRoutePage() {
           isAdd={false}
           onSubmit={onSubmit}
           loading={isSubmitting}
-          defaultValue={route}
+          defaultValue={route.data}
         ></RouteForm>
       )}
     </Paper>

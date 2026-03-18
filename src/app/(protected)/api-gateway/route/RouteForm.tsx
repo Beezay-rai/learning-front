@@ -1,4 +1,3 @@
-import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/Route";
 import { routes } from "@/app/routes.generated";
 import { SearchableSelect } from "@/components/molecules/SearchableSelect";

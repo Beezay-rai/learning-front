@@ -14,6 +14,7 @@ import {
   CornerDownRight,
   SmileIcon,
   FlaskConical,
+  Stethoscope,
 } from "lucide-react";
 import SettingsInputCompositeIcon from "@mui/icons-material/SettingsInputComposite";
 import ElectricalServicesIcon from "@mui/icons-material/ElectricalServices";
@@ -188,6 +189,25 @@ const menuItems: MenuItem[] = [
         id: "api-tester",
         label: "API Tester",
         link: "/playground/api-tester",
+        icon: CornerDownRight,
+      },
+      {
+        id: "jwt-inspector",
+        label: "JWT Inspector",
+        link: "/playground/jwt-inspector",
+        icon: CornerDownRight,
+      },
+    ],
+  },
+  {
+    id: "diagnose",
+    label: "Diagnose",
+    icon: Stethoscope,
+    subItems: [
+      {
+        id: "network-logs",
+        label: "Network Logs",
+        link: "/diagnose/network-logs",
         icon: CornerDownRight,
       },
     ],

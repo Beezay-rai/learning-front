@@ -50,6 +50,7 @@ export interface ProductApiEndpoint {
   description: string;
   apiPath: string;
   runTimeExecutioner: string;
+  executionerId: string;
   isEnabled: boolean;
   isDeprecated: boolean;
 }

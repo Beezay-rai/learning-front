@@ -114,6 +114,7 @@ export default function useApiGatewayService() {
   // ROUTES – HOOKS
   // --------------------
   const useGetRoutes = (
+    pagination?: PaginationRequest,
     options?: Omit<
       UseQueryOptions<GatewayApiDataResponse<PaginatedResponse<Route>>, Error>,
       "queryKey" | "queryFn"

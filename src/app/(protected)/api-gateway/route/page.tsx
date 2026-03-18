@@ -23,7 +23,6 @@ import {
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useEffect, useMemo, useState } from "react";
-import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { ColumnDef } from "@tanstack/react-table";
 import {
   Route,
@@ -51,10 +50,10 @@ function RoutePage() {
   const [configureModal, setConfigureModal] = useState<{
     open: boolean;
     routeId?: number | null;
-    selectedRow?: RouteConfigureRequest | null;
+    // selectedRow?: RouteConfigureRequest | null;
   }>({
     open: false,
-    selectedRow: null,
+    // selectedRow: null,
     routeId: 0,
   });
 
@@ -94,7 +93,7 @@ function RoutePage() {
     setConfigureModal({
       open: true,
       routeId: id,
-      selectedRow: null,
+      // selectedRow: null,
     });
   };
 
@@ -110,7 +109,7 @@ function RoutePage() {
           setConfigureModal({
             open: false,
             routeId: null,
-            selectedRow: null,
+            // selectedRow: null,
           });
         },
       }
@@ -132,15 +131,15 @@ function RoutePage() {
       },
     });
   };
-  useEffect(() => {
-    if (!configureData?.data) return;
+  // useEffect(() => {
+  //   // if (!configureData?.data) return;
 
-    setConfigureModal({
-      open: true,
-      routeId: configureModal.routeId,
-      selectedRow: configureData.data,
-    });
-  }, [configureData, configureModal.routeId]);
+  //   setConfigureModal({
+  //     open: true,
+  //     routeId: configureModal.routeId,
+  //     selectedRow: configureData?.data,
+  //   });
+  // }, [configureData, configureModal.routeId]);
 
   const routeColumns: ColumnDef<Route>[] = [
     {
@@ -348,15 +347,14 @@ function RoutePage() {
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden", padding: 2 }}>
-      {configureModal.selectedRow && (
-        <ApiConfigureModal
-          open={configureModal.open}
-          isLoading={configureLoading}
-          defaultValue={configureModal?.selectedRow as ApiConfigureFormData}
-          onClose={() => setConfigureModal({ open: false, selectedRow: null })}
-          onUpdate={handleConfigure}
-        />
-      )}
+      <ApiConfigureModal
+        open={configureModal.open}
+        isLoading={configureLoading}
+        // defaultValue={configureModal?.selectedRow as ApiConfigureFormData}
+        defaultValue={configureData as ApiConfigureFormData}
+        onClose={() => setConfigureModal({ open: false, })}
+        onUpdate={handleConfigure}
+      />
 
       <Box
         sx={{

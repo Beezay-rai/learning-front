@@ -10,81 +10,55 @@ import {
     Grid,
     Typography,
 } from "@mui/material";
-import CodeIcon from "@mui/icons-material/Code";
-import PublicIcon from "@mui/icons-material/Public";
-import DataObjectIcon from "@mui/icons-material/DataObject";
-import SendIcon from "@mui/icons-material/Send";
-import TerminalIcon from "@mui/icons-material/Terminal";
-
-import KeyIcon from "@mui/icons-material/VpnKey";
+import NetworkCheckIcon from "@mui/icons-material/NetworkCheck";
+import BugReportIcon from "@mui/icons-material/BugReport";
+import SpeedIcon from "@mui/icons-material/Speed";
 
 const tools = [
     {
-        id: "code-editor",
-        title: "Code Editor",
+        id: "network-logs",
+        title: "Network Logs",
         description:
-            "Write and run HTML, CSS, and JavaScript code directly in the browser with live preview.",
-        icon: CodeIcon,
-        link: "/playground/code-editor",
-        color: "#6366f1",
-        bg: "#eef2ff",
-        tag: "Frontend",
+            "Intercept and inspect HTTP requests and responses in real-time with detailed headers, body, and timing info.",
+        icon: NetworkCheckIcon,
+        link: "/diagnose/network-logs",
+        color: "#06b6d4",
+        bg: "#ecfeff",
+        tag: "Network",
     },
     {
-        id: "json-formatter",
-        title: "JSON Formatter",
+        id: "performance",
+        title: "Performance Monitor",
         description:
-            "Paste JSON to format, validate, and explore its structure with syntax highlighting.",
-        icon: DataObjectIcon,
-        link: "/playground/json-formatter",
-        color: "#10b981",
-        bg: "#d1fae5",
-        tag: "Utility",
+            "Track page load times, resource sizes, and rendering performance metrics at a glance.",
+        icon: SpeedIcon,
+        link: "/diagnose/network-logs",
+        color: "#f97316",
+        bg: "#fff7ed",
+        tag: "Performance",
     },
     {
-        id: "api-tester",
-        title: "API Tester",
+        id: "error-tracker",
+        title: "Error Tracker",
         description:
-            "Send HTTP requests and inspect responses — a lightweight Postman-like tool.",
-        icon: SendIcon,
-        link: "/playground/api-tester",
-        color: "#f59e0b",
-        bg: "#fef3c7",
-        tag: "Testing",
-    },
-    {
-        id: "csharp-fiddler",
-        title: "C# Fiddler",
-        description:
-            "Write and execute C# code snippets in real-time using .NET runtime via Piston API.",
-        icon: TerminalIcon,
-        link: "/playground/csharp-fiddler",
-        color: "#8b5cf6",
-        bg: "#f5f3ff",
-        tag: "Backend",
-    },
-    {
-        id: "jwt-inspector",
-        title: "JWT Inspector",
-        description:
-            "Decode, verify, and generated JWTs. Inspect headers, payloads, and signatures.",
-        icon: KeyIcon,
-        link: "/playground/jwt-inspector",
-        color: "#ec4899",
-        bg: "#fdf2f8",
-        tag: "Security",
+            "Capture and inspect runtime errors, unhandled rejections, and console warnings.",
+        icon: BugReportIcon,
+        link: "/diagnose/network-logs",
+        color: "#ef4444",
+        bg: "#fef2f2",
+        tag: "Errors",
     },
 ];
 
-export default function PlaygroundPage() {
+export default function DiagnosePage() {
     return (
         <Box>
             <Box mb={4}>
                 <Typography variant="h4" fontWeight={700} color="text.primary">
-                    🧪 Playground
+                    🩺 Diagnose
                 </Typography>
                 <Typography variant="body1" color="text.secondary" mt={0.5}>
-                    Developer tools to code, test, and inspect — all in one place.
+                    Inspect, debug, and monitor network activity and application health.
                 </Typography>
             </Box>
 

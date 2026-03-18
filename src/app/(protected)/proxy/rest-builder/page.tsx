@@ -22,7 +22,6 @@ import {
   ListItemText,
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
-import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { ColumnDef } from "@tanstack/react-table";
 import { Route } from "@/services/apiServices/api-gateway/interfaces/Route";
 import Link from "next/link";
@@ -79,7 +78,7 @@ function RestApiBuilderList() {
     });
   };
 
-  const handleConfigure = (id: number) => {};
+  const handleConfigure = (id: number) => { };
 
   const routeColumns: ColumnDef<RestApiBuilderModel>[] = [
     {

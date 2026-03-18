@@ -10,7 +10,7 @@ import {
   Switch,
   FormControlLabel,
 } from "@mui/material";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { FormProvider, Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -23,6 +23,7 @@ import useOrchestratorApiService, {
 import FormSelect from "@/components/molecules/FormSelect";
 import { constantsToSelectOptions } from "@/common/helpers/formHelper";
 import { APP_RUNTIME_EXECUTOR } from "@/common/constants/APP_RUNTIME_EXECUTOR";
+import useApiGatewayService from "@/services/apiServices/api-gateway/useApiGatewayService";
 
 /* =======================
    Schema
@@ -32,6 +33,7 @@ const productApiEndpointSchema = yup.object({
   apiPath: yup.string().required("API Path is required").max(200),
   runTimeExecutioner: yup.string().required("Runtime Executor is required"),
   description: yup.string().required("Description is required").max(200),
+  executionerId: yup.string().required("Executioner ID is required"),
   isEnabled: yup.boolean().required(),
 });
 
@@ -43,6 +45,7 @@ export interface ProductApiEndpointFormValues {
   apiPath: string;
   runTimeExecutioner: string;
   description: string;
+  executionerId: string;
   isEnabled: boolean;
 }
 
@@ -75,11 +78,12 @@ export default function ProductApiEndpointModal({
       apiPath: "",
       runTimeExecutioner: "",
       description: "",
+      executionerId: "",
       isEnabled: true,
     },
   });
 
-  const { reset, handleSubmit, control } = formMethods;
+  const { reset, handleSubmit, control, watch } = formMethods;
 
   const { useAddProductApiEndpoint, useUpdateProductApiEndpoint } =
     useOrchestratorApiService();
@@ -100,6 +104,7 @@ export default function ProductApiEndpointModal({
         apiPath: defaultValue.apiPath,
         runTimeExecutioner: defaultValue.runTimeExecutioner,
         description: defaultValue.description,
+        executionerId: defaultValue.executionerId,
         isEnabled: defaultValue.isEnabled,
       });
     } else {
@@ -109,13 +114,12 @@ export default function ProductApiEndpointModal({
         runTimeExecutioner: "",
         description: "",
         isEnabled: true,
+        executionerId: "",
       });
     }
   }, [defaultValue, reset]);
 
-  /* =======================
-     Submit
-  ======================= */
+
   const onSubmit = async (data: ProductApiEndpointFormValues) => {
     try {
       if (isEditMode && defaultValue) {
@@ -142,6 +146,34 @@ export default function ProductApiEndpointModal({
     }
   };
 
+  const runTimeExecutioner = watch("runTimeExecutioner")
+  const { useGetRoutes, useGetClusters } = useApiGatewayService();
+  const { data: routes } = useGetRoutes({
+    page: 1,
+    pageSize: 100,
+  },
+    {
+      enabled: !!runTimeExecutioner,
+    }
+  )
+
+
+
+  const executionerOptions = useMemo(() => {
+    if (!runTimeExecutioner) return [];
+    if (runTimeExecutioner === APP_RUNTIME_EXECUTOR.API_GATEWAY) {
+      return routes?.data?.items.map((route) => ({
+        label: route.name,
+        value: route.id,
+      })) ?? [];
+    }
+    return [
+      { label: "Executioner 1", value: "1" },
+      { label: "Executioner 2", value: "2" },
+    ]
+  }, [runTimeExecutioner, routes]);
+
+
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>{isEditMode ? "Edit Endpoint" : "Add Endpoint"}</DialogTitle>
@@ -164,6 +196,15 @@ export default function ProductApiEndpointModal({
                   label="Runtime Executor"
                   name="runTimeExecutioner"
                   options={constantsToSelectOptions(APP_RUNTIME_EXECUTOR)}
+                ></FormSelect>
+              </Grid>
+              <Grid size={{ xs: 12, sm: 12 }}>
+                <FormSelect
+                  size="small"
+                  label="Executioner"
+                  name="executionerId"
+                  disabled={!runTimeExecutioner}
+                  options={executionerOptions}
                 ></FormSelect>
               </Grid>
 

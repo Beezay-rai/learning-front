@@ -6,7 +6,6 @@ const config: UserManagerSettings = {
   client_id: "nextjs-app",
   redirect_uri: "http://localhost:3000/callback",
   post_logout_redirect_uri: "http://localhost:3000",
-  prompt: "login",
   // automaticSilentRenew: true,
 
   response_type: "code",
