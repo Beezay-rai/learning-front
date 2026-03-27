@@ -119,22 +119,25 @@ export default function ProductApiEndpointModal({
     }
   }, [defaultValue, reset]);
 
-
   const onSubmit = async (data: ProductApiEndpointFormValues) => {
     try {
+      const finalPayload = {
+        ...data,
+      };
+
       if (isEditMode && defaultValue) {
         await updateEndpoint({
           id: defaultValue.id,
           productId,
           versionId,
-          payload: data,
+          payload: finalPayload,
         });
         toast.success("Endpoint updated");
       } else {
         await createEndpoint({
           productId,
           versionId,
-          payload: data,
+          payload: finalPayload,
         });
         toast.success("Endpoint created");
       }
@@ -146,7 +149,7 @@ export default function ProductApiEndpointModal({
     }
   };
 
-  const runTimeExecutioner = watch("runTimeExecutioner")
+  const runTimeExecutioner = watch("runTimeExecutioner");
   const { useGetRoutes, useGetClusters } = useApiGatewayService();
   const { data: routes } = useGetRoutes({
     page: 1,
@@ -186,7 +189,9 @@ export default function ProductApiEndpointModal({
                 <FormTextField fullWidth label="Name" name="name" />
               </Grid>
 
-              <Grid size={{ xs: 12, sm: 6 }}>
+
+
+              <Grid size={{ xs: 12, sm: 12 }}>
                 <FormTextField fullWidth label="API Path" name="apiPath" />
               </Grid>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { apiService } from "@/services/apiServices/api-gateway/apiService";
+
 import { Cluster } from "@/services/apiServices/api-gateway/interfaces/Cluster";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";

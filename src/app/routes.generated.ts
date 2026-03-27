@@ -101,6 +101,9 @@ export const routes = {
         },
         "configure": {
           "index": "/user-management/api-user/configure"
+        },
+        "keys": {
+          "index": "/user-management/api-user/[id]/keys"
         }
       },
       "role": {

@@ -1,4 +1,4 @@
-import { PaginationRequest } from "./PaginationModel";
+import { PaginationRequest } from "../../common/PaginationModel";
 
 export interface RoleModel {
   id: string;

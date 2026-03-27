@@ -4,6 +4,7 @@ import Breadcrumbs from "./components/layout/breadcrumb";
 import MyQueryClientProvider from "@/providers/MyQueryClientProvider";
 import { ToastContainer } from "react-toastify";
 import AuthProvider from "@/providers/AuthProvider";
+import NetworkLogPanel from "./components/network-log-panel";
 
 export default function ProtectedLayout({
   children,
@@ -33,6 +34,7 @@ export default function ProtectedLayout({
             </div>
           </main>
         </div>
+        {/* <NetworkLogPanel /> */}
       </MyQueryClientProvider>
     </AuthProvider>
   );

@@ -12,7 +12,6 @@ import {
   House,
   Activity,
   CornerDownRight,
-  SmileIcon,
   FlaskConical,
   Stethoscope,
 } from "lucide-react";
@@ -239,30 +238,47 @@ export function SideBar() {
   return (
     <Drawer
       variant="permanent"
-      open={!isCollapsed}
+      // ✅ Remove open prop — useless on permanent variant
       sx={{
-        width: !isCollapsed ? 300 : 110, // 240px when open, 80px when collapsed
+        width: !isCollapsed ? 300 : 80,
+        flexShrink: 0,
+        whiteSpace: "nowrap",
+        // ✅ Remove transition from wrapper — only paper needs it
         "& .MuiDrawer-paper": {
-          width: !isCollapsed ? 300 : 110, // Ensure the paper element matches
+          width: !isCollapsed ? 300 : 80,
           boxSizing: "border-box",
+          overflowX: "hidden",
+          // ✅ Use correct duration per direction
+          transition: (theme) =>
+            theme.transitions.create("width", {
+              easing: theme.transitions.easing.sharp,
+              duration: isCollapsed
+                ? theme.transitions.duration.leavingScreen   // collapsing
+                : theme.transitions.duration.enteringScreen, // expanding
+            }),
         },
       }}
     >
-      <div className="p-4 border-b border-sidebar-border flex items-center justify-between">
-        {!isCollapsed && (
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-primary rounded-sm flex items-center justify-center">
-              <SmileIcon></SmileIcon>
-            </div>
-            <span className="font-semibold text-sidebar-foreground">
-              Tee Hee
-            </span>
-          </div>
-        )}
+      <div className={`py-4 border-b border-sidebar-border flex ${isCollapsed ? 'flex-col gap-3 px-1' : 'items-center justify-between px-4'}`}>
+        <div className="flex items-center gap-2">
+          <img src="/icon.svg" alt="Logo" className="w-10 h-10 object-contain flex-shrink-0" />
+          <span
+            className="font-semibold text-sidebar-foreground whitespace-nowrap"
+            style={{
+              opacity: isCollapsed ? 0 : 1,
+              transition: 'opacity 0.2s, width 0.3s',
+              width: isCollapsed ? 0 : '60px',
+              overflow: 'hidden'
+            }}
+          >
+            Tee Hee
+          </span>
+        </div>
         <Button
           variant="text"
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="text-sidebar-foreground hover:bg-sidebar-accent"
+          className="text-sidebar-foreground hover:bg-sidebar-accent transition-all duration-300"
+          sx={{ minWidth: 'auto', p: 1 }}
         >
           {isCollapsed ? (
             <ChevronRight className="w-4 h-4" />
@@ -276,11 +292,9 @@ export function SideBar() {
         component="nav"
         aria-labelledby="sidebar-menu"
         subheader={
-          !isCollapsed && (
-            <ListSubheader component="div" id="sidebar-menu">
-              Menu
-            </ListSubheader>
-          )
+          <ListSubheader component="div" id="sidebar-menu" sx={{ opacity: isCollapsed ? 0 : 1, transition: 'opacity 0.3s' }}>
+            Menu
+          </ListSubheader>
         }
       >
         {menuItems.map(({ id, label, link, icon: Icon, subItems }) => {
@@ -292,29 +306,50 @@ export function SideBar() {
               <ListItemButton
                 selected={isActive}
                 onClick={() => handleItemClick(id, !!subItems)}
+                sx={{
+                  minHeight: 48,
+                  justifyContent: isCollapsed ? 'center' : 'initial',
+                  px: 2.5,
+                }}
               >
                 {link ? (
-                  <Link href={link} className="flex items-center gap-3 w-full">
-                    <ListItemIcon>
-                      <Icon className="w-4 h-4 flex-shrink-0" />
+                  <Link href={link} className={`flex items-center gap-3 w-full ${isCollapsed ? 'justify-center' : ''}`}>
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: isCollapsed ? 0 : 3,
+                        justifyContent: 'center',
+                        transition: 'margin 0.3s',
+                      }}
+                    >
+                      <Icon className={`flex-shrink-0 ${isCollapsed ? 'w-6 h-6' : 'w-4 h-4'}`} style={{ transition: 'width 0.3s, height 0.3s' }} />
                     </ListItemIcon>
-                    {!isCollapsed && <ListItemText primary={label} />}
+                    <ListItemText primary={label} sx={{ opacity: isCollapsed ? 0 : 1, transition: 'opacity 0.3s' }} />
                   </Link>
                 ) : (
                   <>
-                    <ListItemIcon>
-                      <Icon className="w-4 h-4 flex-shrink-0" />
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: isCollapsed ? 0 : 3,
+                        justifyContent: 'center',
+                        transition: 'margin 0.3s',
+                      }}
+                    >
+                      <Icon className={`flex-shrink-0 ${isCollapsed ? 'w-6 h-6' : 'w-4 h-4'}`} style={{ transition: 'width 0.3s, height 0.3s' }} />
                     </ListItemIcon>
-                    {!isCollapsed && <ListItemText primary={label} />}
-                    {!isCollapsed &&
-                      subItems &&
-                      (isOpen ? <ChevronUp /> : <ChevronDown />)}
+                    <ListItemText primary={label} sx={{ opacity: isCollapsed ? 0 : 1, transition: 'opacity 0.3s' }} />
+                    {subItems && (
+                      <div style={{ opacity: isCollapsed ? 0 : 1, transition: 'opacity 0.3s' }}>
+                        {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                      </div>
+                    )}
                   </>
                 )}
               </ListItemButton>
 
-              {!isCollapsed && subItems && (
-                <Collapse in={isOpen} timeout="auto" unmountOnExit>
+              {subItems && (
+                <Collapse in={isOpen && !isCollapsed} timeout="auto" unmountOnExit>
                   <List component="div" disablePadding>
                     {subItems.map((sub) => (
                       <ListItemButton key={sub.id} sx={{ pl: 4 }}>
@@ -337,7 +372,14 @@ export function SideBar() {
         })}
       </List>
 
-      {!isCollapsed && (
+      <Box
+        sx={{
+          opacity: isCollapsed ? 0 : 1,
+          transition: 'opacity 0.3s',
+          pointerEvents: isCollapsed ? 'none' : 'auto',
+          overflow: 'hidden'
+        }}
+      >
         <Box
           sx={{
             p: 2,
@@ -373,7 +415,7 @@ export function SideBar() {
             </Box>
           </Stack>
         </Box>
-      )}
+      </Box>
       <Dialog open={logoutOpen} onClose={() => setLogoutOpen(false)}>
         <DialogTitle>Confirm Logout</DialogTitle>
         <DialogContent>Are you sure you want to log out?</DialogContent>

@@ -18,9 +18,7 @@ import {
   IconButton,
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
-import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { ColumnDef } from "@tanstack/react-table";
-import { Route } from "@/services/apiServices/api-gateway/interfaces/Route";
 import Link from "next/link";
 import { routes } from "@/app/routes.generated";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -30,14 +28,14 @@ import { RestApiBuilderModel } from "@/services/apiServices/core/interface/RestA
 import useConfirm from "@/hooks/useConfirm";
 import { toast } from "react-toastify";
 import { ApiUserModel } from "@/services/apiServices/core/interface/ApiUserModel";
-import useCoreApiService from "@/services/apiServices/core/useCoreApiService";
+import useOrchestratorApiService from "@/services/apiServices/orchestrator/useOrchestratorApiService";
 
 function ApiUserInfoList() {
   const confirm = useConfirm();
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const { useGetApiUsers, useDeleteRestApiBuilder } = useCoreApiService();
+  const { useGetApiUsers, useDeleteApiUser } = useOrchestratorApiService();
   const {
     data: apiUserList,
     isLoading,
@@ -61,7 +59,7 @@ function ApiUserInfoList() {
     setPage(0);
   };
 
-  const { mutateAsync } = useDeleteRestApiBuilder();
+  const { mutateAsync } = useDeleteApiUser();
 
   const handleDelete = (id: number) => {
     confirm({

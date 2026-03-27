@@ -9,7 +9,7 @@ import { idsrvAPIRoutes } from "./idsrvAPIRoutes";
 import {
   PaginatedResponse,
   PaginationRequest,
-} from "./interface/PaginationModel";
+} from "../common/PaginationModel";
 import {
   AddUserRequest,
   UpdateUserRequest,

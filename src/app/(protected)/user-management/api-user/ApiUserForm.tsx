@@ -101,8 +101,8 @@ export default function ApiUserForm({
                 ? "Adding..."
                 : "Updating..."
               : isAdd
-              ? "Add Api"
-              : "Update"}
+                ? "Add User"
+                : "Update"}
           </Button>
 
           <Link

@@ -666,10 +666,13 @@ export default function NetworkLogsPage() {
                             {/* Response Body */}
                             {detailTab === 3 && (
                                 <CodeBlock
-                                    content={selected.error ? `Error: ${selected.error}` : tryPrettyJson(selected.responseBody)}
+                                    content={
+                                        tryPrettyJson(selected.responseBody) ||
+                                        (selected.error ? `Error: ${selected.error}` : "")
+                                    }
                                     onCopy={handleCopy}
                                     emptyMessage={selected.pending ? "Waiting for response..." : "No response body"}
-                                    isError={!!selected.error}
+                                    isError={!!selected.error && !selected.responseBody}
                                 />
                             )}
                         </Box>

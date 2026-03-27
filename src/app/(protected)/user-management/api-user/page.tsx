@@ -18,25 +18,24 @@ import {
   IconButton,
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
-import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { ColumnDef } from "@tanstack/react-table";
-import { Route } from "@/services/apiServices/api-gateway/interfaces/Route";
 import Link from "next/link";
 import { routes } from "@/app/routes.generated";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import DataTable from "@/components/ui/table/DataTable";
 import { RestApiBuilderModel } from "@/services/apiServices/core/interface/RestApiBuilderModel";
 import useConfirm from "@/hooks/useConfirm";
 import { toast } from "react-toastify";
 import { ApiUserModel } from "@/services/apiServices/core/interface/ApiUserModel";
-import useCoreApiService from "@/services/apiServices/core/useCoreApiService";
+import useOrchestratorApiService from "@/services/apiServices/orchestrator/useOrchestratorApiService";
 
 function ApiUserList() {
   const confirm = useConfirm();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const { useGetApiUsers, useDeleteRestApiBuilder } = useCoreApiService();
+  const { useGetApiUsers, useDeleteApiUser } = useOrchestratorApiService();
   const {
     data: apiUserList,
     isLoading,
@@ -59,7 +58,7 @@ function ApiUserList() {
     setPage(0);
   };
 
-  const { mutateAsync } = useDeleteRestApiBuilder();
+  const { mutateAsync } = useDeleteApiUser();
 
   const handleDelete = (id: number) => {
     confirm({
@@ -87,6 +86,19 @@ function ApiUserList() {
       header: "Action",
       cell: ({ row }) => (
         <Stack direction="row" spacing={1}>
+          <Link
+            href={
+              routes["(protected)"]["user-management"]["api-user"].keys.index.replace(
+                "[id]",
+                row.original.id.toString()
+              )
+            }
+          >
+            <IconButton color="secondary" size="small" title="Manage Keys">
+              <VpnKeyIcon />
+            </IconButton>
+          </Link>
+
           <Link
             href={
               routes["(protected)"]["user-management"]["api-user"].edit.index +

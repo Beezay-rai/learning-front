@@ -15,7 +15,6 @@ import {
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { Minus, Plus } from "lucide-react";
 import { ClusterRequest } from "@/services/apiServices/api-gateway/interfaces/Cluster";
 import { useRouter } from "next/navigation";
@@ -189,8 +188,8 @@ export default function ClusterForm({
               ? "Adding..."
               : "Updating..."
             : isAdd
-            ? "Add Cluster"
-            : "Update"}
+              ? "Add Cluster"
+              : "Update"}
         </Button>
 
         <Link href={routes["(protected)"]["api-gateway"].cluster.index}>

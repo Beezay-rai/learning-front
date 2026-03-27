@@ -27,8 +27,7 @@ export default function useCoreApiService() {
     restApiBuilders: ["core", "restApiBuilders"] as const,
     restApiBuilderById: (id: number) => ["core", "restApiBuilder", id] as const,
 
-    apiUsers: ["core", "apiUsers"] as const,
-    apiUserById: (id: number) => ["core", "apiUser", id] as const,
+
   };
   const { oidc_user } = useAuth();
 
@@ -151,114 +150,6 @@ export default function useCoreApiService() {
       },
     });
 
-  const getApiUsers = async (
-    pagination: PaginationRequest = new PaginationRequest(),
-  ) =>
-    (
-      await coreApi.get<CoreApiDataResponse<PaginatedResponse<ApiUserModel>>>(
-        coreAPIRoutes.api_users,
-        { ...apiConfig, axios_config: { params: pagination } },
-      )
-    ).data;
-
-  const getApiUserById = async (id: number) =>
-    (
-      await coreApi.get<CoreApiDataResponse<ApiUserModel>>(
-        `${coreAPIRoutes.api_users}/${id}`,
-      )
-    ).data;
-
-  const addApiUser = async (payload: ApiUserRequest) =>
-    (
-      await coreApi.post<CoreApiDataResponse<ApiUserModel>>(
-        coreAPIRoutes.api_users,
-        payload,
-        apiConfig,
-      )
-    ).data;
-
-  const updateApiUser = async ({
-    id,
-    payload,
-  }: {
-    id: number;
-    payload: ApiUserRequest;
-  }) =>
-    (
-      await coreApi.put<CoreApiDataResponse<ApiUserModel>>(
-        `${coreAPIRoutes.api_users}/${id}`,
-        payload,
-      )
-    ).data;
-
-  const deleteApiUser = async (id: number) =>
-    (await coreApi.delete<CoreApiResponse>(`${coreAPIRoutes.api_users}/${id}`))
-      .data;
-
-  const useGetApiUsers = (
-    pagination?: PaginationRequest,
-    options?: Omit<
-      UseQueryOptions<
-        CoreApiDataResponse<PaginatedResponse<ApiUserModel>>,
-        Error
-      >,
-      "queryKey" | "queryFn"
-    >,
-  ) =>
-    useQuery({
-      queryKey: [...CORE_QUERY_KEYS.apiUsers, pagination],
-      queryFn: () => getApiUsers(pagination),
-      ...options,
-    });
-
-  const useGetApiUserById = (
-    id: number,
-    options?: Omit<
-      UseQueryOptions<CoreApiDataResponse<ApiUserModel>, Error>,
-      "queryKey" | "queryFn"
-    >,
-  ) =>
-    useQuery({
-      queryKey: CORE_QUERY_KEYS.apiUserById(id),
-      queryFn: () => getApiUserById(id),
-      enabled: !!id,
-      ...options,
-    });
-
-  const useAddApiUser = () =>
-    useMutation({
-      mutationFn: addApiUser,
-      onSuccess: () =>
-        queryClient.invalidateQueries({
-          queryKey: CORE_QUERY_KEYS.apiUsers,
-        }),
-    });
-
-  const useUpdateApiUser = () =>
-    useMutation({
-      mutationFn: updateApiUser,
-      onSuccess: (_, variables) => {
-        queryClient.invalidateQueries({
-          queryKey: CORE_QUERY_KEYS.apiUsers,
-        });
-        queryClient.invalidateQueries({
-          queryKey: CORE_QUERY_KEYS.apiUserById(variables.id),
-        });
-      },
-    });
-
-  const useDeleteApiUser = () =>
-    useMutation({
-      mutationFn: deleteApiUser,
-      onSuccess: (_, id) => {
-        queryClient.invalidateQueries({
-          queryKey: CORE_QUERY_KEYS.apiUsers,
-        });
-        queryClient.invalidateQueries({
-          queryKey: CORE_QUERY_KEYS.apiUserById(id),
-        });
-      },
-    });
 
   return {
     useGetRestApiBuilders,
@@ -266,10 +157,5 @@ export default function useCoreApiService() {
     useAddRestApiBuilder,
     useUpdateRestApiBuilder,
     useDeleteRestApiBuilder,
-    useGetApiUsers,
-    useGetApiUserById,
-    useAddApiUser,
-    useUpdateApiUser,
-    useDeleteApiUser,
   };
 }

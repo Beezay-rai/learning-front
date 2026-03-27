@@ -9,3 +9,14 @@ export interface ApiUserRequest {
   userName: string;
   password: string;
 }
+
+export interface ApiUserKeyModel {
+  keyName: string;
+  permissions: string;
+  apiKey: string;
+}
+
+export interface ApiUserKeyRequest {
+  keyName: string;
+  permissions: string;
+}
