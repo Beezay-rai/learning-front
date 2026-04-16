@@ -1,129 +1,130 @@
 export const routes = {
   "(guest)": {
-    "callback": {
-      "index": "/callback"
+    callback: {
+      index: "/callback",
     },
-    "login": {
-      "index": "/login"
+    login: {
+      index: "/login",
     },
-    "signup": {
-      "index": "/signup"
-    }
+    signup: {
+      index: "/signup",
+    },
   },
   "(protected)": {
     "api-gateway": {
-      "cluster": {
-        "index": "/api-gateway/cluster/",
-        "add": {
-          "index": "/api-gateway/cluster/add"
+      cluster: {
+        index: "/api-gateway/cluster/",
+        add: {
+          index: "/api-gateway/cluster/add",
         },
-        "edit": {
-          "index": "/api-gateway/cluster/edit/"
-        }
+        edit: {
+          index: "/api-gateway/cluster/edit/",
+        },
       },
-      "route": {
-        "index": "/api-gateway/route/",
-        "add": {
-          "index": "/api-gateway/route/add"
+      route: {
+        index: "/api-gateway/route/",
+        add: {
+          index: "/api-gateway/route/add",
         },
-        "edit": {
-          "index": "/api-gateway/route/edit/"
-        }
-      }
+        edit: {
+          index: "/api-gateway/route/edit/",
+        },
+      },
     },
-    "configure": {
+    configure: {
+      index: "/configure",
       "ca-certificate": {
-        "index": "/configure/ca-certificate"
+        index: "/configure/ca-certificate",
       },
       "ssl-certificate": {
-        "index": "/configure/ssl-certificate"
-      }
+        index: "/configure/ssl-certificate",
+      },
     },
-    "dashboard": {
-      "index": "/dashboard"
+    dashboard: {
+      index: "/dashboard",
     },
     "dll-manager": {
-      "index": "/dll-manager"
+      index: "/dll-manager",
     },
-    "playground": {
-      "index": "/playground",
+    playground: {
+      index: "/playground",
       "api-tester": {
-        "index": "/playground/api-tester"
+        index: "/playground/api-tester",
       },
       "code-editor": {
-        "index": "/playground/code-editor"
+        index: "/playground/code-editor",
       },
       "json-formatter": {
-        "index": "/playground/json-formatter"
-      }
+        index: "/playground/json-formatter",
+      },
     },
     "product-management": {
       "api-product": {
-        "index": "/product-management/api-product/",
-        "add": {
-          "index": "/product-management/api-product/add"
+        index: "/product-management/api-product/",
+        add: {
+          index: "/product-management/api-product/add",
         },
-        "edit": {
-          "index": "/product-management/api-product/edit/"
-        }
-      }
+        edit: {
+          index: "/product-management/api-product/edit/",
+        },
+      },
     },
-    "proxy": {
+    proxy: {
       "rest-builder": {
-        "index": "/proxy/rest-builder",
-        "add": {
-          "index": "/proxy/rest-builder/add"
+        index: "/proxy/rest-builder",
+        add: {
+          index: "/proxy/rest-builder/add",
         },
-        "edit": {
-          "index": "/proxy/rest-builder/edit/"
-        }
+        edit: {
+          index: "/proxy/rest-builder/edit/",
+        },
       },
       "soap-builder": {
-        "index": "/proxy/soap-builder"
-      }
+        index: "/proxy/soap-builder",
+      },
     },
-    "sockets": {
-      "signalR": {
-        "index": "/sockets/signalr"
+    sockets: {
+      signalR: {
+        index: "/sockets/signalr",
       },
       "web-socket": {
-        "index": "/sockets/web-socket"
-      }
+        index: "/sockets/web-socket",
+      },
     },
     "user-management": {
       "api-user": {
-        "index": "/user-management/api-user",
-        "add": {
-          "index": "/user-management/api-user/add"
+        index: "/user-management/api-user",
+        add: {
+          index: "/user-management/api-user/add",
         },
-        "edit": {
-          "index": "/user-management/api-user/edit/"
+        edit: {
+          index: "/user-management/api-user/edit/",
         },
-        "configure": {
-          "index": "/user-management/api-user/configure"
-        }
+        configure: {
+          index: "/user-management/api-user/configure",
+        },
       },
-      "role": {
-        "index": "/user-management/role",
-        "add": {
-          "index": "/user-management/role/add"
+      role: {
+        index: "/user-management/role",
+        add: {
+          index: "/user-management/role/add",
         },
-        "edit": {
-          "index": "/user-management/role/edit/"
-        }
+        edit: {
+          index: "/user-management/role/edit/",
+        },
       },
-      "user": {
-        "index": "/user-management/user",
-        "add": {
-          "index": "/user-management/user/add"
+      user: {
+        index: "/user-management/user",
+        add: {
+          index: "/user-management/user/add",
         },
-        "edit": {
-          "index": "/user-management/user/edit/"
-        }
-      }
+        edit: {
+          index: "/user-management/user/edit/",
+        },
+      },
     },
-    "util": {
-      "index": "/util"
-    }
-  }
+    util: {
+      index: "/util",
+    },
+  },
 };

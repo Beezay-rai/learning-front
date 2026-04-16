@@ -1,4 +1,3 @@
-import "../globals.css";
 import { SideBar } from "@/app/(protected)/components/layout/sidebar";
 import Breadcrumbs from "./components/layout/breadcrumb";
 import MyQueryClientProvider from "@/providers/MyQueryClientProvider";

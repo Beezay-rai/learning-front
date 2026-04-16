@@ -7,7 +7,12 @@ import {
 import { orchestratorApi } from "@/lib/apis";
 import { ApiConfig } from "@/lib/apiClient";
 import { useAuth } from "@/lib/auth/useAuth";
-import { ApiUserModel, ApiUserRequest, ApiUserKeyModel, ApiUserKeyRequest } from "../core/interface/ApiUserModel";
+import {
+  ApiUserModel,
+  ApiUserRequest,
+  ApiUserKeyModel,
+  ApiUserKeyRequest,
+} from "../core/interface/ApiUserModel";
 import { PaginationRequest } from "../common/PaginationModel";
 
 /* =========================
@@ -35,7 +40,6 @@ export interface PaginatedResponse<T> {
   totalCount?: number;
 }
 
-
 export interface ApiDataResponse<T> {
   data: T;
   message: string;
@@ -54,6 +58,8 @@ export interface ProductApiEndpoint {
   isDeprecated: boolean;
 }
 
+export type ProductApiSpec = Record<string, unknown> | string;
+
 /* =========================
    API Routes
 ========================= */
@@ -68,12 +74,13 @@ const orchestratorApiRoutes = {
     `/products/${productId}/versions/${versionId}/endpoints`,
   endpointById: (productId: number, versionId: number, endpointId: number) =>
     `/products/${productId}/versions/${versionId}/endpoints/${endpointId}`,
+  apiSpec: (productId: number, versionId: number) =>
+    `/products/${productId}/versions/${versionId}/api-spec`,
   api_users: "/api-users",
   apiUserKeys: (api_user_id: number) => `/api-users/${api_user_id}/keys`,
-  generateApiUserKey: (api_user_id: number) => `/api-users/generate-key/${api_user_id}`,
-
+  generateApiUserKey: (api_user_id: number) =>
+    `/api-users/generate-key/${api_user_id}`,
 };
-
 
 export default function useOrchestratorApiService() {
   const queryClient = useQueryClient();
@@ -84,7 +91,6 @@ export default function useOrchestratorApiService() {
     auth_token: oidc_user?.access_token,
   };
 
-
   const QUERY_KEYS = {
     products: ["products"] as const,
     productById: (id: number) => ["products", id] as const,
@@ -94,12 +100,20 @@ export default function useOrchestratorApiService() {
     endpoints: (productId: number, versionId: number) =>
       ["products", productId, "versions", versionId, "endpoints"] as const,
     endpointById: (productId: number, versionId: number, endpointId: number) =>
-      ["products", productId, "versions", versionId, "endpoints", endpointId] as const,
+      [
+        "products",
+        productId,
+        "versions",
+        versionId,
+        "endpoints",
+        endpointId,
+      ] as const,
+    apiSpec: (productId: number, versionId: number) =>
+      ["products", productId, "versions", versionId, "api-spec"] as const,
     apiUsers: ["apiUsers"] as const,
     apiUserById: (id: number) => ["apiUser", id] as const,
     apiUserKeys: (api_user_id: number) => ["apiUserKeys", api_user_id] as const,
   };
-
 
   const getProducts = async (pagination?: PaginationRequest) =>
     (
@@ -290,6 +304,31 @@ export default function useOrchestratorApiService() {
       )
     ).data;
 
+  const getProductApiSpec = async (productId: number, versionId: number) =>
+    (
+      await orchestratorApi.get<ApiDataResponse<ProductApiSpec>>(
+        orchestratorApiRoutes.apiSpec(productId, versionId),
+        apiConfig,
+      )
+    ).data;
+
+  const updateProductApiSpec = async ({
+    productId,
+    versionId,
+    payload,
+  }: {
+    productId: number;
+    versionId: number;
+    payload: ProductApiSpec;
+  }) =>
+    (
+      await orchestratorApi.put<ApiDataResponse<ProductApiSpec>>(
+        orchestratorApiRoutes.apiSpec(productId, versionId),
+        payload,
+        apiConfig,
+      )
+    ).data;
+
   /* =========================
      React Query Hooks
   ========================= */
@@ -375,7 +414,6 @@ export default function useOrchestratorApiService() {
         }),
     });
 
-
   const useGetProductApiEndpoints = (productId: number, versionId: number) =>
     useQuery({
       queryKey: QUERY_KEYS.endpoints(productId, versionId),
@@ -416,21 +454,38 @@ export default function useOrchestratorApiService() {
   ) =>
     useQuery({
       queryKey: QUERY_KEYS.endpointById(productId, versionId, endpointId),
-      queryFn: () => getProductApiEndpointById(productId, versionId, endpointId),
+      queryFn: () =>
+        getProductApiEndpointById(productId, versionId, endpointId),
       enabled: !!productId && !!versionId && !!endpointId,
     });
 
+  const useGetProductApiSpec = (productId: number, versionId: number) =>
+    useQuery({
+      queryKey: QUERY_KEYS.apiSpec(productId, versionId),
+      queryFn: () => getProductApiSpec(productId, versionId),
+      enabled: !!productId && !!versionId,
+    });
 
-
+  const useUpdateProductApiSpec = () =>
+    useMutation({
+      mutationFn: updateProductApiSpec,
+      onSuccess: (_, vars) => {
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.apiSpec(vars.productId, vars.versionId),
+        });
+      },
+    });
 
   const getApiUsers = async (
     pagination: PaginationRequest = new PaginationRequest(),
   ) =>
     (
-      await orchestratorApi.get<ApiDataResponse<PaginatedResponse<ApiUserModel>>>(
-        orchestratorApiRoutes.api_users,
-        { ...apiConfig, axios_config: { params: pagination } },
-      )
+      await orchestratorApi.get<
+        ApiDataResponse<PaginatedResponse<ApiUserModel>>
+      >(orchestratorApiRoutes.api_users, {
+        ...apiConfig,
+        axios_config: { params: pagination },
+      })
     ).data;
 
   const getApiUserById = async (id: number) =>
@@ -464,18 +519,23 @@ export default function useOrchestratorApiService() {
     ).data;
 
   const deleteApiUser = async (id: number) =>
-    (await orchestratorApi.delete<ApiDataResponse<null>>(`${orchestratorApiRoutes.api_users}/${id}`))
-      .data;
+    (
+      await orchestratorApi.delete<ApiDataResponse<null>>(
+        `${orchestratorApiRoutes.api_users}/${id}`,
+      )
+    ).data;
 
   const getApiUserKeys = async (
     api_user_id: number,
     pagination: PaginationRequest = new PaginationRequest(),
   ) =>
     (
-      await orchestratorApi.get<ApiDataResponse<PaginatedResponse<ApiUserKeyModel>>>(
-        orchestratorApiRoutes.apiUserKeys(api_user_id),
-        { ...apiConfig, axios_config: { params: pagination } },
-      )
+      await orchestratorApi.get<
+        ApiDataResponse<PaginatedResponse<ApiUserKeyModel>>
+      >(orchestratorApiRoutes.apiUserKeys(api_user_id), {
+        ...apiConfig,
+        axios_config: { params: pagination },
+      })
     ).data;
 
   const generateApiUserKey = async ({
@@ -496,10 +556,7 @@ export default function useOrchestratorApiService() {
   const useGetApiUsers = (
     pagination?: PaginationRequest,
     options?: Omit<
-      UseQueryOptions<
-        ApiDataResponse<PaginatedResponse<ApiUserModel>>,
-        Error
-      >,
+      UseQueryOptions<ApiDataResponse<PaginatedResponse<ApiUserModel>>, Error>,
       "queryKey" | "queryFn"
     >,
   ) =>
@@ -585,8 +642,6 @@ export default function useOrchestratorApiService() {
         }),
     });
 
-
-
   return {
     // Products
     useGetApiProducts,
@@ -607,6 +662,8 @@ export default function useOrchestratorApiService() {
     useUpdateProductApiEndpoint,
     useDeleteProductApiEndpoint,
     useGetProductApiEndpointById,
+    useGetProductApiSpec,
+    useUpdateProductApiSpec,
 
     // API Users
     useGetApiUsers,

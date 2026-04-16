@@ -1,12 +1,10 @@
 "use client";
 
 import { CircularProgress, Paper, Typography } from "@mui/material";
-import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { toast } from "react-toastify";
 import { useParams, useRouter } from "next/navigation";
 import { routes } from "@/app/routes.generated";
 import { ApiUserRequest } from "@/services/apiServices/core/interface/ApiUserModel";
-import useCoreApiService from "@/services/apiServices/core/useCoreApiService";
 import ApiProductForm, { ApiProductRequest } from "../../ApiProductForm";
 import useOrchestratorApiService from "@/services/apiServices/orchestrator/useOrchestratorApiService";
 import NotFound from "@/app/(protected)/not-found";
@@ -18,8 +16,7 @@ export default function UpdateProduct() {
   const idParam = params?.id;
 
   const id = idParam ? Number(idParam) : 0;
-  const { useUpdateApiProduct, useGetApiProductById } =
-    useOrchestratorApiService();
+  const { useUpdateApiProduct, useGetApiProductById } = useOrchestratorApiService();
 
   const { mutateAsync, isPending } = useUpdateApiProduct();
 
@@ -36,7 +33,7 @@ export default function UpdateProduct() {
         onSuccess: () => {
           toast.success("App User created!");
           router.push(
-            routes["(protected)"]["user-management"]["api-user"].index,
+            routes["(protected)"]["product-management"]["api-product"].index,
           );
         },
       },

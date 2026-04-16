@@ -48,18 +48,7 @@ export default function ApiProductForm({
             <FormTextField fullWidth label="Name" name="name" />
           </Grid>
 
-          <Grid size={8}>
-            <FormTextField
-              fullWidth
-              helperText={
-                <>
-                  <code>{`Must begin with '/'. Eg: /task-management`}</code>
-                </>
-              }
-              label="Base Address"
-              name="baseAddress"
-            />
-          </Grid>
+
 
           <Grid size={12}>
             <FormTextField

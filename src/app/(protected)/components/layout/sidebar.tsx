@@ -115,6 +115,12 @@ const menuItems: MenuItem[] = [
     icon: SettingsIcon,
     subItems: [
       {
+        id: "identity-config",
+        label: "Identity Server",
+        link: `${routes["(protected)"].configure.index}`,
+        icon: CornerDownRight,
+      },
+      {
         id: "ssl-certificate",
         label: "SSL Certificate",
         link: `${routes["(protected)"].configure["ssl-certificate"].index}`,
@@ -253,22 +259,28 @@ export function SideBar() {
             theme.transitions.create("width", {
               easing: theme.transitions.easing.sharp,
               duration: isCollapsed
-                ? theme.transitions.duration.leavingScreen   // collapsing
+                ? theme.transitions.duration.leavingScreen // collapsing
                 : theme.transitions.duration.enteringScreen, // expanding
             }),
         },
       }}
     >
-      <div className={`py-4 border-b border-sidebar-border flex ${isCollapsed ? 'flex-col gap-3 px-1' : 'items-center justify-between px-4'}`}>
+      <div
+        className={`py-4 border-b border-sidebar-border flex ${isCollapsed ? "flex-col gap-3 px-1" : "items-center justify-between px-4"}`}
+      >
         <div className="flex items-center gap-2">
-          <img src="/icon.svg" alt="Logo" className="w-10 h-10 object-contain flex-shrink-0" />
+          <img
+            src="/icon.svg"
+            alt="Logo"
+            className="w-10 h-10 object-contain flex-shrink-0"
+          />
           <span
             className="font-semibold text-sidebar-foreground whitespace-nowrap"
             style={{
               opacity: isCollapsed ? 0 : 1,
-              transition: 'opacity 0.2s, width 0.3s',
-              width: isCollapsed ? 0 : '60px',
-              overflow: 'hidden'
+              transition: "opacity 0.2s, width 0.3s",
+              width: isCollapsed ? 0 : "60px",
+              overflow: "hidden",
             }}
           >
             Tee Hee
@@ -278,7 +290,7 @@ export function SideBar() {
           variant="text"
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="text-sidebar-foreground hover:bg-sidebar-accent transition-all duration-300"
-          sx={{ minWidth: 'auto', p: 1 }}
+          sx={{ minWidth: "auto", p: 1 }}
         >
           {isCollapsed ? (
             <ChevronRight className="w-4 h-4" />
@@ -292,7 +304,11 @@ export function SideBar() {
         component="nav"
         aria-labelledby="sidebar-menu"
         subheader={
-          <ListSubheader component="div" id="sidebar-menu" sx={{ opacity: isCollapsed ? 0 : 1, transition: 'opacity 0.3s' }}>
+          <ListSubheader
+            component="div"
+            id="sidebar-menu"
+            sx={{ opacity: isCollapsed ? 0 : 1, transition: "opacity 0.3s" }}
+          >
             Menu
           </ListSubheader>
         }
@@ -308,23 +324,35 @@ export function SideBar() {
                 onClick={() => handleItemClick(id, !!subItems)}
                 sx={{
                   minHeight: 48,
-                  justifyContent: isCollapsed ? 'center' : 'initial',
+                  justifyContent: isCollapsed ? "center" : "initial",
                   px: 2.5,
                 }}
               >
                 {link ? (
-                  <Link href={link} className={`flex items-center gap-3 w-full ${isCollapsed ? 'justify-center' : ''}`}>
+                  <Link
+                    href={link}
+                    className={`flex items-center gap-3 w-full ${isCollapsed ? "justify-center" : ""}`}
+                  >
                     <ListItemIcon
                       sx={{
                         minWidth: 0,
                         mr: isCollapsed ? 0 : 3,
-                        justifyContent: 'center',
-                        transition: 'margin 0.3s',
+                        justifyContent: "center",
+                        transition: "margin 0.3s",
                       }}
                     >
-                      <Icon className={`flex-shrink-0 ${isCollapsed ? 'w-6 h-6' : 'w-4 h-4'}`} style={{ transition: 'width 0.3s, height 0.3s' }} />
+                      <Icon
+                        className={`flex-shrink-0 ${isCollapsed ? "w-6 h-6" : "w-4 h-4"}`}
+                        style={{ transition: "width 0.3s, height 0.3s" }}
+                      />
                     </ListItemIcon>
-                    <ListItemText primary={label} sx={{ opacity: isCollapsed ? 0 : 1, transition: 'opacity 0.3s' }} />
+                    <ListItemText
+                      primary={label}
+                      sx={{
+                        opacity: isCollapsed ? 0 : 1,
+                        transition: "opacity 0.3s",
+                      }}
+                    />
                   </Link>
                 ) : (
                   <>
@@ -332,16 +360,34 @@ export function SideBar() {
                       sx={{
                         minWidth: 0,
                         mr: isCollapsed ? 0 : 3,
-                        justifyContent: 'center',
-                        transition: 'margin 0.3s',
+                        justifyContent: "center",
+                        transition: "margin 0.3s",
                       }}
                     >
-                      <Icon className={`flex-shrink-0 ${isCollapsed ? 'w-6 h-6' : 'w-4 h-4'}`} style={{ transition: 'width 0.3s, height 0.3s' }} />
+                      <Icon
+                        className={`flex-shrink-0 ${isCollapsed ? "w-6 h-6" : "w-4 h-4"}`}
+                        style={{ transition: "width 0.3s, height 0.3s" }}
+                      />
                     </ListItemIcon>
-                    <ListItemText primary={label} sx={{ opacity: isCollapsed ? 0 : 1, transition: 'opacity 0.3s' }} />
+                    <ListItemText
+                      primary={label}
+                      sx={{
+                        opacity: isCollapsed ? 0 : 1,
+                        transition: "opacity 0.3s",
+                      }}
+                    />
                     {subItems && (
-                      <div style={{ opacity: isCollapsed ? 0 : 1, transition: 'opacity 0.3s' }}>
-                        {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                      <div
+                        style={{
+                          opacity: isCollapsed ? 0 : 1,
+                          transition: "opacity 0.3s",
+                        }}
+                      >
+                        {isOpen ? (
+                          <ChevronUp className="w-4 h-4" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4" />
+                        )}
                       </div>
                     )}
                   </>
@@ -349,7 +395,11 @@ export function SideBar() {
               </ListItemButton>
 
               {subItems && (
-                <Collapse in={isOpen && !isCollapsed} timeout="auto" unmountOnExit>
+                <Collapse
+                  in={isOpen && !isCollapsed}
+                  timeout="auto"
+                  unmountOnExit
+                >
                   <List component="div" disablePadding>
                     {subItems.map((sub) => (
                       <ListItemButton key={sub.id} sx={{ pl: 4 }}>
@@ -375,9 +425,9 @@ export function SideBar() {
       <Box
         sx={{
           opacity: isCollapsed ? 0 : 1,
-          transition: 'opacity 0.3s',
-          pointerEvents: isCollapsed ? 'none' : 'auto',
-          overflow: 'hidden'
+          transition: "opacity 0.3s",
+          pointerEvents: isCollapsed ? "none" : "auto",
+          overflow: "hidden",
         }}
       >
         <Box

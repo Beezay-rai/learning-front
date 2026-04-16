@@ -16,6 +16,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
+import DescriptionIcon from "@mui/icons-material/Description";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
@@ -34,7 +35,7 @@ import { LayersIcon } from "lucide-react";
 
 function ApiProductVersionPage() {
   const params = useParams();
-  console.log({ ...params })
+  const productId = Number(params?.id);
   const confirm = useConfirm();
 
   const [modal, setModal] = useState<{
@@ -45,7 +46,7 @@ function ApiProductVersionPage() {
   const { useGetApiProductVersions, useDeleteApiProductVersion } =
     useOrchestratorApiService();
 
-  const { data, isLoading, refetch } = useGetApiProductVersions(Number(params?.id));
+  const { data, isLoading, refetch } = useGetApiProductVersions(productId);
 
   const { mutateAsync: deleteVersion } = useDeleteApiProductVersion();
 
@@ -93,12 +94,18 @@ function ApiProductVersionPage() {
                 <Link
                   href={
                     routes["(protected)"]["product-management"]["api-product"]
-                      .index + row.original.id + "/versions/" + row.original.id + "/product-endpoints"
+                      .index +
+                    row.original.productId +
+                    "/versions/" +
+                    row.original.id +
+                    "/product-endpoints"
                   }
                   style={{
                     display: "flex",
                     alignItems: "center",
                     width: "100%",
+                    color: "inherit",
+                    textDecoration: "none",
                   }}
                 >
                   <ListItemIcon>
@@ -107,20 +114,47 @@ function ApiProductVersionPage() {
                   <ListItemText>View Endpoints</ListItemText>
                 </Link>
               </MenuItem>
+              <MenuItem>
+                <Link
+                  href={
+                    routes["(protected)"]["product-management"]["api-product"]
+                      .index +
+                    row.original.productId +
+                    "/versions/" +
+                    row.original.id +
+                    "/swagger-doc"
+                  }
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "100%",
+                    color: "inherit",
+                    textDecoration: "none",
+                  }}
+                >
+                  <ListItemIcon>
+                    <DescriptionIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Swagger Docs</ListItemText>
+                </Link>
+              </MenuItem>
               <MenuItem
                 onClick={() => {
                   setAnchorEl(null);
                   confirm({
                     onConfirm: async () => {
-                      await deleteVersion({
-                        id: row.original.id,
-                        productId: row.original.productId
-                      }, {
-                        onSuccess: () => {
-                          toast.success("Version deleted");
-                          refetch();
+                      await deleteVersion(
+                        {
+                          id: row.original.id,
+                          productId: row.original.productId,
                         },
-                      });
+                        {
+                          onSuccess: () => {
+                            toast.success("Version deleted");
+                            refetch();
+                          },
+                        },
+                      );
                     },
                   });
                 }}
@@ -162,7 +196,7 @@ function ApiProductVersionPage() {
         <ApiProductVersionModal
           open={modal.open}
           defaultValue={modal.selected}
-          productId={Number(params?.id)}
+          productId={productId}
           onClose={() => setModal({ open: false })}
           onSuccess={refetch}
         />

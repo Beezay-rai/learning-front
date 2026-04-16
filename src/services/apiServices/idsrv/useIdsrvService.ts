@@ -25,6 +25,14 @@ import {
   RoleModel,
   UpdateRoleRequest,
 } from "./interface/RoleModel";
+import {
+  AddApiScopeRequest,
+  AddIdentityClientRequest,
+  ApiScopeModel,
+  IdentityClientModel,
+  UpdateApiScopeRequest,
+  UpdateIdentityClientRequest,
+} from "./interface/IdentityConfigModel";
 import { ApiConfig } from "@/lib/apiClient";
 import { useAuth } from "@/lib/auth/useAuth";
 
@@ -39,14 +47,126 @@ export default function useIdsrvService() {
 
   // --- QUERY KEYS ---
   const IDSRV_QUERY_KEYS = {
+    clients: ["idsrv", "clients"] as const,
+    clientById: (id: number) => ["idsrv", "client", id] as const,
+    apiScopes: ["idsrv", "api-scopes"] as const,
+    apiScopeById: (id: number) => ["idsrv", "api-scope", id] as const,
     users: ["idsrv", "users"] as const,
-    userById: (id: string) => ["idsrv", "user", id] as const,
+    userById: (id: number) => ["idsrv", "user", id] as const,
     roles: ["idsrv", "roles"] as const,
-    roleById: (id: string) => ["idsrv", "role", id] as const,
+    roleById: (id: number) => ["idsrv", "role", id] as const,
   };
 
+  const getAllClients = async (
+    pagination: PaginationRequest = new PaginationRequest(),
+  ) =>
+    (
+      await idsrvApi.get<
+        IdsrvApiDataResponse<PaginatedResponse<IdentityClientModel>>
+      >(idsrvAPIRoutes.clients, {
+        ...apiConfig,
+        axios_config: {
+          params: pagination,
+        },
+      })
+    ).data;
+
+  const getClientById = async (id: number) =>
+    (
+      await idsrvApi.get<IdsrvApiDataResponse<IdentityClientModel>>(
+        `${idsrvAPIRoutes.clients}/${id}`,
+        apiConfig,
+      )
+    ).data;
+
+  const addClient = async (payload: AddIdentityClientRequest) =>
+    (
+      await idsrvApi.post<IdsrvApiDataResponse<IdentityClientModel>>(
+        idsrvAPIRoutes.clients,
+        payload,
+        apiConfig,
+      )
+    ).data;
+
+  const updateClient = async ({
+    id,
+    payload,
+  }: {
+    id: number;
+    payload: UpdateIdentityClientRequest;
+  }) =>
+    (
+      await idsrvApi.put<IdsrvApiDataResponse<IdentityClientModel>>(
+        `${idsrvAPIRoutes.clients}/${id}`,
+        payload,
+        apiConfig,
+      )
+    ).data;
+
+  const deleteClient = async (id: number) =>
+    (
+      await idsrvApi.delete<IdsrvApiResponse>(
+        `${idsrvAPIRoutes.clients}/${id}`,
+        apiConfig,
+      )
+    ).data;
+
+  const getAllApiScopes = async (
+    pagination: PaginationRequest = new PaginationRequest(),
+  ) =>
+    (
+      await idsrvApi.get<
+        IdsrvApiDataResponse<PaginatedResponse<ApiScopeModel>>
+      >(idsrvAPIRoutes.apiScopes, {
+        ...apiConfig,
+        axios_config: {
+          params: pagination,
+        },
+      })
+    ).data;
+
+  const getApiScopeById = async (id: number) =>
+    (
+      await idsrvApi.get<IdsrvApiDataResponse<ApiScopeModel>>(
+        `${idsrvAPIRoutes.apiScopes}/${id}`,
+        apiConfig,
+      )
+    ).data;
+
+  const addApiScope = async (payload: AddApiScopeRequest) =>
+    (
+      await idsrvApi.post<IdsrvApiDataResponse<ApiScopeModel>>(
+        idsrvAPIRoutes.apiScopes,
+        payload,
+        apiConfig,
+      )
+    ).data;
+
+  const updateApiScope = async ({
+    id,
+    payload,
+  }: {
+    id: number;
+    payload: UpdateApiScopeRequest;
+  }) =>
+    (
+      await idsrvApi.put<IdsrvApiDataResponse<ApiScopeModel>>(
+        `${idsrvAPIRoutes.apiScopes}/${id}`,
+        payload,
+        apiConfig,
+      )
+    ).data;
+
+  const deleteApiScope = async (id: number) =>
+    (
+      await idsrvApi.delete<IdsrvApiResponse>(
+        `${idsrvAPIRoutes.apiScopes}/${id}`,
+        apiConfig,
+      )
+    ).data;
+
   const getAllUsers = async (
-    pagination: PaginationRequest = new PaginationRequest()
+    pagination: PaginationRequest = new PaginationRequest(),
   ) =>
     (
       await idsrvApi.get<IdsrvApiDataResponse<PaginatedResponse<UserModel>>>(
@@ -56,15 +176,15 @@ export default function useIdsrvService() {
           axios_config: {
             params: pagination,
           },
-        }
+        },
       )
     ).data;
 
-  const getUserById = async (id: string) =>
+  const getUserById = async (id: number) =>
     (
       await idsrvApi.get<IdsrvApiDataResponse<UserModel>>(
         `${idsrvAPIRoutes.users}/${id}`,
-        apiConfig
+        apiConfig,
       )
     ).data;
 
@@ -73,7 +193,7 @@ export default function useIdsrvService() {
       await idsrvApi.post<IdsrvApiDataResponse<UserModel>>(
         idsrvAPIRoutes.users,
         payload,
-        apiConfig
+        apiConfig,
       )
     ).data;
 
@@ -81,22 +201,22 @@ export default function useIdsrvService() {
     id,
     payload,
   }: {
-    id: string;
+    id: number;
     payload: UpdateUserRequest;
   }) =>
     (
       await idsrvApi.put<IdsrvApiDataResponse<UserModel>>(
         `${idsrvAPIRoutes.users}/${id}`,
         payload,
-        apiConfig
+        apiConfig,
       )
     ).data;
 
-  const deleteUser = async (id: string) =>
+  const deleteUser = async (id: number) =>
     (
       await idsrvApi.delete<IdsrvApiResponse>(
         `${idsrvAPIRoutes.users}/${id}`,
-        apiConfig
+        apiConfig,
       )
     ).data;
 
@@ -110,7 +230,7 @@ export default function useIdsrvService() {
         Error
       >,
       "queryKey" | "queryFn"
-    >
+    >,
   ) =>
     useQuery({
       queryKey: [...IDSRV_QUERY_KEYS.users, pagination],
@@ -119,11 +239,11 @@ export default function useIdsrvService() {
     });
 
   const useGetUserById = (
-    id: string,
+    id: number,
     options?: Omit<
       UseQueryOptions<IdsrvApiDataResponse<UserModel>, Error>,
       "queryKey" | "queryFn"
-    >
+    >,
   ) =>
     useQuery({
       queryKey: IDSRV_QUERY_KEYS.userById(id),
@@ -161,7 +281,7 @@ export default function useIdsrvService() {
     });
 
   const getAllRoles = async (
-    filter: GetAllRoleFilterModel = new PaginationRequest()
+    filter: GetAllRoleFilterModel = new PaginationRequest(),
   ) =>
     (
       await idsrvApi.get<IdsrvApiDataResponse<PaginatedResponse<RoleModel>>>(
@@ -171,15 +291,15 @@ export default function useIdsrvService() {
           axios_config: {
             params: filter,
           },
-        }
+        },
       )
     ).data;
 
-  const getRoleById = async (id: string) =>
+  const getRoleById = async (id: number) =>
     (
       await idsrvApi.get<IdsrvApiDataResponse<RoleModel>>(
         `${idsrvAPIRoutes.roles}/${id}`,
-        apiConfig
+        apiConfig,
       )
     ).data;
 
@@ -188,7 +308,7 @@ export default function useIdsrvService() {
       await idsrvApi.post<IdsrvApiDataResponse<RoleModel>>(
         idsrvAPIRoutes.roles,
         payload,
-        apiConfig
+        apiConfig,
       )
     ).data;
 
@@ -196,22 +316,22 @@ export default function useIdsrvService() {
     id,
     payload,
   }: {
-    id: string;
+    id: number;
     payload: UpdateRoleRequest;
   }) =>
     (
       await idsrvApi.put<IdsrvApiDataResponse<RoleModel>>(
         `${idsrvAPIRoutes.roles}/${id}`,
         payload,
-        apiConfig
+        apiConfig,
       )
     ).data;
 
-  const deleteRole = async (id: string) =>
+  const deleteRole = async (id: number) =>
     (
       await idsrvApi.delete<IdsrvApiResponse>(
         `${idsrvAPIRoutes.roles}/${id}`,
-        apiConfig
+        apiConfig,
       )
     ).data;
 
@@ -225,7 +345,7 @@ export default function useIdsrvService() {
         Error
       >,
       "queryKey" | "queryFn"
-    >
+    >,
   ) =>
     useQuery({
       queryKey: [...IDSRV_QUERY_KEYS.roles, filter],
@@ -233,12 +353,128 @@ export default function useIdsrvService() {
       ...options,
     });
 
+  const useGetClients = (
+    pagination?: PaginationRequest,
+    options?: Omit<
+      UseQueryOptions<
+        IdsrvApiDataResponse<PaginatedResponse<IdentityClientModel>>,
+        Error
+      >,
+      "queryKey" | "queryFn"
+    >,
+  ) =>
+    useQuery({
+      queryKey: [...IDSRV_QUERY_KEYS.clients, pagination],
+      queryFn: () => getAllClients(pagination),
+      ...options,
+    });
+
+  const useGetClientById = (
+    id: number,
+    options?: Omit<
+      UseQueryOptions<IdsrvApiDataResponse<IdentityClientModel>, Error>,
+      "queryKey" | "queryFn"
+    >,
+  ) =>
+    useQuery({
+      queryKey: IDSRV_QUERY_KEYS.clientById(id),
+      queryFn: () => getClientById(id),
+      ...options,
+    });
+
+  const useAddClient = () =>
+    useMutation({
+      mutationFn: addClient,
+      onSuccess: () =>
+        queryClient.invalidateQueries({ queryKey: IDSRV_QUERY_KEYS.clients }),
+    });
+
+  const useUpdateClient = () =>
+    useMutation({
+      mutationFn: updateClient,
+      onSuccess: (_, variables) => {
+        queryClient.invalidateQueries({ queryKey: IDSRV_QUERY_KEYS.clients });
+        queryClient.invalidateQueries({
+          queryKey: IDSRV_QUERY_KEYS.clientById(variables.id),
+        });
+      },
+    });
+
+  const useDeleteClient = () =>
+    useMutation({
+      mutationFn: deleteClient,
+      onSuccess: (_, id) => {
+        queryClient.invalidateQueries({ queryKey: IDSRV_QUERY_KEYS.clients });
+        queryClient.invalidateQueries({
+          queryKey: IDSRV_QUERY_KEYS.clientById(id),
+        });
+      },
+    });
+
+  const useGetApiScopes = (
+    pagination?: PaginationRequest,
+    options?: Omit<
+      UseQueryOptions<
+        IdsrvApiDataResponse<PaginatedResponse<ApiScopeModel>>,
+        Error
+      >,
+      "queryKey" | "queryFn"
+    >,
+  ) =>
+    useQuery({
+      queryKey: [...IDSRV_QUERY_KEYS.apiScopes, pagination],
+      queryFn: () => getAllApiScopes(pagination),
+      ...options,
+    });
+
+  const useGetApiScopeById = (
+    id: number,
+    options?: Omit<
+      UseQueryOptions<IdsrvApiDataResponse<ApiScopeModel>, Error>,
+      "queryKey" | "queryFn"
+    >,
+  ) =>
+    useQuery({
+      queryKey: IDSRV_QUERY_KEYS.apiScopeById(id),
+      queryFn: () => getApiScopeById(id),
+      ...options,
+    });
+
+  const useAddApiScope = () =>
+    useMutation({
+      mutationFn: addApiScope,
+      onSuccess: () =>
+        queryClient.invalidateQueries({ queryKey: IDSRV_QUERY_KEYS.apiScopes }),
+    });
+
+  const useUpdateApiScope = () =>
+    useMutation({
+      mutationFn: updateApiScope,
+      onSuccess: (_, variables) => {
+        queryClient.invalidateQueries({ queryKey: IDSRV_QUERY_KEYS.apiScopes });
+        queryClient.invalidateQueries({
+          queryKey: IDSRV_QUERY_KEYS.apiScopeById(variables.id),
+        });
+      },
+    });
+
+  const useDeleteApiScope = () =>
+    useMutation({
+      mutationFn: deleteApiScope,
+      onSuccess: (_, id) => {
+        queryClient.invalidateQueries({ queryKey: IDSRV_QUERY_KEYS.apiScopes });
+        queryClient.invalidateQueries({
+          queryKey: IDSRV_QUERY_KEYS.apiScopeById(id),
+        });
+      },
+    });
+
   const useGetRoleById = (
-    id: string,
+    id: number,
     options?: Omit<
       UseQueryOptions<IdsrvApiDataResponse<RoleModel>, Error>,
       "queryKey" | "queryFn"
-    >
+    >,
   ) =>
     useQuery({
       queryKey: IDSRV_QUERY_KEYS.roleById(id),
@@ -276,6 +512,16 @@ export default function useIdsrvService() {
     });
 
   return {
+    useGetClients,
+    useGetClientById,
+    useAddClient,
+    useUpdateClient,
+    useDeleteClient,
+    useGetApiScopes,
+    useGetApiScopeById,
+    useAddApiScope,
+    useUpdateApiScope,
+    useDeleteApiScope,
     useGetUsers,
     useGetUserById,
     useAddUser,
