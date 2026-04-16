@@ -16,23 +16,67 @@ import {
   Chip,
   Stack,
   IconButton,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useEffect, useMemo, useState } from "react";
-import { apiService } from "@/api/api-gateway/apiService";
 import { ColumnDef } from "@tanstack/react-table";
-import { Route } from "@/api/api-gateway/interfaces/route";
+import {
+  Route,
+  RouteConfigureRequest,
+} from "@/services/apiServices/api-gateway/interfaces/Route";
 import Link from "next/link";
 import { routes } from "@/app/routes.generated";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import DataTable from "@/components/DataTable";
+import DataTable from "@/components/ui/table/DataTable";
+import useConfirm from "@/hooks/useConfirm";
+import ApiConfigureModal, {
+  ApiConfigureFormData,
+} from "../../components/ApiConfigureModal";
+import SettingsIcon from "@mui/icons-material/Settings";
+import useApiGatewayService from "@/services/apiServices/api-gateway/useApiGatewayService";
+import { toast } from "react-toastify";
+import { mapMatchingKeys } from "@/utils/autoMap";
 
 function RoutePage() {
+  const confirm = useConfirm();
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
-  const [totalCount, setTotalCount] = useState<number>(0);
 
-  const { data: routeList, isLoading, error } = apiService.useGetRoutes();
+  const [configureModal, setConfigureModal] = useState<{
+    open: boolean;
+    routeId?: number | null;
+    // selectedRow?: RouteConfigureRequest | null;
+  }>({
+    open: false,
+    // selectedRow: null,
+    routeId: 0,
+  });
+
+  const {
+    useGetRoutes,
+    useDeleteRoute,
+    useGetRouteConfigureById,
+    useConfigureRouteById,
+  } = useApiGatewayService();
+
+  const {
+    data: routeList,
+    isLoading,
+    error,
+    isRefetching,
+    refetch: refetchRouteList,
+  } = useGetRoutes();
+
+  const { mutateAsync: deleteRouteMutateAsync } = useDeleteRoute();
+  const {
+    mutateAsync: configureRouteMutateAsync,
+    isPending: configureLoading,
+  } = useConfigureRouteById();
 
   const handlePageChange = (e: unknown, newPage: number) => setPage(newPage);
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,15 +84,73 @@ function RoutePage() {
     setPage(0);
   };
 
+  const { data: configureData, refetch: refetchConfigureData } =
+    useGetRouteConfigureById(configureModal.routeId!, {
+      enabled: !!configureModal.routeId,
+    });
+
+  const handleSetConfigureModal = (id: number) => {
+    setConfigureModal({
+      open: true,
+      routeId: id,
+      // selectedRow: null,
+    });
+  };
+
+  const handleConfigure = async (data: ApiConfigureFormData) => {
+    await configureRouteMutateAsync(
+      {
+        id: configureModal.routeId!,
+        payload: data as RouteConfigureRequest,
+      },
+      {
+        onSuccess: (response) => {
+          toast.success(response.message);
+          setConfigureModal({
+            open: false,
+            routeId: null,
+            // selectedRow: null,
+          });
+        },
+      }
+    );
+  };
+
+  const handleDelete = (id: number) => {
+    confirm({
+      onConfirm: async () => {
+        await deleteRouteMutateAsync(id, {
+          onSuccess: () => {
+            toast.error("API Deleted Sucessfully !");
+            refetchRouteList();
+          },
+          onError: () => {
+            toast.error("Error Occured  !");
+          },
+        });
+      },
+    });
+  };
+  // useEffect(() => {
+  //   // if (!configureData?.data) return;
+
+  //   setConfigureModal({
+  //     open: true,
+  //     routeId: configureModal.routeId,
+  //     selectedRow: configureData?.data,
+  //   });
+  // }, [configureData, configureModal.routeId]);
+
   const routeColumns: ColumnDef<Route>[] = [
     {
       accessorKey: "name",
       header: "Name",
     },
     {
-      accessorKey: "clusterId",
-      header: "Cluster ID",
+      accessorKey: "id",
+      header: "Route ID",
     },
+
     {
       accessorKey: "methods",
       header: "Methods",
@@ -74,7 +176,6 @@ function RoutePage() {
                 | "warning"
                 | "info" = "primary";
 
-              // Example color mapping
               switch (method.toUpperCase()) {
                 case "GET":
                   color = "success";
@@ -102,6 +203,10 @@ function RoutePage() {
           </Box>
         );
       },
+    },
+    {
+      accessorKey: "clusterId",
+      header: "Cluster ID",
     },
     {
       accessorKey: "path",
@@ -159,37 +264,98 @@ function RoutePage() {
           : new Date(value).toLocaleDateString("en-CA");
       },
     },
-
     {
       header: "Action",
-      cell: ({ row }) => (
-        <Stack direction="row" spacing={1}>
-          <Link
-            href={
-              routes["(protected)"]["api-gateway"].route.edit.index +
-              row.original.id
-            }
-          >
-            <IconButton color="primary" size="small">
-              <EditIcon />
-            </IconButton>
-          </Link>
+      cell: ({ row }) => {
+        const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+        const open = Boolean(anchorEl);
 
-          <IconButton
-            color="error"
-            size="small"
-            onClick={() => {
-              // handle delete logic here (e.g., open confirm dialog)
-            }}
-          >
-            <DeleteIcon />
-          </IconButton>
-        </Stack>
-      ),
+        const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
+          setAnchorEl(event.currentTarget);
+        };
+
+        const handleClose = () => {
+          setAnchorEl(null);
+        };
+
+        const id = row.original.id;
+
+        return (
+          <>
+            <IconButton size="small" onClick={handleOpen}>
+              <MoreVertIcon />
+            </IconButton>
+
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              transformOrigin={{ vertical: "top", horizontal: "right" }}
+            >
+              {/* Edit */}
+              <MenuItem onClick={handleClose}>
+                <Link
+                  href={
+                    routes["(protected)"]["api-gateway"].route.edit.index + id
+                  }
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "100%",
+                  }}
+                >
+                  <ListItemIcon>
+                    <EditIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Edit</ListItemText>
+                </Link>
+              </MenuItem>
+
+              {/* Configure */}
+              <MenuItem
+                onClick={() => {
+                  handleClose();
+                  handleSetConfigureModal(row.original.id);
+                  // setConfigureModal({ open: true, selectedRow: data?.data });
+                }}
+              >
+                <ListItemIcon>
+                  <SettingsIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>Configure</ListItemText>
+              </MenuItem>
+
+              {/* Delete */}
+              <MenuItem
+                onClick={() => {
+                  handleClose();
+                  handleDelete(id);
+                }}
+              >
+                <ListItemIcon>
+                  <DeleteIcon fontSize="small" color="error" />
+                </ListItemIcon>
+                <ListItemText sx={{ color: "error.main" }}>Delete</ListItemText>
+              </MenuItem>
+            </Menu>
+          </>
+        );
+      },
     },
   ];
+
   return (
     <Paper sx={{ width: "100%", overflow: "hidden", padding: 2 }}>
+      <ApiConfigureModal
+        open={configureModal.open}
+        isLoading={configureLoading}
+        // defaultValue={configureModal?.selectedRow as ApiConfigureFormData}
+        defaultValue={configureData as ApiConfigureFormData}
+        onClose={() => setConfigureModal({ open: false, })}
+        onUpdate={handleConfigure}
+      />
+
       <Box
         sx={{
           display: "flex",
@@ -208,14 +374,15 @@ function RoutePage() {
       </Box>
 
       <DataTable
-        isLoading={isLoading}
+        isLoading={isLoading || isRefetching}
         columns={routeColumns}
-        data={routeList?.items || []}
+        data={routeList?.data.items || []}
+        refetchData={refetchRouteList}
       />
 
       <TablePagination
         component="div"
-        count={totalCount}
+        count={routeList?.data.totalCount ?? 0}
         page={page}
         onPageChange={handlePageChange}
         rowsPerPage={rowsPerPage}

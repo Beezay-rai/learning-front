@@ -10,13 +10,13 @@ import {
   Typography,
   IconButton,
   Grid,
+  Tooltip,
 } from "@mui/material";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { apiService } from "@/api/api-gateway/apiService";
 import { Minus, Plus } from "lucide-react";
-import { ClusterRequest } from "@/api/api-gateway/interfaces/cluster";
+import { ClusterRequest } from "@/services/apiServices/api-gateway/interfaces/Cluster";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Link from "next/link";
@@ -63,7 +63,15 @@ export default function ClusterForm({
   const router = useRouter();
   const { control, handleSubmit, formState, reset } = useForm<ClusterRequest>({
     resolver: yupResolver(schema),
-    defaultValues: defaultValue,
+    defaultValues: defaultValue ?? {
+      name: "",
+      clusterDestination: [
+        {
+          name: "",
+          destinationAddress: "",
+        },
+      ],
+    },
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -89,7 +97,6 @@ export default function ClusterForm({
                 error={!!formState.errors.name}
                 helperText={formState.errors.name?.message}
                 fullWidth
-                inputProps={{ maxLength: 50 }}
               />
             )}
           />
@@ -148,9 +155,22 @@ export default function ClusterForm({
             />
           </Grid>
           <Grid size={1}>
-            <IconButton color="error" onClick={() => remove(index)}>
-              <Minus />
-            </IconButton>
+            <Tooltip
+              title="At least one destination is required"
+              disableHoverListener={fields.length !== 1}
+              disableFocusListener={fields.length !== 1}
+              disableTouchListener={fields.length !== 1}
+            >
+              <span>
+                <IconButton
+                  disabled={fields.length === 1}
+                  color="error"
+                  onClick={() => remove(index)}
+                >
+                  <Minus />
+                </IconButton>
+              </span>
+            </Tooltip>
           </Grid>
         </Grid>
       ))}
@@ -168,8 +188,8 @@ export default function ClusterForm({
               ? "Adding..."
               : "Updating..."
             : isAdd
-            ? "Add Cluster"
-            : "Update"}
+              ? "Add Cluster"
+              : "Update"}
         </Button>
 
         <Link href={routes["(protected)"]["api-gateway"].cluster.index}>

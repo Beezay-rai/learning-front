@@ -1,5 +1,4 @@
-import { apiService } from "@/api/api-gateway/apiService";
-import { RouteRequest } from "@/api/api-gateway/interfaces/route";
+import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/Route";
 import { routes } from "@/app/routes.generated";
 import { SearchableSelect } from "@/components/molecules/SearchableSelect";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -20,8 +19,10 @@ import Link from "next/link";
 import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
+import useApiGatewayService from "@/services/apiServices/api-gateway/useApiGatewayService";
 
 const methodOptions = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+
 const schema = yup.object({
   name: yup.string().required("Name is Required"),
   clusterId: yup.string().required("Cluster ID is required"),
@@ -49,26 +50,22 @@ export default function RouteForm({
   const { control, handleSubmit, formState, reset } = useForm<RouteRequest>({
     resolver: yupResolver(schema),
     defaultValues: {
-      ...defaultValue,
+      ...(defaultValue ?? {
+        name: "",
+        clusterId: "",
+        path: "",
+      }),
       methods: defaultValue?.methods || [],
     },
   });
-
-  const { data: clusters } = apiService.useGetClusters();
-  const clusterOptions = clusters?.items.map((item, index) => {
+  const { useGetClusters } = useApiGatewayService()
+  const { data: clusters } = useGetClusters();
+  const clusterOptions = clusters?.data?.items.map((item, index) => {
     return {
       label: item.name,
       value: item.id,
     };
   });
-  useEffect(() => {
-    if (defaultValue) {
-      reset({
-        ...defaultValue,
-        methods: defaultValue.methods || [],
-      });
-    }
-  }, [defaultValue, reset]);
 
   return (
     <Box
@@ -184,8 +181,8 @@ export default function RouteForm({
               ? "Adding..."
               : "Updating..."
             : isAdd
-            ? "Add Route"
-            : "Update"}
+              ? "Add Route"
+              : "Update"}
         </Button>
 
         <Link href={routes["(protected)"]["api-gateway"].route.index}>

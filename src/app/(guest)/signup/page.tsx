@@ -47,7 +47,6 @@ export default function SignupPage() {
   });
 
   const onSubmit = (data: SignupFormInputs) => {
-    console.log("Signup Data:", data);
 
     // Example: redirect after signup
     if (data.email && data.password) {

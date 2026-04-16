@@ -14,14 +14,14 @@ import {
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { apiService } from "@/api/api-gateway/apiService";
 import { Minus, Plus } from "lucide-react";
-import { ClusterRequest } from "@/api/api-gateway/interfaces/cluster";
+import { ClusterRequest } from "@/services/apiServices/api-gateway/interfaces/Cluster";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import { routes } from "@/app/routes.generated";
 import ClusterForm from "@/app/(protected)/api-gateway/cluster/ClusterForm";
+import useApiGatewayService from "@/services/apiServices/api-gateway/useApiGatewayService";
 
 const schema = yup.object({
   name: yup
@@ -57,6 +57,7 @@ export default function AddCluster() {
       clusterDestination: [],
     },
   });
+  const { useAddCluster } = useApiGatewayService();
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -67,7 +68,7 @@ export default function AddCluster() {
     mutateAsync,
     isPending: isSubmitting,
     isSuccess,
-  } = apiService.useAddCluster();
+  } = useAddCluster();
   const onSubmit = async (data: ClusterRequest) => {
     try {
       await mutateAsync(data, {

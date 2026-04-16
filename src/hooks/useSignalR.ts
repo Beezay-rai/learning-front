@@ -1,49 +1,45 @@
 import { useState, useRef } from "react";
 import * as signalR from "@microsoft/signalr";
 
-export default function useSignalR(
-  url: string,
-  config?: { authType?: "none" | "bearer" | "basic"; authValue?: string }
-) {
+interface SignalRParams {
+  url: string;
+  config?: {
+    authType?: "none" | "Bearer" | "Basic";
+    authValue?: string;
+    headers?: signalR.MessageHeaders;
+  };
+}
+
+export default function useSignalR(params: SignalRParams) {
   const connectionRef = useRef<signalR.HubConnection | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [receivedMessages, setReceivedMessages] = useState<string[]>([]);
 
   const connect = async () => {
-    if (!url) return;
+    if (!params.url) return;
 
     setIsConnecting(true);
-
     try {
-      // let connectionOptions: signalR.IHttpConnectionOptions = {
-      //   transport:
-      //     signalR.HttpTransportType.WebSockets |
-      //     signalR.HttpTransportType.LongPolling,
-      // };
+      let signalRConfig: signalR.IHttpConnectionOptions = {
+        headers: params.config?.headers,
+        transport:
+          signalR.HttpTransportType.WebSockets |
+          signalR.HttpTransportType.LongPolling,
+      };
 
-      // if (config?.authType === "bearer") {
-      //   connectionOptions = {
-      //     ...connectionOptions,
-      //     accessTokenFactory: () => config.authValue ?? "",
-      //   };
-      // } else if (config?.authType === "basic" && config.authValue) {
-      //   const encoded = btoa(config.authValue);
-      //   connectionOptions = {
-      //     transport: signalR.HttpTransportType.LongPolling, // force fallback
-      //     headers: {
-      //       Authorization: `Basic ${encoded}`,
-      //     },
-      //   };
-      // }
+      params.config?.authType === "Basic"
+        ? (signalRConfig.headers = {
+            ...signalRConfig.headers,
+            Authorization: params.config?.authValue ?? "",
+          })
+        : params.config?.authType === "Bearer"
+        ? (signalRConfig.accessTokenFactory = () =>
+            params.config?.authValue ?? "")
+        : null;
 
       const connection = new signalR.HubConnectionBuilder()
-        .withUrl(url, {
-          accessTokenFactory: () => config?.authValue ?? "",
-          transport:
-            signalR.HttpTransportType.WebSockets |
-            signalR.HttpTransportType.LongPolling,
-        })
+        .withUrl(params.url, signalRConfig)
         .withAutomaticReconnect()
         .configureLogging(signalR.LogLevel.Information)
         .build();

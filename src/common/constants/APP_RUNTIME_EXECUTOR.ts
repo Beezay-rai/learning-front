@@ -1,0 +1,4 @@
+export const APP_RUNTIME_EXECUTOR = {
+  API_GATEWAY: "AG",
+  REST_BUILDER: "RB",
+};

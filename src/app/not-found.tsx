@@ -1,9 +1,11 @@
 "use client";
 
+import { useAuth } from "@/lib/auth/useAuth";
 import { Box, Button, Typography } from "@mui/material";
 import Link from "next/link";
 
 export default function NotFound() {
+  const { isAuthenticated } = useAuth();
   return (
     <Box
       sx={{
@@ -28,7 +30,7 @@ export default function NotFound() {
         The page you’re looking for doesn’t exist or may have been moved.
       </Typography>
 
-      <Link href="/" passHref>
+      <Link href={isAuthenticated ? "/dashboard" : "/"} passHref>
         <Button variant="contained" color="primary">
           Go Back Home
         </Button>
