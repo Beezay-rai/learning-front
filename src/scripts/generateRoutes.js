@@ -105,8 +105,9 @@
 // console.log("✅ routes.generated.js created successfully!");
 
 // src/scripts/generateRoutes.js
-const fs = require("fs");
-const path = require("path");
+const req = module.require.bind(module);
+const fs = req("fs");
+const path = req("path");
 
 const APP_DIR = path.join(__dirname, "../app");
 const OUTPUT_FILE = path.join(APP_DIR, "routes.generated.js");
@@ -127,7 +128,7 @@ function hasPageFile(dir) {
   return files.some(
     (f) =>
       f.toLowerCase().startsWith("page.") &&
-      (f.toLowerCase().endsWith(".tsx") || f.toLowerCase().endsWith(".jsx"))
+      (f.toLowerCase().endsWith(".tsx") || f.toLowerCase().endsWith(".jsx")),
   );
 }
 
@@ -180,7 +181,7 @@ function generateRoutes(dir, parentUrl = "") {
     const children = childDirs(folderPath);
     for (const pf of PAGE_FOLDERS) {
       const match = children.find(
-        (c) => c.name.toLowerCase() === pf.toLowerCase()
+        (c) => c.name.toLowerCase() === pf.toLowerCase(),
       );
       if (match) {
         const subDir = path.join(folderPath, match.name);
@@ -191,7 +192,7 @@ function generateRoutes(dir, parentUrl = "") {
         } else {
           // case 2: subfolder contains dynamic folder(s) like [id]
           const subChildren = childDirs(subDir).filter((d) =>
-            /^\[.*\]$/.test(d.name)
+            /^\[.*\]$/.test(d.name),
           );
           if (subChildren.length > 0) {
             // ignore [id] in path, just add trailing slash
@@ -226,7 +227,7 @@ const routes = generateRoutes(APP_DIR);
 // write to file
 fs.writeFileSync(
   OUTPUT_FILE,
-  "export const routes = " + JSON.stringify(routes, null, 2) + ";\n"
+  "export const routes = " + JSON.stringify(routes, null, 2) + ";\n",
 );
 
 console.log("✅ routes.generated.js created successfully!");

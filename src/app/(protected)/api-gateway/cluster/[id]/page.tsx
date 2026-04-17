@@ -15,15 +15,15 @@ import {
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { Minus, Plus } from "lucide-react";
-import { ClusterRequest } from "@/services/apiServices/api-gateway/interfaces/Cluster";
+import { ClusterRequest } from "@/services/apiServices/api-gateway/interfaces/cluster";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import { routes } from "@/app/routes.generated";
 import ClusterForm from "../ClusterForm";
 import NotFound from "@/app/(protected)/not-found";
+import useApiGatewayService from "@/services/apiServices/api-gateway/useApiGatewayService";
 
 const schema = yup.object({
   name: yup
@@ -44,7 +44,7 @@ const schema = yup.object({
         // .url(
         //   "Must be a valid URI (e.g., http://example.com or https://example.com)"
         // ),
-      })
+      }),
     )
     .required("At least one destination is required")
     .min(1, "At least one destination is required"),
@@ -52,33 +52,32 @@ const schema = yup.object({
 
 export default function UpdateCluster() {
   const router = useRouter();
+  const { useGetClusterById, useUpdateCluster } = useApiGatewayService();
 
   const params = useParams();
   const idParam = params?.id;
 
   const id = idParam ? Number(idParam) : 0;
 
-  const { data: cluster, isLoading: clusterLoading } =
-    apiService.useGetClusterById(id, {
-      enabled: !!id,
-    });
+  const { data: cluster, isLoading: clusterLoading } = useGetClusterById(id, {
+    enabled: !!id,
+  });
 
-  const { mutateAsync, isPending: isSubmitting } =
-    apiService.useUpdateCluster();
+  const { mutateAsync, isPending: isSubmitting } = useUpdateCluster();
 
   const onSubmit = async (data: ClusterRequest) => {
     try {
       await mutateAsync(
         {
           clusterId: id,
-          data: data,
+          payload: data,
         },
         {
           onSuccess: () => {
             toast.success("Cluster Updated Sucessfully !");
             router.push(routes["(protected)"]["api-gateway"].cluster.index);
           },
-        }
+        },
       );
     } catch (err) {
       console.error("Failed to add cluster:", err);
@@ -99,7 +98,7 @@ export default function UpdateCluster() {
         <ClusterForm
           isAdd={false}
           onSubmit={onSubmit}
-          defaultValue={cluster}
+          defaultValue={cluster.data}
           loading={isSubmitting}
         ></ClusterForm>
       )}

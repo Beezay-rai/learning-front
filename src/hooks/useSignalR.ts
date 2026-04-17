@@ -21,22 +21,21 @@ export default function useSignalR(params: SignalRParams) {
 
     setIsConnecting(true);
     try {
-      let signalRConfig: signalR.IHttpConnectionOptions = {
+      const signalRConfig: signalR.IHttpConnectionOptions = {
         headers: params.config?.headers,
         transport:
           signalR.HttpTransportType.WebSockets |
           signalR.HttpTransportType.LongPolling,
       };
 
-      params.config?.authType === "Basic"
-        ? (signalRConfig.headers = {
-            ...signalRConfig.headers,
-            Authorization: params.config?.authValue ?? "",
-          })
-        : params.config?.authType === "Bearer"
-        ? (signalRConfig.accessTokenFactory = () =>
-            params.config?.authValue ?? "")
-        : null;
+      if (params.config?.authType === "Basic") {
+        signalRConfig.headers = {
+          ...signalRConfig.headers,
+          Authorization: params.config?.authValue ?? "",
+        };
+      } else if (params.config?.authType === "Bearer") {
+        signalRConfig.accessTokenFactory = () => params.config?.authValue ?? "";
+      }
 
       const connection = new signalR.HubConnectionBuilder()
         .withUrl(params.url, signalRConfig)

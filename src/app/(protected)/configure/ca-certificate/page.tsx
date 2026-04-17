@@ -18,23 +18,23 @@ import {
   IconButton,
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
-import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { ColumnDef } from "@tanstack/react-table";
-import { Route } from "@/services/apiServices/api-gateway/interfaces/Route";
+import { Route } from "@/services/apiServices/api-gateway/interfaces/route";
 import Link from "next/link";
 import { routes } from "@/app/routes.generated";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DataTable from "@/components/ui/table/DataTable";
 import useConfirm from "@/hooks/useConfirm";
+import useApiGatewayService from "@/services/apiServices/api-gateway/useApiGatewayService";
 
 function CACertificatePage() {
   const confirm = useConfirm();
+  const { useGetRoutes } = useApiGatewayService();
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
-  const [totalCount, setTotalCount] = useState<number>(0);
 
-  const { data: routeList, isLoading, error } = apiService.useGetRoutes();
+  const { data: routeList, isLoading, error } = useGetRoutes();
 
   const handlePageChange = (e: unknown, newPage: number) => setPage(newPage);
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -211,12 +211,12 @@ function CACertificatePage() {
       <DataTable
         isLoading={isLoading}
         columns={routeColumns}
-        data={routeList?.items || []}
+        data={routeList?.data.items || []}
       />
 
       <TablePagination
         component="div"
-        count={totalCount}
+        count={routeList?.data.totalCount ?? 0}
         page={page}
         onPageChange={handlePageChange}
         rowsPerPage={rowsPerPage}

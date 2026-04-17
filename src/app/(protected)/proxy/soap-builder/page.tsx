@@ -48,9 +48,15 @@ interface SoapOperation {
   output: string;
 }
 
+interface WsdlOperation {
+  "@_name"?: string;
+  "wsdl:input"?: { "@_message"?: string };
+  "wsdl:output"?: { "@_message"?: string };
+}
+
 export default function SoapTester() {
   const [wsdlUrl, setWsdlUrl] = useState(
-    "https://www.dataaccess.com/webservicesserver/numberconversion.wso?WSDL"
+    "https://www.dataaccess.com/webservicesserver/numberconversion.wso?WSDL",
   );
   const [loadingWsdl, setLoadingWsdl] = useState(false);
   const [wsdlError, setWsdlError] = useState("");
@@ -121,8 +127,8 @@ export default function SoapTester() {
         ? portType["wsdl:operation"]
         : [portType["wsdl:operation"]];
 
-      const opsList: SoapOperation[] = ops.map((op: any) => ({
-        name: op["@_name"],
+      const opsList: SoapOperation[] = (ops as WsdlOperation[]).map((op) => ({
+        name: op["@_name"] ?? "",
         input: op["wsdl:input"]?.["@_message"]?.split(":").pop() || "",
         output: op["wsdl:output"]?.["@_message"]?.split(":").pop() || "",
       }));
@@ -131,8 +137,8 @@ export default function SoapTester() {
       if (opsList.length > 0) {
         setSelectedOp(opsList[0].name);
       }
-    } catch (err: any) {
-      setWsdlError(err.message || "Failed to load WSDL");
+    } catch (err: unknown) {
+      setWsdlError(err instanceof Error ? err.message : "Failed to load WSDL");
     } finally {
       setLoadingWsdl(false);
     }
@@ -149,7 +155,7 @@ export default function SoapTester() {
         .join("/")}/${selectedOp}"`;
       setSoapAction(action);
       setHeaders((prev) =>
-        prev.map((h) => (h.key === "SOAPAction" ? { ...h, value: action } : h))
+        prev.map((h) => (h.key === "SOAPAction" ? { ...h, value: action } : h)),
       );
     }
   }, [selectedOp, operations, endpoint]);
@@ -172,7 +178,7 @@ export default function SoapTester() {
         reqHeaders[h.key.trim()] = h.value.trim();
       });
 
-    try {
+    try { 
       const res = await fetch(endpoint, {
         method: "POST",
         headers: reqHeaders,
@@ -197,8 +203,10 @@ export default function SoapTester() {
       setResponse(pretty);
       setResStatus(res.status);
       setResTime(Math.round(end - start));
-    } catch (err: any) {
-      setResponse(`Error: ${err.message}`);
+    } catch (err: unknown) {
+      setResponse(
+        `Error: ${err instanceof Error ? err.message : "Request failed"}`,
+      );
       setResStatus(0);
       setResTime(Math.round(performance.now() - start));
     } finally {
@@ -217,10 +225,10 @@ export default function SoapTester() {
   const updateHeader = (
     id: string,
     field: "key" | "value" | "enabled",
-    value: string | boolean
+    value: string | boolean,
   ) => {
     setHeaders((prev) =>
-      prev.map((h) => (h.id === id ? { ...h, [field]: value } : h))
+      prev.map((h) => (h.id === id ? { ...h, [field]: value } : h)),
     );
   };
 

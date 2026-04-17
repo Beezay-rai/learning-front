@@ -1,11 +1,9 @@
 "use client";
 
 import { CircularProgress, Paper, Typography } from "@mui/material";
-import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { toast } from "react-toastify";
 import { useParams, useRouter } from "next/navigation";
 import { routes } from "@/app/routes.generated";
-import { ApiUserRequest } from "@/services/apiServices/core/interface/ApiUserModel";
 import UserForm from "../../UserForm";
 import {
   UpdateUserRequest,
@@ -13,7 +11,6 @@ import {
 } from "@/services/apiServices/idsrv/interface/UserModel";
 import NotFound from "@/app/not-found";
 import useIdsrvService from "@/services/apiServices/idsrv/useIdsrvService";
-import { use } from "react";
 
 export default function AddAppUser() {
   const router = useRouter();
@@ -22,10 +19,10 @@ export default function AddAppUser() {
   const params = useParams();
   const idParam = params?.id;
 
-  const id = idParam ? String(idParam) : "";
+  const id = idParam ? Number(idParam) : 0;
 
   const { data: user, isLoading: isUserLoading } = useGetUserById(id, {
-    enabled: !!id,
+    enabled: id > 0,
   });
 
   console.log(user);
@@ -43,7 +40,7 @@ export default function AddAppUser() {
             toast.success("User Updated successfully!");
             router.push(routes["(protected)"]["user-management"].user.index);
           },
-        }
+        },
       );
     } catch (err) {
       console.error("Failed to add User:", err);

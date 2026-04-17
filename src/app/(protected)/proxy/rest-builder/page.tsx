@@ -22,14 +22,14 @@ import {
   ListItemText,
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
-import { ColumnDef } from "@tanstack/react-table";
-import { Route } from "@/services/apiServices/api-gateway/interfaces/Route";
+import { ColumnDef, Row } from "@tanstack/react-table";
+import { Route } from "@/services/apiServices/api-gateway/interfaces/route";
 import Link from "next/link";
 import { routes } from "@/app/routes.generated";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DataTable from "@/components/ui/table/DataTable";
-import { RestApiBuilderModel } from "@/services/apiServices/core/interface/RestApiBuilderModel";
+import { RestApiBuilderModel } from "@/services/apiServices/core/interface/restApiBuilderModel";
 import useConfirm from "@/hooks/useConfirm";
 import { toast } from "react-toastify";
 import useCoreApiService from "@/services/apiServices/core/useCoreApiService";
@@ -78,7 +78,79 @@ function RestApiBuilderList() {
     });
   };
 
-  const handleConfigure = (id: number) => { };
+  const handleConfigure = (id: number) => {};
+
+  function RestBuilderActionCell({ row }: { row: Row<RestApiBuilderModel> }) {
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+
+    const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
+      setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+      setAnchorEl(null);
+    };
+
+    const id = row.original.id;
+
+    return (
+      <>
+        <IconButton size="small" onClick={handleOpen}>
+          <MoreVertIcon />
+        </IconButton>
+
+        <Menu
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          transformOrigin={{ vertical: "top", horizontal: "right" }}
+        >
+          <MenuItem onClick={handleClose}>
+            <Link
+              href={routes["(protected)"].proxy["rest-builder"].edit.index + id}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <ListItemIcon>
+                <EditIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Edit</ListItemText>
+            </Link>
+          </MenuItem>
+
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              handleConfigure(id);
+              setConfigureModalOpen(true);
+            }}
+          >
+            <ListItemIcon>
+              <SettingsIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Configure</ListItemText>
+          </MenuItem>
+
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              handleDelete(id);
+            }}
+          >
+            <ListItemIcon>
+              <DeleteIcon fontSize="small" color="error" />
+            </ListItemIcon>
+            <ListItemText sx={{ color: "error.main" }}>Delete</ListItemText>
+          </MenuItem>
+        </Menu>
+      </>
+    );
+  }
 
   const routeColumns: ColumnDef<RestApiBuilderModel>[] = [
     {
@@ -166,82 +238,7 @@ function RestApiBuilderList() {
     },
     {
       header: "Action",
-      cell: ({ row }) => {
-        const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-        const open = Boolean(anchorEl);
-
-        const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
-          setAnchorEl(event.currentTarget);
-        };
-
-        const handleClose = () => {
-          setAnchorEl(null);
-        };
-
-        const id = row.original.id;
-
-        return (
-          <>
-            <IconButton size="small" onClick={handleOpen}>
-              <MoreVertIcon />
-            </IconButton>
-
-            <Menu
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-              transformOrigin={{ vertical: "top", horizontal: "right" }}
-            >
-              {/* Edit */}
-              <MenuItem onClick={handleClose}>
-                <Link
-                  href={
-                    routes["(protected)"].proxy["rest-builder"].edit.index + id
-                  }
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    width: "100%",
-                  }}
-                >
-                  <ListItemIcon>
-                    <EditIcon fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText>Edit</ListItemText>
-                </Link>
-              </MenuItem>
-
-              {/* Configure */}
-              <MenuItem
-                onClick={() => {
-                  handleClose();
-                  handleConfigure(id);
-                  setConfigureModalOpen(true);
-                }}
-              >
-                <ListItemIcon>
-                  <SettingsIcon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>Configure</ListItemText>
-              </MenuItem>
-
-              {/* Delete */}
-              <MenuItem
-                onClick={() => {
-                  handleClose();
-                  handleDelete(id);
-                }}
-              >
-                <ListItemIcon>
-                  <DeleteIcon fontSize="small" color="error" />
-                </ListItemIcon>
-                <ListItemText sx={{ color: "error.main" }}>Delete</ListItemText>
-              </MenuItem>
-            </Menu>
-          </>
-        );
-      },
+      cell: ({ row }) => <RestBuilderActionCell row={row} />,
     },
   ];
   return (

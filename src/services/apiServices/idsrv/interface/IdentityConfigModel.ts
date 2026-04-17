@@ -48,4 +48,4 @@ export interface AddApiScopeRequest {
   userClaims: string[];
 }
 
-export interface UpdateApiScopeRequest extends AddApiScopeRequest {}
+export type UpdateApiScopeRequest = AddApiScopeRequest;

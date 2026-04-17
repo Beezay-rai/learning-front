@@ -18,7 +18,7 @@ import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import { styled } from "@mui/material/styles";
 import React from "react";
 
-const icons: Record<string, any> = {
+const icons: Record<string, React.ElementType> = {
   success: CheckIcon,
   error: CloseIcon,
   warning: PriorityHighIcon,
@@ -57,7 +57,7 @@ export default function ConfirmDialog({
     pending,
   } = props;
   const renderIcon = (
-    icon: "success" | "error" | "warning" | "info" | "question"
+    icon: "success" | "error" | "warning" | "info" | "question",
   ) => {
     const IconComponent = icons[icon];
 

@@ -18,18 +18,17 @@ import {
   IconButton,
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
-import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { ColumnDef } from "@tanstack/react-table";
-import { Route } from "@/services/apiServices/api-gateway/interfaces/Route";
+import { Route } from "@/services/apiServices/api-gateway/interfaces/route";
 import Link from "next/link";
 import { routes } from "@/app/routes.generated";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DataTable from "@/components/ui/table/DataTable";
-import { RestApiBuilderModel } from "@/services/apiServices/core/interface/RestApiBuilderModel";
+import { RestApiBuilderModel } from "@/services/apiServices/core/interface/restApiBuilderModel";
 import useConfirm from "@/hooks/useConfirm";
 import { toast } from "react-toastify";
-import { ApiUserModel } from "@/services/apiServices/core/interface/ApiUserModel";
+import { ApiUserModel } from "@/services/apiServices/core/interface/apiUserModel";
 import { UserModel } from "@/services/apiServices/idsrv/interface/UserModel";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
@@ -57,7 +56,7 @@ function UserList() {
   };
 
   const handleRowsPerPageChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
@@ -65,7 +64,7 @@ function UserList() {
 
   const { mutateAsync } = useDeleteUser();
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: number) => {
     confirm({
       onConfirm: async () => {
         await mutateAsync(id, {
@@ -136,7 +135,7 @@ function UserList() {
           <IconButton
             color="error"
             size="small"
-            onClick={() => handleDelete(row.original.id)}
+            onClick={() => handleDelete(Number(row.original.id))}
           >
             <DeleteIcon />
           </IconButton>

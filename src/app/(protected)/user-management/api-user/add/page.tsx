@@ -4,7 +4,7 @@ import { Paper, Typography } from "@mui/material";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { routes } from "@/app/routes.generated";
-import { ApiUserRequest } from "@/services/apiServices/core/interface/ApiUserModel";
+import { ApiUserRequest } from "@/services/apiServices/core/interface/apiUserModel";
 import ApiUserForm from "../ApiUserForm";
 import useOrchestratorApiService from "@/services/apiServices/orchestrator/useOrchestratorApiService";
 

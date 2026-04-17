@@ -12,7 +12,7 @@ import {
   ApiUserRequest,
   ApiUserKeyModel,
   ApiUserKeyRequest,
-} from "../core/interface/ApiUserModel";
+} from "../core/interface/apiUserModel";
 import { PaginationRequest } from "../common/PaginationModel";
 
 /* =========================

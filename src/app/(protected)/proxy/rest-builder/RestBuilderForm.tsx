@@ -51,7 +51,7 @@ import { HttpMethod } from "@/common/types/httpmethod";
 import {
   RestApiBuilderModel,
   RestApiBuilderRequest,
-} from "@/services/apiServices/core/interface/RestApiBuilderModel";
+} from "@/services/apiServices/core/interface/restApiBuilderModel";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { coreApiSchema } from "@/services/apiServices/core/schema/coreApiSchema";
@@ -93,7 +93,9 @@ export default function RestBuilderForm({
   const [activeReqTab, setActiveReqTab] = useState(0);
   const [body, setBody] = useState("");
   const formMethods = useForm<RestApiBuilderRequest>({
-    resolver: yupResolver(coreApiSchema.RestBuilder.Add as any),
+    resolver: yupResolver(
+      coreApiSchema.RestBuilder.Add as yup.ObjectSchema<RestApiBuilderRequest>,
+    ),
     defaultValues: defaultValue,
   });
   const rawUrl = formMethods.watch("url");
@@ -194,11 +196,11 @@ export default function RestBuilderForm({
         body: text,
         headers: Object.fromEntries(res.headers.entries()),
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       const end = performance.now();
       setResponse({
         status: 0,
-        statusText: err.message ?? "Network error",
+        statusText: err instanceof Error ? err.message : "Network error",
         timeMs: Math.round(end - start),
         sizeKb: 0,
         body: "",
@@ -255,7 +257,7 @@ export default function RestBuilderForm({
             },
             (errors) => {
               console.log("Form validation errors:", errors);
-            }
+            },
           )}
         >
           <Grid
@@ -451,7 +453,35 @@ export default function RestBuilderForm({
                     <Select
                       value={auth.type}
                       label="Auth Type"
-                      onChange={(e) => setAuth({ type: e.target.value as any })}
+                      onChange={(e) => {
+                        const type = e.target.value as AuthConfig["type"];
+
+                        if (type === "basic") {
+                          setAuth({
+                            type: "basic",
+                            username: "",
+                            password: "",
+                          });
+                          return;
+                        }
+
+                        if (type === "bearer") {
+                          setAuth({ type: "bearer", token: "" });
+                          return;
+                        }
+
+                        if (type === "api-key") {
+                          setAuth({
+                            type: "api-key",
+                            key: "",
+                            value: "",
+                            addTo: "header",
+                          });
+                          return;
+                        }
+
+                        setAuth({ type: "none" });
+                      }}
                     >
                       <MenuItem value="none">No Auth</MenuItem>
                       <MenuItem value="basic">Basic Auth</MenuItem>
@@ -856,8 +886,8 @@ export default function RestBuilderForm({
                   ? "Adding..."
                   : "Updating..."
                 : isAdd
-                ? "Add Api"
-                : "Update"}
+                  ? "Add Api"
+                  : "Update"}
             </Button>
 
             <Link href={routes["(protected)"]["proxy"]["rest-builder"].index}>

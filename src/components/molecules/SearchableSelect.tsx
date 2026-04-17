@@ -1,37 +1,31 @@
 "use client";
 
-import React, { ReactNode, useState } from "react";
-import { Autocomplete, TextField, Chip, Box } from "@mui/material";
-import { Controller } from "react-hook-form";
+import React from "react";
+import { Autocomplete, TextField } from "@mui/material";
+import { Controller, Control, FieldValues, Path } from "react-hook-form";
 
 interface Option {
   label: string;
   value: string | number;
 }
 
-interface SearchableSelectProps {
-  name: string;
+interface SearchableSelectProps<TFieldValues extends FieldValues> {
+  name: Path<TFieldValues>;
   options: Option[];
-  value?: Option | Option[]; // single or multi-select
   label?: string;
   multiple?: boolean;
   placeholder?: string;
-  control: any;
+  control: Control<TFieldValues>;
 }
 
-export const SearchableSelect: React.FC<SearchableSelectProps> = ({
+export function SearchableSelect<TFieldValues extends FieldValues>({
   options,
-  value,
   name,
   label,
   multiple = false,
   placeholder,
   control,
-}) => {
-  const [selectedOption, setSelectedOption] = useState<
-    Option | Option[] | null
-  >(multiple ? [] : null);
-
+}: SearchableSelectProps<TFieldValues>) {
   return (
     <Controller
       name={name}
@@ -44,14 +38,18 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
           getOptionLabel={(option) => option.label}
           value={
             multiple
-              ? options.filter((opt) => (field.value || []).includes(opt.value))
+              ? options.filter((opt) =>
+                  (Array.isArray(field.value)
+                    ? (field.value as Array<Option["value"]>)
+                    : []
+                  ).includes(opt.value),
+                )
               : options.find((opt) => opt.value === field.value) || null
           }
           onChange={(event, newValue) => {
             const finalValue = multiple
               ? (newValue as Option[]).map((opt) => opt.value)
               : (newValue as Option)?.value || "";
-            // setSelectedOption(finalValue);
             field.onChange(finalValue);
           }}
           filterSelectedOptions
@@ -69,4 +67,4 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
       )}
     ></Controller>
   );
-};
+}

@@ -27,7 +27,7 @@ type Listener = () => void;
 
 let _entries: NetworkLogEntry[] = [];
 let _idCounter = 0;
-let _listeners: Set<Listener> = new Set();
+const _listeners: Set<Listener> = new Set();
 let _maxEntries = 500;
 
 function notify() {

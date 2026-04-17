@@ -18,7 +18,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import LayersIcon from "@mui/icons-material/Layers";
 import { useState } from "react";
 import Link from "next/link";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row } from "@tanstack/react-table";
 
 import DataTable from "@/components/ui/table/DataTable";
 import useConfirm from "@/hooks/useConfirm";
@@ -43,7 +43,7 @@ function ApiProductPage() {
     isLoading,
     isRefetching,
     refetch,
-  } = useGetApiProducts({ page, size: rowsPerPage });
+  } = useGetApiProducts({ page, pageSize: rowsPerPage });
 
   const { mutateAsync: deleteProduct } = useDeleteApiProduct();
 
@@ -59,6 +59,73 @@ function ApiProductPage() {
       },
     });
   };
+
+  function ProductActionCell({ row }: { row: Row<Product> }) {
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+
+    return (
+      <>
+        <IconButton size="small" onClick={(e) => setAnchorEl(e.currentTarget)}>
+          <MoreVertIcon />
+        </IconButton>
+
+        <Menu anchorEl={anchorEl} open={open} onClose={() => setAnchorEl(null)}>
+          <MenuItem>
+            <Link
+              href={
+                routes["(protected)"]["product-management"]["api-product"].edit
+                  .index + row.original.id
+              }
+              style={{
+                display: "flex",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <ListItemIcon>
+                <EditIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Edit</ListItemText>
+            </Link>
+          </MenuItem>
+
+          <MenuItem>
+            <Link
+              href={
+                routes["(protected)"]["product-management"]["api-product"]
+                  .index +
+                row.original.id +
+                "/versions"
+              }
+              style={{
+                display: "flex",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <ListItemIcon>
+                <LayersIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Versions</ListItemText>
+            </Link>
+          </MenuItem>
+
+          <MenuItem
+            onClick={() => {
+              setAnchorEl(null);
+              handleDelete(row.original.id);
+            }}
+          >
+            <ListItemIcon>
+              <DeleteIcon fontSize="small" color="error" />
+            </ListItemIcon>
+            <ListItemText sx={{ color: "error.main" }}>Delete</ListItemText>
+          </MenuItem>
+        </Menu>
+      </>
+    );
+  }
 
   const columns: ColumnDef<Product>[] = [
     { accessorKey: "name", header: "Name" },
@@ -77,80 +144,7 @@ function ApiProductPage() {
     },
     {
       header: "Action",
-      cell: ({ row }) => {
-        const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-        const open = Boolean(anchorEl);
-
-        return (
-          <>
-            <IconButton
-              size="small"
-              onClick={(e) => setAnchorEl(e.currentTarget)}
-            >
-              <MoreVertIcon />
-            </IconButton>
-
-            <Menu
-              anchorEl={anchorEl}
-              open={open}
-              onClose={() => setAnchorEl(null)}
-            >
-              {/* Edit */}
-              <MenuItem>
-                <Link
-                  href={
-                    routes["(protected)"]["product-management"]["api-product"]
-                      .edit.index + row.original.id
-                  }
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    width: "100%",
-                  }}
-                >
-                  <ListItemIcon>
-                    <EditIcon fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText>Edit</ListItemText>
-                </Link>
-              </MenuItem>
-
-              {/* Versions */}
-              <MenuItem>
-                <Link
-                  href={
-                    routes["(protected)"]["product-management"]["api-product"]
-                      .index + row.original.id + "/versions"
-                  }
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    width: "100%",
-                  }}
-                >
-                  <ListItemIcon>
-                    <LayersIcon fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText>Versions</ListItemText>
-                </Link>
-              </MenuItem>
-
-              {/* Delete */}
-              <MenuItem
-                onClick={() => {
-                  setAnchorEl(null);
-                  handleDelete(row.original.id);
-                }}
-              >
-                <ListItemIcon>
-                  <DeleteIcon fontSize="small" color="error" />
-                </ListItemIcon>
-                <ListItemText sx={{ color: "error.main" }}>Delete</ListItemText>
-              </MenuItem>
-            </Menu>
-          </>
-        );
-      },
+      cell: ({ row }) => <ProductActionCell row={row} />,
     },
   ];
 

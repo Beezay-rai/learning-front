@@ -23,7 +23,7 @@ import { routes } from "@/app/routes.generated";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DataTable from "@/components/ui/table/DataTable";
-import { RestApiBuilderModel } from "@/services/apiServices/core/interface/RestApiBuilderModel";
+import { RestApiBuilderModel } from "@/services/apiServices/core/interface/restApiBuilderModel";
 import useConfirm from "@/hooks/useConfirm";
 import { toast } from "react-toastify";
 import { RoleModel } from "@/services/apiServices/idsrv/interface/RoleModel";
@@ -52,7 +52,7 @@ function RoleList() {
   };
 
   const handleRowsPerPageChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
@@ -60,7 +60,7 @@ function RoleList() {
 
   const { mutateAsync } = useDeleteRole();
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: number) => {
     confirm({
       onConfirm: async () => {
         await mutateAsync(id, {
@@ -110,7 +110,7 @@ function RoleList() {
             <IconButton
               color="error"
               size="small"
-              onClick={() => handleDelete(row.original.id)}
+              onClick={() => handleDelete(Number(row.original.id))}
             >
               <DeleteIcon />
             </IconButton>

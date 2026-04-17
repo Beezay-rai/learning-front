@@ -26,7 +26,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import { routes } from "@/app/routes.generated";
-import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/Route"; // You’ll define this interface
+import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/route"; // You’ll define this interface
 import { SearchableSelect } from "@/components/molecules/SearchableSelect";
 import NotFound from "@/app/(protected)/not-found";
 import RouteForm from "../../RouteForm";
@@ -73,7 +73,7 @@ export default function EditRoutePage() {
             toast.success("Route Updated successfully!");
             router.push(routes["(protected)"]["api-gateway"].route.index);
           },
-        }
+        },
       );
     } catch (err) {
       console.error("Failed to add route:", err);

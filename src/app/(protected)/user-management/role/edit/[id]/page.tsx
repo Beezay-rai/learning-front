@@ -1,14 +1,13 @@
 "use client";
 
 import { CircularProgress, Paper, Typography } from "@mui/material";
-import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { toast } from "react-toastify";
 import { useParams, useRouter } from "next/navigation";
 import { routes } from "@/app/routes.generated";
 import RoleForm from "../../RoleForm";
 import {
+  AddRoleRequest,
   UpdateRoleRequest,
-  RoleModel,
 } from "@/services/apiServices/idsrv/interface/RoleModel";
 import NotFound from "@/app/not-found";
 import useIdsrvService from "@/services/apiServices/idsrv/useIdsrvService";
@@ -19,28 +18,34 @@ export default function AddAppRole() {
   const params = useParams();
   const idParam = params?.id;
 
-  const id = idParam ? String(idParam) : "";
+  const id = idParam ? Number(idParam) : 0;
   const { useGetRoleById, useUpdateRole } = useIdsrvService();
 
   const { data: role, isLoading: isRoleLoading } = useGetRoleById(id, {
-    enabled: !!id,
+    enabled: id > 0,
   });
 
   const { mutateAsync, isPending: isSubmitting } = useUpdateRole();
 
-  const onSubmit = async (data: UpdateRoleRequest) => {
+  const onSubmit = async (data: AddRoleRequest | UpdateRoleRequest) => {
+    const payload: UpdateRoleRequest = {
+      name: data.name,
+      description: data.description,
+      userTypeId: data.userTypeId,
+    };
+
     try {
       await mutateAsync(
         {
           id: id,
-          payload: data,
+          payload,
         },
         {
           onSuccess: () => {
             toast.success("Role Updated successfully!");
             router.push(routes["(protected)"]["user-management"].role.index);
           },
-        }
+        },
       );
     } catch (err) {
       console.error("Failed to add Role:", err);

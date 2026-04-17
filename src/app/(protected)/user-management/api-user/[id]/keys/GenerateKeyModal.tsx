@@ -13,7 +13,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import FormTextField from "@/components/molecules/FormTextField";
-import { ApiUserKeyRequest } from "@/services/apiServices/core/interface/ApiUserModel";
+import { ApiUserKeyRequest } from "@/services/apiServices/core/interface/apiUserModel";
 
 const keySchema = yup.object({
   keyName: yup.string().required("Key name is required").max(100),
@@ -51,9 +51,14 @@ export default function GenerateKeyModal({
   };
 
   return (
-    <Dialog open={open} onClose={loading ? undefined : handleClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open={open}
+      onClose={loading ? undefined : handleClose}
+      maxWidth="sm"
+      fullWidth
+    >
       <DialogTitle>Generate New Key</DialogTitle>
-      
+
       <FormProvider {...formMethods}>
         <form onSubmit={formMethods.handleSubmit(handleFormSubmit)}>
           <DialogContent dividers>
