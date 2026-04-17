@@ -2,7 +2,7 @@ import { SideBar } from "@/app/(protected)/components/layout/sidebar";
 import Breadcrumbs from "./components/layout/breadcrumb";
 import MyQueryClientProvider from "@/providers/MyQueryClientProvider";
 import { ToastContainer } from "react-toastify";
-import AuthProvider from "@/providers/authProvider";
+import AuthProvider from "@/providers/AuthProvider";
 import NetworkLogPanel from "./components/network-log-panel";
 
 export default function ProtectedLayout({
