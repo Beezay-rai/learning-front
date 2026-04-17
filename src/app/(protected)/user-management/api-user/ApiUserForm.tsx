@@ -14,7 +14,7 @@ import * as yup from "yup";
 import { routes } from "@/app/routes.generated";
 import FormTextField from "@/components/molecules/FormTextField";
 import { AddUserRequest } from "@/services/apiServices/idsrv/interface/UserModel";
-import { ApiUserRequest } from "@/services/apiServices/core/interface/ApiUserModel";
+import { ApiUserRequest } from "@/services/apiServices/core/interface/apiUserModel";
 
 const userSchema = yup.object({
   name: yup.string().required("Name is required").max(50, "Max 50 characters"),
@@ -35,9 +35,9 @@ const userSchema = yup.object({
   //   .min(1, "At least one role is required"),
 });
 interface UserFormProps {
-  onSubmit: (data: any) => void;
+  onSubmit: (data: ApiUserRequest) => void;
   loading?: boolean;
-  defaultValue?: any;
+  defaultValue?: ApiUserRequest;
   isAdd?: boolean;
   cancelUrl: string;
 }

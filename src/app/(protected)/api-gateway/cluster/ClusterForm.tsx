@@ -16,7 +16,7 @@ import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { Minus, Plus } from "lucide-react";
-import { ClusterRequest } from "@/services/apiServices/api-gateway/interfaces/Cluster";
+import { ClusterRequest } from "@/services/apiServices/api-gateway/interfaces/cluster";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Link from "next/link";
@@ -48,7 +48,7 @@ const schema = yup.object({
         // .url(
         //   "Must be a valid URI (e.g., http://example.com or https://example.com)"
         // ),
-      })
+      }),
     )
     .required("At least one destination is required")
     .min(1, "At least one destination is required"),

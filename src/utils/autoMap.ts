@@ -1,6 +1,6 @@
 // autoMap.ts
 export function mapMatchingKeys<TSource extends object, TTarget extends object>(
-  source: TSource
+  source: TSource,
 ): Partial<TTarget> {
   const result = {} as Partial<TTarget>;
 
@@ -12,10 +12,12 @@ export function mapMatchingKeys<TSource extends object, TTarget extends object>(
   }
 
   // Instead, iterate keys of source and assign only if key exists in TTarget
+  const resultRecord = result as Record<string, unknown>;
+  const sourceRecord = source as Record<string, unknown>;
   for (const key in source) {
     // only assign if key exists in TTarget
     if (key in ({} as TTarget)) {
-      (result as any)[key] = source[key];
+      resultRecord[key] = sourceRecord[key];
     }
   }
 

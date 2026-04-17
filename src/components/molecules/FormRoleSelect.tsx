@@ -45,11 +45,11 @@ function FormRoleSelect({ name, label, user_type_id_name }: FormSelectProps) {
   // Build options as objects with { value, label }
   const roleOptions = useMemo<FormSelectOption[]>(
     () =>
-      data?.data.items?.map((it: any) => ({
+      data?.data.items?.map((it: { id: string | number; name: string }) => ({
         value: it.id,
         label: it.name,
       })) ?? [],
-    [data]
+    [data],
   );
 
   return (

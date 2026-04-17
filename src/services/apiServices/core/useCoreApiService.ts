@@ -8,13 +8,16 @@ import { coreAPIRoutes } from "./coreApiRoutes";
 import {
   RestApiBuilderModel,
   RestApiBuilderRequest,
-} from "./interface/RestApiBuilderModel";
+} from "./interface/restApiBuilderModel";
 
-import { ApiUserModel, ApiUserRequest } from "./interface/ApiUserModel";
+import { ApiUserModel, ApiUserRequest } from "./interface/apiUserModel";
 
-import { CoreApiDataResponse, CoreApiResponse } from "./common/CoreApiResponse";
+import { CoreApiDataResponse, CoreApiResponse } from "./common/coreApiResponse";
 
-import { PaginationRequest, PaginatedResponse } from "../common/PaginationModel";
+import {
+  PaginationRequest,
+  PaginatedResponse,
+} from "../common/PaginationModel";
 import { coreApi, idsrvApi } from "@/lib/apis";
 import { ApiConfig } from "@/lib/apiClient";
 import { useGetUserInfo } from "@/hooks/useGetUserInfo";
@@ -26,8 +29,6 @@ export default function useCoreApiService() {
   const CORE_QUERY_KEYS = {
     restApiBuilders: ["core", "restApiBuilders"] as const,
     restApiBuilderById: (id: number) => ["core", "restApiBuilder", id] as const,
-
-
   };
   const { oidc_user } = useAuth();
 
@@ -149,7 +150,6 @@ export default function useCoreApiService() {
         });
       },
     });
-
 
   return {
     useGetRestApiBuilders,

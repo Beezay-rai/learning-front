@@ -21,6 +21,17 @@ export interface ApiConfig {
   axios_config?: AxiosRequestConfig;
 }
 
+type NetworkLogRequestConfig = InternalAxiosRequestConfig & {
+  _networkLogId?: string;
+  _networkLogStart?: number;
+};
+
+type ApiClientError = {
+  message: string;
+  status?: number;
+  data?: unknown;
+};
+
 export class ApiClient {
   private client: AxiosInstance;
   private name: string;
@@ -53,22 +64,22 @@ export class ApiClient {
           size: null,
         });
         // Stash the log-entry id on the config so the response interceptor can find it
-        (config as any)._networkLogId = id;
-        (config as any)._networkLogStart = performance.now();
+        const requestConfig = config as NetworkLogRequestConfig;
+        requestConfig._networkLogId = id;
+        requestConfig._networkLogStart = performance.now();
         return config;
       },
       (error) => {
         return Promise.reject(error);
-      }
+      },
     );
 
     // ── Network Log: Response Interceptor (success) ───────────────
     this.client.interceptors.response.use(
       (response: AxiosResponse) => {
-        const id: string | undefined = (response.config as any)
-          ._networkLogId;
-        const start: number | undefined = (response.config as any)
-          ._networkLogStart;
+        const requestConfig = response.config as NetworkLogRequestConfig;
+        const id = requestConfig._networkLogId;
+        const start = requestConfig._networkLogStart;
         if (id) {
           const size = this.estimateSize(response.data);
           networkLogStore.updateEntry(id, {
@@ -76,7 +87,9 @@ export class ApiClient {
             statusText: response.statusText,
             endTime: Date.now(),
             duration:
-              start !== undefined ? Math.round(performance.now() - start) : null,
+              start !== undefined
+                ? Math.round(performance.now() - start)
+                : null,
             responseHeaders: this.flattenHeaders(response.headers),
             responseBody: response.data,
             pending: false,
@@ -96,7 +109,9 @@ export class ApiClient {
             statusText: error.response?.statusText ?? "",
             endTime: Date.now(),
             duration:
-              start !== undefined ? Math.round(performance.now() - start) : null,
+              start !== undefined
+                ? Math.round(performance.now() - start)
+                : null,
             responseHeaders: error.response
               ? this.flattenHeaders(error.response.headers)
               : {},
@@ -113,7 +128,7 @@ export class ApiClient {
         }
 
         // ── Original error handling (unchanged) ───────────────────
-        const customError: any = {
+        const customError: ApiClientError = {
           message:
             error.response?.data?.message ||
             error.message ||
@@ -141,36 +156,46 @@ export class ApiClient {
         }
 
         return Promise.reject(customError);
-      }
+      },
     );
   }
 
   /** Flatten axios headers object to Record<string, string> */
-  private flattenHeaders(headers: any): Record<string, string> {
+  private flattenHeaders(headers: unknown): Record<string, string> {
     if (!headers) return {};
     const flat: Record<string, string> = {};
-    if (typeof headers.forEach === "function") {
-      headers.forEach((value: string, key: string) => {
+    if (
+      typeof headers === "object" &&
+      headers !== null &&
+      "forEach" in headers &&
+      typeof (headers as { forEach?: unknown }).forEach === "function"
+    ) {
+      (
+        headers as {
+          forEach: (callback: (value: string, key: string) => void) => void;
+        }
+      ).forEach((value: string, key: string) => {
         flat[key] = value;
       });
-    } else {
-      Object.entries(headers).forEach(([key, value]) => {
-        if (typeof value === "string") {
-          flat[key] = value;
-        } else if (value !== undefined && value !== null) {
-          flat[key] = String(value);
-        }
-      });
+    } else if (typeof headers === "object" && headers !== null) {
+      Object.entries(headers as Record<string, unknown>).forEach(
+        ([key, value]) => {
+          if (typeof value === "string") {
+            flat[key] = value;
+          } else if (value !== undefined && value !== null) {
+            flat[key] = String(value);
+          }
+        },
+      );
     }
     return flat;
   }
 
   /** Rough byte-size estimate for response body */
-  private estimateSize(data: any): number | null {
+  private estimateSize(data: unknown): number | null {
     if (data === null || data === undefined) return null;
     try {
-      const str =
-        typeof data === "string" ? data : JSON.stringify(data);
+      const str = typeof data === "string" ? data : JSON.stringify(data);
       return new Blob([str]).size;
     } catch {
       return null;
@@ -204,11 +229,11 @@ export class ApiClient {
     return this.client.get<T>(url, this.buildConfig(apiConfig));
   }
 
-  post<T>(url: string, data?: any, apiConfig?: ApiConfig) {
+  post<T>(url: string, data?: unknown, apiConfig?: ApiConfig) {
     return this.client.post<T>(url, data, this.buildConfig(apiConfig));
   }
 
-  put<T>(url: string, data?: any, apiConfig?: ApiConfig) {
+  put<T>(url: string, data?: unknown, apiConfig?: ApiConfig) {
     return this.client.put<T>(url, data, this.buildConfig(apiConfig));
   }
 

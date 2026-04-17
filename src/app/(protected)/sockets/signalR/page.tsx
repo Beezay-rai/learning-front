@@ -53,10 +53,13 @@ export default function SignalRPage() {
       authValue: authToken,
       headers: headers
         .filter((h) => h.key.trim())
-        .reduce((acc, { key, value }) => {
-          acc[key] = value;
-          return acc;
-        }, {} as Record<string, string>),
+        .reduce(
+          (acc, { key, value }) => {
+            acc[key] = value;
+            return acc;
+          },
+          {} as Record<string, string>,
+        ),
     },
   });
 
@@ -82,7 +85,7 @@ export default function SignalRPage() {
   const handleHeaderChange = (
     index: number,
     field: "key" | "value",
-    value: string
+    value: string,
   ) => {
     const updated = [...headers];
     updated[index][field] = value;
@@ -163,7 +166,9 @@ export default function SignalRPage() {
               fullWidth
               size="small"
               value={authType}
-              onChange={(e) => setAuthType(e.target.value as any)}
+              onChange={(e) =>
+                setAuthType(e.target.value as "none" | "Basic" | "Bearer")
+              }
               disabled={isConnected}
             >
               <MenuItem value="none">None</MenuItem>

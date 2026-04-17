@@ -23,11 +23,11 @@ import {
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useEffect, useMemo, useState } from "react";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import {
   Route,
   RouteConfigureRequest,
-} from "@/services/apiServices/api-gateway/interfaces/Route";
+} from "@/services/apiServices/api-gateway/interfaces/route";
 import Link from "next/link";
 import { routes } from "@/app/routes.generated";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -112,7 +112,7 @@ function RoutePage() {
             // selectedRow: null,
           });
         },
-      }
+      },
     );
   };
 
@@ -131,6 +131,77 @@ function RoutePage() {
       },
     });
   };
+
+  function RouteActionCell({ row }: { row: Row<Route> }) {
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+
+    const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
+      setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+      setAnchorEl(null);
+    };
+
+    const id = row.original.id;
+
+    return (
+      <>
+        <IconButton size="small" onClick={handleOpen}>
+          <MoreVertIcon />
+        </IconButton>
+
+        <Menu
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          transformOrigin={{ vertical: "top", horizontal: "right" }}
+        >
+          <MenuItem onClick={handleClose}>
+            <Link
+              href={routes["(protected)"]["api-gateway"].route.edit.index + id}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <ListItemIcon>
+                <EditIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Edit</ListItemText>
+            </Link>
+          </MenuItem>
+
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              handleSetConfigureModal(row.original.id);
+            }}
+          >
+            <ListItemIcon>
+              <SettingsIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Configure</ListItemText>
+          </MenuItem>
+
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              handleDelete(id);
+            }}
+          >
+            <ListItemIcon>
+              <DeleteIcon fontSize="small" color="error" />
+            </ListItemIcon>
+            <ListItemText sx={{ color: "error.main" }}>Delete</ListItemText>
+          </MenuItem>
+        </Menu>
+      </>
+    );
+  }
   // useEffect(() => {
   //   // if (!configureData?.data) return;
 
@@ -266,82 +337,7 @@ function RoutePage() {
     },
     {
       header: "Action",
-      cell: ({ row }) => {
-        const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-        const open = Boolean(anchorEl);
-
-        const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
-          setAnchorEl(event.currentTarget);
-        };
-
-        const handleClose = () => {
-          setAnchorEl(null);
-        };
-
-        const id = row.original.id;
-
-        return (
-          <>
-            <IconButton size="small" onClick={handleOpen}>
-              <MoreVertIcon />
-            </IconButton>
-
-            <Menu
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-              transformOrigin={{ vertical: "top", horizontal: "right" }}
-            >
-              {/* Edit */}
-              <MenuItem onClick={handleClose}>
-                <Link
-                  href={
-                    routes["(protected)"]["api-gateway"].route.edit.index + id
-                  }
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    width: "100%",
-                  }}
-                >
-                  <ListItemIcon>
-                    <EditIcon fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText>Edit</ListItemText>
-                </Link>
-              </MenuItem>
-
-              {/* Configure */}
-              <MenuItem
-                onClick={() => {
-                  handleClose();
-                  handleSetConfigureModal(row.original.id);
-                  // setConfigureModal({ open: true, selectedRow: data?.data });
-                }}
-              >
-                <ListItemIcon>
-                  <SettingsIcon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>Configure</ListItemText>
-              </MenuItem>
-
-              {/* Delete */}
-              <MenuItem
-                onClick={() => {
-                  handleClose();
-                  handleDelete(id);
-                }}
-              >
-                <ListItemIcon>
-                  <DeleteIcon fontSize="small" color="error" />
-                </ListItemIcon>
-                <ListItemText sx={{ color: "error.main" }}>Delete</ListItemText>
-              </MenuItem>
-            </Menu>
-          </>
-        );
-      },
+      cell: ({ row }) => <RouteActionCell row={row} />,
     },
   ];
 
@@ -352,7 +348,7 @@ function RoutePage() {
         isLoading={configureLoading}
         // defaultValue={configureModal?.selectedRow as ApiConfigureFormData}
         defaultValue={configureData as ApiConfigureFormData}
-        onClose={() => setConfigureModal({ open: false, })}
+        onClose={() => setConfigureModal({ open: false })}
         onUpdate={handleConfigure}
       />
 

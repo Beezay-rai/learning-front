@@ -4,7 +4,7 @@ import { CircularProgress, Paper, Typography } from "@mui/material";
 import { toast } from "react-toastify";
 import { useParams, useRouter } from "next/navigation";
 import { routes } from "@/app/routes.generated";
-import { ApiUserRequest } from "@/services/apiServices/core/interface/ApiUserModel";
+import { ApiUserRequest } from "@/services/apiServices/core/interface/apiUserModel";
 import ApiUserForm from "../../ApiUserForm";
 import NotFound from "@/app/not-found";
 import useOrchestratorApiService from "@/services/apiServices/orchestrator/useOrchestratorApiService";
@@ -49,6 +49,17 @@ export default function AddAppUser() {
     return <NotFound />;
   }
 
+  const defaultFormValue: ApiUserRequest | undefined = user?.data
+    ? {
+        name: user.data.name ?? "",
+        userName:
+          "userName" in user.data && typeof user.data.userName === "string"
+            ? user.data.userName
+            : "",
+        password: "",
+      }
+    : undefined;
+
   return (
     <Paper sx={{ p: 4 }}>
       <Typography variant="h5" gutterBottom>
@@ -57,7 +68,7 @@ export default function AddAppUser() {
 
       <ApiUserForm
         onSubmit={onSubmit}
-        defaultValue={user?.data}
+        defaultValue={defaultFormValue}
         loading={isSubmitting}
         isAdd={false}
         cancelUrl={routes["(protected)"]["user-management"]["api-user"].index}

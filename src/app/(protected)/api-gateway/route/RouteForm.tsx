@@ -1,4 +1,4 @@
-import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/Route";
+import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/route";
 import { routes } from "@/app/routes.generated";
 import { SearchableSelect } from "@/components/molecules/SearchableSelect";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -58,7 +58,7 @@ export default function RouteForm({
       methods: defaultValue?.methods || [],
     },
   });
-  const { useGetClusters } = useApiGatewayService()
+  const { useGetClusters } = useApiGatewayService();
   const { data: clusters } = useGetClusters();
   const clusterOptions = clusters?.data?.items.map((item, index) => {
     return {

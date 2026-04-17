@@ -19,7 +19,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DescriptionIcon from "@mui/icons-material/Description";
 import { useParams } from "next/navigation";
 import { useState } from "react";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row } from "@tanstack/react-table";
 
 import DataTable from "@/components/ui/table/DataTable";
 import useConfirm from "@/hooks/useConfirm";
@@ -50,6 +50,110 @@ function ApiProductVersionPage() {
 
   const { mutateAsync: deleteVersion } = useDeleteApiProductVersion();
 
+  function VersionActionCell({ row }: { row: Row<ProductVersion> }) {
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+    return (
+      <>
+        <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
+          <MoreVertIcon />
+        </IconButton>
+
+        <Menu
+          anchorEl={anchorEl}
+          open={!!anchorEl}
+          onClose={() => setAnchorEl(null)}
+        >
+          <MenuItem
+            onClick={() => {
+              setAnchorEl(null);
+              setModal({ open: true, selected: row.original });
+            }}
+          >
+            <ListItemIcon>
+              <EditIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Edit</ListItemText>
+          </MenuItem>
+          <MenuItem>
+            <Link
+              href={
+                routes["(protected)"]["product-management"]["api-product"]
+                  .index +
+                row.original.productId +
+                "/versions/" +
+                row.original.id +
+                "/product-endpoints"
+              }
+              style={{
+                display: "flex",
+                alignItems: "center",
+                width: "100%",
+                color: "inherit",
+                textDecoration: "none",
+              }}
+            >
+              <ListItemIcon>
+                <LayersIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>View Endpoints</ListItemText>
+            </Link>
+          </MenuItem>
+          <MenuItem>
+            <Link
+              href={
+                routes["(protected)"]["product-management"]["api-product"]
+                  .index +
+                row.original.productId +
+                "/versions/" +
+                row.original.id +
+                "/swagger-doc"
+              }
+              style={{
+                display: "flex",
+                alignItems: "center",
+                width: "100%",
+                color: "inherit",
+                textDecoration: "none",
+              }}
+            >
+              <ListItemIcon>
+                <DescriptionIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Swagger Docs</ListItemText>
+            </Link>
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              setAnchorEl(null);
+              confirm({
+                onConfirm: async () => {
+                  await deleteVersion(
+                    {
+                      id: row.original.id,
+                      productId: row.original.productId,
+                    },
+                    {
+                      onSuccess: () => {
+                        toast.success("Version deleted");
+                        refetch();
+                      },
+                    },
+                  );
+                },
+              });
+            }}
+          >
+            <ListItemIcon>
+              <DeleteIcon fontSize="small" color="error" />
+            </ListItemIcon>
+            <ListItemText sx={{ color: "error.main" }}>Delete</ListItemText>
+          </MenuItem>
+        </Menu>
+      </>
+    );
+  }
+
   const columns: ColumnDef<ProductVersion>[] = [
     { accessorKey: "version", header: "Version" },
     {
@@ -65,109 +169,7 @@ function ApiProductVersionPage() {
     { accessorKey: "description", header: "Description" },
     {
       header: "Action",
-      cell: ({ row }) => {
-        const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
-        return (
-          <>
-            <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
-              <MoreVertIcon />
-            </IconButton>
-
-            <Menu
-              anchorEl={anchorEl}
-              open={!!anchorEl}
-              onClose={() => setAnchorEl(null)}
-            >
-              <MenuItem
-                onClick={() => {
-                  setAnchorEl(null);
-                  setModal({ open: true, selected: row.original });
-                }}
-              >
-                <ListItemIcon>
-                  <EditIcon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>Edit</ListItemText>
-              </MenuItem>
-              <MenuItem>
-                <Link
-                  href={
-                    routes["(protected)"]["product-management"]["api-product"]
-                      .index +
-                    row.original.productId +
-                    "/versions/" +
-                    row.original.id +
-                    "/product-endpoints"
-                  }
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    width: "100%",
-                    color: "inherit",
-                    textDecoration: "none",
-                  }}
-                >
-                  <ListItemIcon>
-                    <LayersIcon fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText>View Endpoints</ListItemText>
-                </Link>
-              </MenuItem>
-              <MenuItem>
-                <Link
-                  href={
-                    routes["(protected)"]["product-management"]["api-product"]
-                      .index +
-                    row.original.productId +
-                    "/versions/" +
-                    row.original.id +
-                    "/swagger-doc"
-                  }
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    width: "100%",
-                    color: "inherit",
-                    textDecoration: "none",
-                  }}
-                >
-                  <ListItemIcon>
-                    <DescriptionIcon fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText>Swagger Docs</ListItemText>
-                </Link>
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  setAnchorEl(null);
-                  confirm({
-                    onConfirm: async () => {
-                      await deleteVersion(
-                        {
-                          id: row.original.id,
-                          productId: row.original.productId,
-                        },
-                        {
-                          onSuccess: () => {
-                            toast.success("Version deleted");
-                            refetch();
-                          },
-                        },
-                      );
-                    },
-                  });
-                }}
-              >
-                <ListItemIcon>
-                  <DeleteIcon fontSize="small" color="error" />
-                </ListItemIcon>
-                <ListItemText sx={{ color: "error.main" }}>Delete</ListItemText>
-              </MenuItem>
-            </Menu>
-          </>
-        );
-      },
+      cell: ({ row }) => <VersionActionCell row={row} />,
     },
   ];
 

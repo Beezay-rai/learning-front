@@ -27,11 +27,13 @@ interface PaginationConfig {
   handleRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-interface DataTableProp<TData extends RowData>
-  extends Omit<TableOptions<TData>, "getCoreRowModel"> {
+interface DataTableProp<TData extends RowData> extends Omit<
+  TableOptions<TData>,
+  "getCoreRowModel"
+> {
   isLoading: boolean;
   noDataText?: React.ReactNode;
-  subItem?: any;
+  subItem?: unknown;
   refetchData?: () => void;
   paginationConfig?: PaginationConfig;
 }
@@ -134,7 +136,7 @@ export default function DataTable<TData>(props: DataTableProp<TData>) {
                     >
                       {flexRender(
                         header.column.columnDef.header,
-                        header.getContext()
+                        header.getContext(),
                       )}
                     </TableCell>
                   );
@@ -142,9 +144,13 @@ export default function DataTable<TData>(props: DataTableProp<TData>) {
               </TableRow>
             ))}
           </TableHead>
-          <TableBody sx={{
-            minHeight: "50vh",
-          }}>{renderTableBody()}</TableBody>
+          <TableBody
+            sx={{
+              minHeight: "50vh",
+            }}
+          >
+            {renderTableBody()}
+          </TableBody>
         </Table>
         {paginationConfig && (
           <TablePagination

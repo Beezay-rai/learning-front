@@ -1,12 +1,14 @@
 "use client";
 
 import { Paper, Typography } from "@mui/material";
-import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { routes } from "@/app/routes.generated";
 import RoleForm from "../RoleForm";
-import { AddRoleRequest } from "@/services/apiServices/idsrv/interface/RoleModel";
+import {
+  AddRoleRequest,
+  UpdateRoleRequest,
+} from "@/services/apiServices/idsrv/interface/RoleModel";
 import useIdsrvService from "@/services/apiServices/idsrv/useIdsrvService";
 
 export default function AddAppRole() {
@@ -14,8 +16,19 @@ export default function AddAppRole() {
   const { useAddRole } = useIdsrvService();
   const { mutateAsync, isPending } = useAddRole();
 
-  const submit = async (data: AddRoleRequest) => {
-    await mutateAsync(data, {
+  const submit = async (data: AddRoleRequest | UpdateRoleRequest) => {
+    if (typeof data.userTypeId !== "number") {
+      toast.error("User type is required");
+      return;
+    }
+
+    const payload: AddRoleRequest = {
+      name: data.name,
+      description: data.description,
+      userTypeId: data.userTypeId,
+    };
+
+    await mutateAsync(payload, {
       onSuccess: () => {
         toast.success(" Role created !");
         router.push(routes["(protected)"]["user-management"]["role"].index);

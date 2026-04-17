@@ -10,18 +10,21 @@ export function buildPreviewDoc(files: Record<string, string>): string {
 
   const resolveImports = (code: string, currentDir: string): string => {
     // Replace relative imports with inlined module content
-    return code.replace(
-      /from\s+['"](\.[^'"]+)['"]/g,
-      (match, importPath) => {
-        let resolved = resolveRelative(currentDir, importPath);
-        // Try adding extensions if not present
-        const candidates = [resolved, resolved + ".jsx", resolved + ".js", resolved + ".tsx", resolved + ".ts"];
-        for (const c of candidates) {
-          if (files[c]) return `from '${c}'`;
-        }
-        return match;
+    return code.replace(/from\s+['"](\.[^'"]+)['"]/g, (match, importPath) => {
+      const resolved = resolveRelative(currentDir, importPath);
+      // Try adding extensions if not present
+      const candidates = [
+        resolved,
+        resolved + ".jsx",
+        resolved + ".js",
+        resolved + ".tsx",
+        resolved + ".ts",
+      ];
+      for (const c of candidates) {
+        if (files[c]) return `from '${c}'`;
       }
-    );
+      return match;
+    });
   };
 
   // Build a big inline script that defines all modules using Blob URLs via import
@@ -31,26 +34,40 @@ export function buildPreviewDoc(files: Record<string, string>): string {
   const moduleEntries: string[] = [];
 
   for (const [path, content] of Object.entries(files)) {
-    if (!path.endsWith(".jsx") && !path.endsWith(".js") && !path.endsWith(".tsx") && !path.endsWith(".ts") && !path.endsWith(".css")) continue;
+    if (
+      !path.endsWith(".jsx") &&
+      !path.endsWith(".js") &&
+      !path.endsWith(".tsx") &&
+      !path.endsWith(".ts") &&
+      !path.endsWith(".css")
+    )
+      continue;
 
     if (path.endsWith(".css")) {
       // CSS files: inject as <style>
-      moduleEntries.push(`__modules["${path}"] = { __css: ${JSON.stringify(content)} };`);
+      moduleEntries.push(
+        `__modules["${path}"] = { __css: ${JSON.stringify(content)} };`,
+      );
     } else {
       const resolved = resolveImports(content, dirname(path));
       moduleEntries.push(
-        `__modules["${path}"] = async function(require, module, exports) {\n${resolved}\n};`
+        `__modules["${path}"] = async function(require, module, exports) {\n${resolved}\n};`,
       );
     }
   }
 
   // Find the main entry
-  const mainEntry = files["src/main.jsx"] ? "src/main.jsx" :
-    files["src/main.tsx"] ? "src/main.tsx" :
-      files["src/index.jsx"] ? "src/index.jsx" :
-        "src/main.jsx";
+  const mainEntry = files["src/main.jsx"]
+    ? "src/main.jsx"
+    : files["src/main.tsx"]
+      ? "src/main.tsx"
+      : files["src/index.jsx"]
+        ? "src/index.jsx"
+        : "src/main.jsx";
 
-  const htmlContent = files["index.html"] || `<!DOCTYPE html><html><body><div id="root"></div></body></html>`;
+  const htmlContent =
+    files["index.html"] ||
+    `<!DOCTYPE html><html><body><div id="root"></div></body></html>`;
   // Strip the DOCTYPE/html/body shell to just get the body content for injection
   const bodyMatch = htmlContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
   const bodyContent = bodyMatch ? bodyMatch[1] : '<div id="root"></div>';
@@ -107,11 +124,18 @@ ${bodyContent}
   }
 
   // User file contents (raw strings)
-  const __sources = ${JSON.stringify(Object.fromEntries(
-    Object.entries(files).filter(([p]) =>
-      p.endsWith(".jsx") || p.endsWith(".js") || p.endsWith(".tsx") || p.endsWith(".ts") || p.endsWith(".css")
-    )
-  ))};
+  const __sources = ${JSON.stringify(
+    Object.fromEntries(
+      Object.entries(files).filter(
+        ([p]) =>
+          p.endsWith(".jsx") ||
+          p.endsWith(".js") ||
+          p.endsWith(".tsx") ||
+          p.endsWith(".ts") ||
+          p.endsWith(".css"),
+      ),
+    ),
+  )};
 
   // Resolve a relative path
   function __resolve(from, to) {

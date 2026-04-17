@@ -49,7 +49,7 @@ export default function AuthProvider({
 
     loadUser();
 
-    const onUserLoaded = (user: any) => {
+    const onUserLoaded = (user: User) => {
       dispatch(setOIDCUser(mapUser(user)));
     };
 

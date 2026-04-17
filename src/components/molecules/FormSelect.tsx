@@ -32,6 +32,12 @@ function FormSelect(props: FormSelectProps) {
 
   const value = watch(name);
   const isFieldError = get(errors, name);
+  const fieldErrorMessage =
+    isFieldError &&
+    typeof isFieldError === "object" &&
+    "message" in isFieldError
+      ? String((isFieldError as { message?: unknown }).message ?? "")
+      : "";
 
   return (
     <Controller
@@ -66,8 +72,8 @@ function FormSelect(props: FormSelectProps) {
                 ))
               : options}
           </Select>
-          <FormHelperText error={isFieldError}>
-            {isFieldError ? (isFieldError as any).message : null}
+          <FormHelperText error={!!isFieldError}>
+            {fieldErrorMessage || null}
           </FormHelperText>
         </FormControl>
       )}

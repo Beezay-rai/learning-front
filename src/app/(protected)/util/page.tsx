@@ -68,3 +68,7 @@
 //     </div>
 //   );
 // }
+
+export default function UtilPage() {
+  return null;
+}

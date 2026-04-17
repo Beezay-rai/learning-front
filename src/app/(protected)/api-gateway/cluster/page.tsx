@@ -1,7 +1,6 @@
 "use client";
 
-
-import { Cluster } from "@/services/apiServices/api-gateway/interfaces/Cluster";
+import { Cluster } from "@/services/apiServices/api-gateway/interfaces/cluster";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
@@ -35,22 +34,17 @@ const ClusterPage = () => {
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [openRows, setOpenRows] = useState<Record<string, boolean>>({});
 
-  const {
-    useGetClusters,
-    useDeleteCluster,
-  } = useApiGatewayService();
+  const { useGetClusters, useDeleteCluster } = useApiGatewayService();
   const {
     data: clustersData,
     isLoading,
     error,
     isRefetching,
     refetch: refetchClusterList,
-  } = useGetClusters(
-    {
-      page: page + 1,
-      pageSize: rowsPerPage,
-    },
-  );
+  } = useGetClusters({
+    page: page + 1,
+    pageSize: rowsPerPage,
+  });
 
   const clusters = clustersData?.data?.items ?? [];
   const totalCount = clustersData?.data?.totalCount ?? 0;
@@ -59,7 +53,7 @@ const ClusterPage = () => {
     setPage(newPage);
 
   const handleRowsPerPageChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(1);
@@ -129,56 +123,51 @@ const ClusterPage = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              clusters
-                .map((cluster) => (
-                  <React.Fragment key={cluster.id}>
-                    <TableRow
-                      sx={{ cursor: "pointer" }}
-                      hover
-                      onClick={() =>
-                        setOpenRows((prev) => ({
-                          ...prev,
-                          [cluster.id]: !prev[cluster.id],
-                        }))
-                      }
-                    >
-                      <TableCell>
-                        <IconButton size="small">
-                          {openRows[cluster.id] ? (
-                            <ChevronUp />
-                          ) : (
-                            <ChevronDown />
-                          )}
-                        </IconButton>
-                      </TableCell>
-                      <TableCell>{cluster.id}</TableCell>
-                      <TableCell>{cluster.name}</TableCell>
-                      <TableCell>
-                        <Chip
-                          label={cluster.deleted_Status ? "Deleted" : "Active"}
-                          color={cluster.deleted_Status ? "error" : "success"}
-                        ></Chip>
-                      </TableCell>
-                      <TableCell>
-                        {new Date(cluster.created_date).toLocaleDateString(
-                          "en-CA"
-                        )}
-                      </TableCell>
-                      <TableCell>{cluster.created_By || "N/A"}</TableCell>
-                      <TableCell onClick={(e) => e.stopPropagation()}>
-                        <Stack direction="row" spacing={1}>
-                          <Link
-                            href={
-                              routes["(protected)"]["api-gateway"].cluster.edit
-                                .index + cluster.id
-                            }
-                          >
-                            <IconButton color="primary" size="small">
-                              <EditIcon />
-                            </IconButton>
-                          </Link>
+              clusters.map((cluster) => (
+                <React.Fragment key={cluster.id}>
+                  <TableRow
+                    sx={{ cursor: "pointer" }}
+                    hover
+                    onClick={() =>
+                      setOpenRows((prev) => ({
+                        ...prev,
+                        [cluster.id]: !prev[cluster.id],
+                      }))
+                    }
+                  >
+                    <TableCell>
+                      <IconButton size="small">
+                        {openRows[cluster.id] ? <ChevronUp /> : <ChevronDown />}
+                      </IconButton>
+                    </TableCell>
+                    <TableCell>{cluster.id}</TableCell>
+                    <TableCell>{cluster.name}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={cluster.deleted_Status ? "Deleted" : "Active"}
+                        color={cluster.deleted_Status ? "error" : "success"}
+                      ></Chip>
+                    </TableCell>
+                    <TableCell>
+                      {new Date(cluster.created_date).toLocaleDateString(
+                        "en-CA",
+                      )}
+                    </TableCell>
+                    <TableCell>{cluster.created_By || "N/A"}</TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <Stack direction="row" spacing={1}>
+                        <Link
+                          href={
+                            routes["(protected)"]["api-gateway"].cluster.edit
+                              .index + cluster.id
+                          }
+                        >
+                          <IconButton color="primary" size="small">
+                            <EditIcon />
+                          </IconButton>
+                        </Link>
 
-                          {/* <IconButton
+                        {/* <IconButton
                             color="error"
                             size="small"
                             onClick={() => {
@@ -187,65 +176,59 @@ const ClusterPage = () => {
                           >
                             <DeleteIcon />
                           </IconButton> */}
-                        </Stack>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell
-                        style={{ paddingBottom: 0, paddingTop: 0 }}
-                        colSpan={5}
-                      >
-                        <Collapse
-                          in={openRows[cluster.id]}
-                          timeout="auto"
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell
+                      style={{ paddingBottom: 0, paddingTop: 0 }}
+                      colSpan={5}
+                    >
+                      <Collapse
+                        in={openRows[cluster.id]}
+                        timeout="auto"
                         // unmountOnExit
-                        >
-                          <Table size="small">
-                            <TableHead>
-                              <TableRow>
-                                <TableCell>Destination Name</TableCell>
-                                <TableCell>Cluster ID</TableCell>
-                                <TableCell>Address</TableCell>
-                                <TableCell>Status</TableCell>
-                                <TableCell>Created Date</TableCell>
+                      >
+                        <Table size="small">
+                          <TableHead>
+                            <TableRow>
+                              <TableCell>Destination Name</TableCell>
+                              <TableCell>Cluster ID</TableCell>
+                              <TableCell>Address</TableCell>
+                              <TableCell>Status</TableCell>
+                              <TableCell>Created Date</TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {cluster.clusterDestination.map((dest) => (
+                              <TableRow key={dest.id}>
+                                <TableCell>{dest.name}</TableCell>
+                                <TableCell>{dest.clusterId}</TableCell>
+                                <TableCell>{dest.destinationAddress}</TableCell>
+                                <TableCell>
+                                  <Chip
+                                    label={
+                                      dest.deleted_Status ? "Deleted" : "Active"
+                                    }
+                                    color={
+                                      dest.deleted_Status ? "error" : "success"
+                                    }
+                                  ></Chip>
+                                </TableCell>
+                                <TableCell>
+                                  {new Date(
+                                    dest.created_date,
+                                  ).toLocaleDateString("en-CA")}
+                                </TableCell>
                               </TableRow>
-                            </TableHead>
-                            <TableBody>
-                              {cluster.clusterDestination.map((dest) => (
-                                <TableRow key={dest.id}>
-                                  <TableCell>{dest.name}</TableCell>
-                                  <TableCell>{dest.clusterId}</TableCell>
-                                  <TableCell>
-                                    {dest.destinationAddress}
-                                  </TableCell>
-                                  <TableCell>
-                                    <Chip
-                                      label={
-                                        dest.deleted_Status
-                                          ? "Deleted"
-                                          : "Active"
-                                      }
-                                      color={
-                                        dest.deleted_Status
-                                          ? "error"
-                                          : "success"
-                                      }
-                                    ></Chip>
-                                  </TableCell>
-                                  <TableCell>
-                                    {new Date(
-                                      dest.created_date
-                                    ).toLocaleDateString("en-CA")}
-                                  </TableCell>
-                                </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        </Collapse>
-                      </TableCell>
-                    </TableRow>
-                  </React.Fragment>
-                ))
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </Collapse>
+                    </TableCell>
+                  </TableRow>
+                </React.Fragment>
+              ))
             )}
           </TableBody>
         </Table>

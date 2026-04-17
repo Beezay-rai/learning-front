@@ -4,7 +4,7 @@ import { CircularProgress, Paper, Typography } from "@mui/material";
 import { toast } from "react-toastify";
 import { useParams, useRouter } from "next/navigation";
 import { routes } from "@/app/routes.generated";
-import { ApiUserRequest } from "@/services/apiServices/core/interface/ApiUserModel";
+import { ApiUserRequest } from "@/services/apiServices/core/interface/apiUserModel";
 import ApiProductForm, { ApiProductRequest } from "../../ApiProductForm";
 import useOrchestratorApiService from "@/services/apiServices/orchestrator/useOrchestratorApiService";
 import NotFound from "@/app/(protected)/not-found";
@@ -16,7 +16,8 @@ export default function UpdateProduct() {
   const idParam = params?.id;
 
   const id = idParam ? Number(idParam) : 0;
-  const { useUpdateApiProduct, useGetApiProductById } = useOrchestratorApiService();
+  const { useUpdateApiProduct, useGetApiProductById } =
+    useOrchestratorApiService();
 
   const { mutateAsync, isPending } = useUpdateApiProduct();
 

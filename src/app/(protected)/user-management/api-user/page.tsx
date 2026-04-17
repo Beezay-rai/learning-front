@@ -25,10 +25,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import DataTable from "@/components/ui/table/DataTable";
-import { RestApiBuilderModel } from "@/services/apiServices/core/interface/RestApiBuilderModel";
+import { RestApiBuilderModel } from "@/services/apiServices/core/interface/restApiBuilderModel";
 import useConfirm from "@/hooks/useConfirm";
 import { toast } from "react-toastify";
-import { ApiUserModel } from "@/services/apiServices/core/interface/ApiUserModel";
+import { ApiUserModel } from "@/services/apiServices/core/interface/apiUserModel";
 import useOrchestratorApiService from "@/services/apiServices/orchestrator/useOrchestratorApiService";
 
 function ApiUserList() {
@@ -52,7 +52,7 @@ function ApiUserList() {
   };
 
   const handleRowsPerPageChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
@@ -87,12 +87,9 @@ function ApiUserList() {
       cell: ({ row }) => (
         <Stack direction="row" spacing={1}>
           <Link
-            href={
-              routes["(protected)"]["user-management"]["api-user"].keys.index.replace(
-                "[id]",
-                row.original.id.toString()
-              )
-            }
+            href={routes["(protected)"]["user-management"][
+              "api-user"
+            ].keys.index.replace("[id]", row.original.id.toString())}
           >
             <IconButton color="secondary" size="small" title="Manage Keys">
               <VpnKeyIcon />

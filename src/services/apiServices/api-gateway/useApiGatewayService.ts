@@ -13,9 +13,9 @@ import {
   Route,
   RouteConfigureRequest,
   RouteConfigure,
-} from "./interfaces/Route";
-import { ClusterRequest, Cluster } from "./interfaces/Cluster";
-import { PaginatedResponse } from "./interfaces/common/PaginatedResponse";
+} from "./interfaces/route";
+import { ClusterRequest, Cluster } from "./interfaces/cluster";
+import { PaginatedResponse } from "./interfaces/common/paginatedResponse";
 import {
   GatewayApiDataResponse,
   GatewayApiResponse,
@@ -48,7 +48,7 @@ export default function useApiGatewayService() {
     (
       await gatewayApi.get<GatewayApiDataResponse<PaginatedResponse<Route>>>(
         "/v1/routes",
-        apiConfig
+        apiConfig,
       )
     ).data;
 
@@ -56,7 +56,7 @@ export default function useApiGatewayService() {
     (
       await gatewayApi.get<GatewayApiDataResponse<Route>>(
         `/v1/routes/${id}`,
-        apiConfig
+        apiConfig,
       )
     ).data;
 
@@ -64,7 +64,7 @@ export default function useApiGatewayService() {
     (
       await gatewayApi.get<GatewayApiDataResponse<RouteConfigure>>(
         `/v1/routes/${id}/configure`,
-        apiConfig
+        apiConfig,
       )
     ).data;
   const configureRouteById = async ({
@@ -78,7 +78,7 @@ export default function useApiGatewayService() {
       await gatewayApi.post<GatewayApiDataResponse<Route>>(
         `/v1/routes/${id}/configure`,
         payload,
-        apiConfig
+        apiConfig,
       )
     ).data;
 
@@ -87,7 +87,7 @@ export default function useApiGatewayService() {
       await gatewayApi.post<GatewayApiDataResponse<Route>>(
         "/v1/routes",
         payload,
-        apiConfig
+        apiConfig,
       )
     ).data;
 
@@ -102,7 +102,7 @@ export default function useApiGatewayService() {
       await gatewayApi.put<GatewayApiDataResponse<Route>>(
         `/v1/routes/${routeId}`,
         payload,
-        apiConfig
+        apiConfig,
       )
     ).data;
 
@@ -118,7 +118,7 @@ export default function useApiGatewayService() {
     options?: Omit<
       UseQueryOptions<GatewayApiDataResponse<PaginatedResponse<Route>>, Error>,
       "queryKey" | "queryFn"
-    >
+    >,
   ) =>
     useQuery({
       queryKey: QUERY_KEYS.routes,
@@ -131,7 +131,7 @@ export default function useApiGatewayService() {
     options?: Omit<
       UseQueryOptions<GatewayApiDataResponse<Route>, Error>,
       "queryKey" | "queryFn"
-    >
+    >,
   ) =>
     useQuery({
       queryKey: QUERY_KEYS.routeById(id),
@@ -144,7 +144,7 @@ export default function useApiGatewayService() {
     options?: Omit<
       UseQueryOptions<GatewayApiDataResponse<RouteConfigure>, Error>,
       "queryKey" | "queryFn"
-    >
+    >,
   ) =>
     useQuery({
       queryKey: QUERY_KEYS.configRouteById(id),
@@ -207,7 +207,7 @@ export default function useApiGatewayService() {
     (
       await gatewayApi.get<GatewayApiDataResponse<Cluster>>(
         `/v1/clusters/${id}`,
-        apiConfig
+        apiConfig,
       )
     ).data;
 
@@ -216,7 +216,7 @@ export default function useApiGatewayService() {
       await gatewayApi.post<GatewayApiDataResponse<Cluster>>(
         "/v1/clusters",
         payload,
-        apiConfig
+        apiConfig,
       )
     ).data;
 
@@ -231,7 +231,7 @@ export default function useApiGatewayService() {
       await gatewayApi.put<GatewayApiDataResponse<Cluster>>(
         `/v1/clusters/${clusterId}`,
         payload,
-        apiConfig
+        apiConfig,
       )
     ).data;
 
@@ -239,7 +239,7 @@ export default function useApiGatewayService() {
     (
       await gatewayApi.delete<GatewayApiResponse>(
         `/v1/clusters/${id}`,
-        apiConfig
+        apiConfig,
       )
     ).data;
 
@@ -254,7 +254,7 @@ export default function useApiGatewayService() {
         Error
       >,
       "queryKey" | "queryFn"
-    >
+    >,
   ) =>
     useQuery({
       queryKey: QUERY_KEYS.clusters,
@@ -267,7 +267,7 @@ export default function useApiGatewayService() {
     options?: Omit<
       UseQueryOptions<GatewayApiDataResponse<Cluster>, Error>,
       "queryKey" | "queryFn"
-    >
+    >,
   ) =>
     useQuery({
       queryKey: QUERY_KEYS.clusterById(id),

@@ -1,13 +1,7 @@
 "use client";
 
 import { use, useState } from "react";
-import {
-  Box,
-  Button,
-  Paper,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Paper, Stack, Typography } from "@mui/material";
 import { ColumnDef } from "@tanstack/react-table";
 import { toast } from "react-toastify";
 import Link from "next/link";
@@ -16,11 +10,18 @@ import VpnKeyIcon from "@mui/icons-material/VpnKey";
 
 import DataTable from "@/components/ui/table/DataTable";
 import useOrchestratorApiService from "@/services/apiServices/orchestrator/useOrchestratorApiService";
-import { ApiUserKeyModel, ApiUserKeyRequest } from "@/services/apiServices/core/interface/ApiUserModel";
+import {
+  ApiUserKeyModel,
+  ApiUserKeyRequest,
+} from "@/services/apiServices/core/interface/apiUserModel";
 import { routes } from "@/app/routes.generated";
 import GenerateKeyModal from "./GenerateKeyModal";
 
-export default function ApiUserKeysList({ params }: { params: Promise<{ id: string }> }) {
+export default function ApiUserKeysList({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const unwrappedParams = use(params);
   const apiUserId = parseInt(unwrappedParams.id, 10);
 
@@ -28,7 +29,8 @@ export default function ApiUserKeysList({ params }: { params: Promise<{ id: stri
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { useGetApiUserKeys, useGenerateApiUserKey } = useOrchestratorApiService();
+  const { useGetApiUserKeys, useGenerateApiUserKey } =
+    useOrchestratorApiService();
 
   const {
     data: keysData,
@@ -40,13 +42,16 @@ export default function ApiUserKeysList({ params }: { params: Promise<{ id: stri
     pageSize: rowsPerPage,
   });
 
-  const { mutateAsync: generateKey, isPending: isGenerating } = useGenerateApiUserKey();
+  const { mutateAsync: generateKey, isPending: isGenerating } =
+    useGenerateApiUserKey();
 
   const handlePageChange = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
-  const handleRowsPerPageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleRowsPerPageChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };

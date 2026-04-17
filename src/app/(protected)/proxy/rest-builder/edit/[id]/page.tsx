@@ -22,16 +22,15 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { apiService } from "@/services/apiServices/api-gateway/apiService";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import { routes } from "@/app/routes.generated";
-import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/Route"; // You’ll define this interface
+import { RouteRequest } from "@/services/apiServices/api-gateway/interfaces/route";
 import { SearchableSelect } from "@/components/molecules/SearchableSelect";
 import NotFound from "@/app/(protected)/not-found";
 import RestBuilderForm from "../../RestBuilderForm";
-import { RestApiBuilderRequest } from "@/services/apiServices/core/interface/RestApiBuilderModel";
+import { RestApiBuilderRequest } from "@/services/apiServices/core/interface/restApiBuilderModel";
 import useCoreApiService from "@/services/apiServices/core/useCoreApiService";
 
 export default function EditRoutePage() {
@@ -63,7 +62,7 @@ export default function EditRoutePage() {
             toast.success("Route Updated successfully!");
             router.push(routes["(protected)"].proxy["rest-builder"].index);
           },
-        }
+        },
       );
     } catch (err) {
       console.error("Failed to add route:", err);

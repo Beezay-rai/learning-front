@@ -64,7 +64,7 @@ export default function SwaggerEditorPage() {
   const updateApiSpecMutation = useUpdateProductApiSpec();
 
   const [code, setCode] = useState(DEFAULT_SWAGGER);
-  const [spec, setSpec] = useState<any>(null);
+  const [spec, setSpec] = useState<unknown>(null);
   const [error, setError] = useState<string | null>(null);
   const [snack, setSnack] = useState("");
 
@@ -103,8 +103,12 @@ export default function SwaggerEditorPage() {
       }
       setSpec(parsed);
       setError(null);
-    } catch (err: any) {
-      setError(err.message || "Failed to parse Swagger definition");
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Failed to parse Swagger definition";
+      setError(message);
     }
   }, []);
 
@@ -146,8 +150,10 @@ export default function SwaggerEditorPage() {
       toast.success("Saved successfully");
       setSnack("Saved successfully");
       refetchSpec();
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to save API spec");
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Failed to save API spec";
+      toast.error(message);
     }
   };
 
