@@ -3,7 +3,7 @@ import { UserManager, UserManagerSettings } from "oidc-client-ts";
 
 const config: UserManagerSettings = {
   authority: process.env.NEXT_PUBLIC_IDENTITY_SERVER_URL_DEV ?? "",
-  client_id: "nextjs-app",
+  client_id: "admin-portal-client",
   redirect_uri: "/callback",
   post_logout_redirect_uri: "/",
   automaticSilentRenew: true,
