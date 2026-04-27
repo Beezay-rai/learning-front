@@ -1,13 +1,13 @@
 "use client";
 import { UserManager, UserManagerSettings } from "oidc-client-ts";
+const appBaseUrl = process.env.NEXT_PUBLIC_APP_URL;
 
 const config: UserManagerSettings = {
   authority: process.env.NEXT_PUBLIC_IDENTITY_SERVER_URL_DEV ?? "",
   client_id: "admin-portal-client",
-  redirect_uri: "/callback",
-  post_logout_redirect_uri: "/",
+  redirect_uri: `${appBaseUrl}/callback`,
+  post_logout_redirect_uri: `${appBaseUrl}`,
   automaticSilentRenew: true,
-
   response_type: "code",
   scope: "openid profile email api.read api.write ",
 
