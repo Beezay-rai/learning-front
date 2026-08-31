@@ -14,7 +14,6 @@ import CodeMirror from "@uiw/react-codemirror";
 import { json } from "@codemirror/lang-json";
 import { vscodeDark } from "@uiw/codemirror-theme-vscode";
 import SwaggerUI from "swagger-ui-react";
-import "swagger-ui-react/swagger-ui.css";
 import SaveIcon from "@mui/icons-material/Save";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -53,7 +52,8 @@ export default function SwaggerEditorPage() {
   const productId = Number(params?.id);
   const versionId = Number(params?.versionId);
 
-  const { useGetProductApiSpec, useUpdateProductApiSpec } =
+  const { useGetProductApiSpec,
+     useUpdateProductApiSpec } =
     useOrchestratorApiService();
 
   const {
@@ -164,7 +164,10 @@ export default function SwaggerEditorPage() {
       height="calc(100vh - 110px)"
       gap={1.5}
     >
-      Top Bar
+      {/* Load swagger CSS from public/ to bypass PostCSS/Turbopack parsing */}
+      {/* eslint-disable-next-line @next/next/no-css-tags */}
+      <link rel="stylesheet" href="/swagger-ui.css" />
+      {/* Top Bar */}
       <Box display="flex" alignItems="center" justifyContent="space-between">
         <Box>
           <Typography variant="h5" fontWeight={700}>

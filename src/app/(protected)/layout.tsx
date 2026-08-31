@@ -1,5 +1,6 @@
 import { SideBar } from "@/app/(protected)/components/layout/sidebar";
 import Breadcrumbs from "./components/layout/breadcrumb";
+import { TopBar } from "./components/layout/topbar";
 import MyQueryClientProvider from "@/providers/MyQueryClientProvider";
 import { ToastContainer } from "react-toastify";
 import AuthProvider from "@/providers/AuthProvider";
@@ -13,25 +14,28 @@ export default function ProtectedLayout({
   return (
     <AuthProvider>
       <MyQueryClientProvider>
-        <div className="flex h-screen ">
+        <div className="flex h-screen">
           <SideBar />
-          <main className="flex-1 overflow-auto transition-all duration-300 ml-0">
-            <div className="p-6">
-              <Breadcrumbs />
-              {children}
-              <ToastContainer
-                position="top-right"
-                autoClose={3000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                pauseOnHover
-                limit={1}
-              />
-            </div>
-          </main>
+          <div className="flex flex-col flex-1 overflow-hidden">
+            <TopBar />
+            <main className="flex-1 overflow-auto transition-all duration-300">
+              <div className="p-6">
+                <Breadcrumbs />
+                {children}
+                <ToastContainer
+                  position="top-right"
+                  autoClose={3000}
+                  hideProgressBar={false}
+                  newestOnTop={false}
+                  closeOnClick
+                  rtl={false}
+                  pauseOnFocusLoss
+                  pauseOnHover
+                  limit={1}
+                />
+              </div>
+            </main>
+          </div>
         </div>
         {/* <NetworkLogPanel /> */}
       </MyQueryClientProvider>

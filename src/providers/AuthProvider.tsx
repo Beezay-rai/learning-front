@@ -19,6 +19,7 @@ export default function AuthProvider({
   const mapUser = (user: User) => ({
     access_token: user.access_token,
     id_token: user.id_token,
+    refresh_token: user.refresh_token,
     expires_at: user.expires_at,
     profile: user.profile,
   });

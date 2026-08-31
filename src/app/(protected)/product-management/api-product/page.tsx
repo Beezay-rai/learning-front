@@ -131,10 +131,17 @@ function ApiProductPage() {
     { accessorKey: "name", header: "Name" },
     { accessorKey: "description", header: "Description" },
     {
-      accessorKey: "created_Date",
+      accessorKey: "created_date",
       header: "Created Date",
       cell: (info) =>
-        new Date(info.getValue() as string).toLocaleDateString("en-CA"),
+        new Date(info.getValue() as string).toLocaleString("en-CA", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        }),
     },
     {
       accessorKey: "updated_Date",

@@ -15,11 +15,13 @@ const apiProductSchema = yup.object({
     .string()
     .required("Description is required")
     .max(200, "Max 200 characters"),
+  baseAddress: yup.string().required("Base address is required"),
 });
 
 export interface ApiProductRequest {
   name: string;
   description: string;
+  baseAddress: string;
 }
 
 interface ApiProductFormProps {
@@ -48,9 +50,9 @@ export default function ApiProductForm({
             <FormTextField fullWidth label="Name" name="name" />
           </Grid>
 
-
-
-          <Grid size={12}>
+          <Grid size={4}>
+            <FormTextField fullWidth label="Base Address" name="baseAddress" />
+          </Grid>          <Grid size={12}>
             <FormTextField
               fullWidth
               label="Description"

@@ -4,7 +4,7 @@ import { ApiClient } from "./apiClient";
 export const idsrvApi = new ApiClient({
   name: "Identity Server",
   baseURL:
-    (process.env.IDENTITY_SERVER_URL_DEV || "https://localhost:5082") + "/api",
+    ( "https://localhost:5082") ,
 });
 
 export const coreApi = new ApiClient({

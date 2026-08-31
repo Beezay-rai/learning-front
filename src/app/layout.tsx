@@ -3,8 +3,8 @@ import "./globals.css";
 import { ReduxProvider } from "@/providers/ReduxProvider";
 import CommonProvider from "@/providers/CommonProvider";
 export const metadata: Metadata = {
-  title: "TEE HEE",
-  description: "Tee hee",
+  title: "FlowX",
+  description: "FlowX",
 };
 
 export default function RootLayout({

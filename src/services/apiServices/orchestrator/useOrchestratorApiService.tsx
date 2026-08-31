@@ -22,8 +22,8 @@ export interface Product {
   id: number;
   name: string;
   description: string;
-  created_Date: string;
-  updated_Date: string;
+  created_date: string;
+  updated_date: string;
 }
 
 export interface ProductVersion {

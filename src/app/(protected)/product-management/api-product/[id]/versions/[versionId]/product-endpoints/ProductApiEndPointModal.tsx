@@ -24,6 +24,7 @@ import FormSelect from "@/components/molecules/FormSelect";
 import { constantsToSelectOptions } from "@/common/helpers/formHelper";
 import { APP_RUNTIME_EXECUTOR } from "@/common/constants/APP_RUNTIME_EXECUTOR";
 import useApiGatewayService from "@/services/apiServices/api-gateway/useApiGatewayService";
+import useCoreApiService from "@/services/apiServices/core/useCoreApiService";
 
 /* =======================
    Schema
@@ -160,6 +161,18 @@ export default function ProductApiEndpointModal({
     }
   )
 
+    const { useGetRestApiBuilders, useDeleteRestApiBuilder } =
+      useCoreApiService();
+
+      
+  const {
+    data: restApiList,
+    isLoading,
+    isFetching,
+    error,
+    refetch: refetchApiList,
+  } = useGetRestApiBuilders();
+
 
 
   const executionerOptions = useMemo(() => {
@@ -167,12 +180,18 @@ export default function ProductApiEndpointModal({
     if (runTimeExecutioner === APP_RUNTIME_EXECUTOR.API_GATEWAY) {
       return routes?.data?.items.map((route) => ({
         label: route.name,
-        value: route.id,
+        value: String(route.id),
+      })) ?? [];
+    }
+
+     if (runTimeExecutioner === APP_RUNTIME_EXECUTOR.REST_BUILDER) {
+      return restApiList?.data?.items.map((route) => ({
+        label: route.name,
+        value: String(route.id),
       })) ?? [];
     }
     return [
-      { label: "Executioner 1", value: "1" },
-      { label: "Executioner 2", value: "2" },
+     
     ]
   }, [runTimeExecutioner, routes]);
 

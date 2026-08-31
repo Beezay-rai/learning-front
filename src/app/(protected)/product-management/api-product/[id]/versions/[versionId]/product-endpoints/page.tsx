@@ -30,10 +30,11 @@ import useOrchestratorApiService, {
 import ProductApiEndpointModal from "./ProductApiEndPointModal";
 
 function ProductApiEndpointPage() {
-  const { id: productId, versionId } = useParams<{
-    id: string;
-    versionId: string;
-  }>();
+  const params = useParams();
+  const productId = Number(params?.id);
+  const versionId = Number(params?.versionId);
+
+  console.log("[ProductApiEndpointPage] params:", params, "productId:", productId, "versionId:", versionId);
 
   const confirm = useConfirm();
 
@@ -49,16 +50,16 @@ function ProductApiEndpointPage() {
   } = useOrchestratorApiService();
 
   const { data, isLoading, refetch } = useGetProductApiEndpoints(
-    Number(productId),
-    Number(versionId),
+    productId,
+    versionId,
   );
   const [selectedEndpointId, setSelectedEndpointId] = useState<number | null>(
     null,
   );
 
   const { data: endpointDetail } = useGetProductApiEndpointById(
-    Number(productId),
-    Number(versionId),
+    productId,
+    versionId,
     selectedEndpointId ?? 0,
   );
   const { mutateAsync: deleteEndpoint } = useDeleteProductApiEndpoint();
@@ -97,8 +98,8 @@ function ProductApiEndpointPage() {
                 onConfirm: async () => {
                   await deleteEndpoint({
                     id: row.original.id,
-                    productId: Number(productId),
-                    versionId: Number(versionId),
+                    productId,
+                    versionId,
                   });
                   toast.success("Endpoint deleted");
                   refetch();
@@ -170,8 +171,8 @@ function ProductApiEndpointPage() {
         <ProductApiEndpointModal
           open={modal.open}
           defaultValue={modal.isAdd ? undefined : endpointDetail?.data}
-          productId={Number(productId)}
-          versionId={Number(versionId)}
+          productId={productId}
+          versionId={versionId}
           onClose={() => setModal({ open: false, isAdd: true })}
           onSuccess={refetch}
         />

@@ -80,7 +80,7 @@ function ApiProductVersionPage() {
               href={
                 routes["(protected)"]["product-management"]["api-product"]
                   .index +
-                row.original.productId +
+                productId +
                 "/versions/" +
                 row.original.id +
                 "/product-endpoints"
@@ -104,7 +104,7 @@ function ApiProductVersionPage() {
               href={
                 routes["(protected)"]["product-management"]["api-product"]
                   .index +
-                row.original.productId +
+                productId +
                 "/versions/" +
                 row.original.id +
                 "/swagger-doc"

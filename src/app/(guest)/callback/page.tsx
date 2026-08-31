@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { CircularProgress, Box, Typography } from "@mui/material";
 import { signinCallback } from "@/services/authService";
 import { setOIDCUser } from "@/store/appSlices";
-import { useAuth } from "@/lib/auth/useAuth";
 import { User } from "oidc-client-ts";
 
 export default function CallbackPage() {
@@ -15,6 +14,7 @@ export default function CallbackPage() {
   const mapUser = (user: User) => ({
     access_token: user.access_token,
     id_token: user.id_token,
+    refresh_token: user.refresh_token,
     expires_at: user.expires_at,
     profile: user.profile,
   });
@@ -24,7 +24,7 @@ export default function CallbackPage() {
         const user = await signinCallback();
         dispatch(setOIDCUser(mapUser(user)));
         router.push("/dashboard");
-      } catch (err) {
+      } catch {
         // console.error("Error during signin callback:", err);
       }
     };

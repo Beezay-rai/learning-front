@@ -15,8 +15,8 @@ export default function AddProduct() {
   const submit = async (data: ApiProductRequest) => {
     await mutateAsync(data, {
       onSuccess: () => {
-        toast.success("App User created!");
-        router.push(routes["(protected)"]["user-management"]["api-user"].index);
+        toast.success("Api Product created!");
+        router.push(routes["(protected)"]["product-management"]["api-product"].index);
       },
     });
   };

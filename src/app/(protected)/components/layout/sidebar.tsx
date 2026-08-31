@@ -132,6 +132,12 @@ const menuItems: MenuItem[] = [
         link: `${routes["(protected)"].configure["ca-certificate"].index}`,
         icon: CornerDownRight,
       },
+      {
+        id: "work-flow",
+        label: "Step Flows",
+        link: `/workflow`,
+        icon: CornerDownRight,
+      },
     ],
   },
   {
@@ -244,17 +250,14 @@ export function SideBar() {
   return (
     <Drawer
       variant="permanent"
-      // ✅ Remove open prop — useless on permanent variant
       sx={{
         width: !isCollapsed ? 300 : 80,
         flexShrink: 0,
         whiteSpace: "nowrap",
-        // ✅ Remove transition from wrapper — only paper needs it
         "& .MuiDrawer-paper": {
           width: !isCollapsed ? 300 : 80,
           boxSizing: "border-box",
           overflowX: "hidden",
-          // ✅ Use correct duration per direction
           transition: (theme) =>
             theme.transitions.create("width", {
               easing: theme.transitions.easing.sharp,
@@ -283,7 +286,7 @@ export function SideBar() {
               overflow: "hidden",
             }}
           >
-            Tee Hee
+            FlowX
           </span>
         </div>
         <Button
