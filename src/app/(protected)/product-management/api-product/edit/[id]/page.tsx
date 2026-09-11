@@ -32,7 +32,7 @@ export default function UpdateProduct() {
       },
       {
         onSuccess: () => {
-          toast.success("App User created!");
+          toast.success("Api Product Updated Successfully!");
           router.push(
             routes["(protected)"]["product-management"]["api-product"].index,
           );

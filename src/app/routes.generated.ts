@@ -67,6 +67,9 @@ export const routes = {
         edit: {
           index: "/product-management/api-product/edit/",
         },
+        // info routes: base is .index + productId + "/info"
+        // add:  .index + productId + "/info/add"
+        // edit: .index + productId + "/info/edit/" + infoId
       },
     },
     proxy: {
@@ -89,6 +92,19 @@ export const routes = {
       },
       "web-socket": {
         index: "/sockets/web-socket",
+      },
+    },
+    workflow: {
+      index: "/workflow",
+      add: {
+        index: "/workflow/add",
+      },
+      edit: {
+        index: "/workflow/edit/",
+      },
+      builder: {
+        index: "/workflow/",
+        // usage: routes["(protected)"].workflow.builder.index + id + "/builder"
       },
     },
     "user-management": {

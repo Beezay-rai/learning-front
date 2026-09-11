@@ -16,6 +16,7 @@ export const userSlice = createSlice({
   initialState: userState,
   reducers: {
     setOIDCUser: (state, action) => {
+      console.log("test ?")
       state.oidc_user = action.payload;
       state.isAuthenticated = true;
     },

@@ -61,6 +61,29 @@ export interface ProductApiEndpoint {
 export type ProductApiSpec = Record<string, unknown> | string;
 
 /* =========================
+   ProductInfo
+========================= */
+export interface ProductInfo {
+  id: number;
+  name: string;
+  description: string;
+  isActive: boolean;
+  revokedAt?: string | null;
+  revokedReason?: string | null;
+  productKey: string;
+}
+
+export interface ProductInfoRequest {
+  name: string;
+  description: string;
+  isActive: boolean;
+}
+
+export interface RevokeProductInfoKeyRequest {
+  reason?: string;
+}
+
+/* =========================
    API Routes
 ========================= */
 const orchestratorApiRoutes = {
@@ -76,6 +99,12 @@ const orchestratorApiRoutes = {
     `/products/${productId}/versions/${versionId}/endpoints/${endpointId}`,
   apiSpec: (productId: number, versionId: number) =>
     `/products/${productId}/versions/${versionId}/api-spec`,
+  // ProductInfo
+  productInfo: (productId: number) => `/products/${productId}/info`,
+  productInfoById: (productId: number, infoId: number) =>
+    `/products/${productId}/info/${infoId}`,
+  revokeProductInfoKey: (productId: number, infoId: number) =>
+    `/products/${productId}/info/${infoId}/key/revoke`,
   api_users: "/api-users",
   apiUserKeys: (api_user_id: number) => `/api-users/${api_user_id}/keys`,
   generateApiUserKey: (api_user_id: number) =>
@@ -110,6 +139,10 @@ export default function useOrchestratorApiService() {
       ] as const,
     apiSpec: (productId: number, versionId: number) =>
       ["products", productId, "versions", versionId, "api-spec"] as const,
+    productInfo: (productId: number) =>
+      ["products", productId, "info"] as const,
+    productInfoById: (productId: number, infoId: number) =>
+      ["products", productId, "info", infoId] as const,
     apiUsers: ["apiUsers"] as const,
     apiUserById: (id: number) => ["apiUser", id] as const,
     apiUserKeys: (api_user_id: number) => ["apiUserKeys", api_user_id] as const,
@@ -330,6 +363,85 @@ export default function useOrchestratorApiService() {
     ).data;
 
   /* =========================
+     API Calls – ProductInfo
+  ========================= */
+  const getProductInfoList = async (productId: number) =>
+    (
+      await orchestratorApi.get<
+        ApiDataResponse<PaginatedResponse<ProductInfo>>
+      >(orchestratorApiRoutes.productInfo(productId), apiConfig)
+    ).data;
+
+  const getProductInfoById = async (productId: number, infoId: number) =>
+    (
+      await orchestratorApi.get<ApiDataResponse<ProductInfo>>(
+        orchestratorApiRoutes.productInfoById(productId, infoId),
+        apiConfig,
+      )
+    ).data;
+
+  const addProductInfo = async ({
+    productId,
+    payload,
+  }: {
+    productId: number;
+    payload: ProductInfoRequest;
+  }) =>
+    (
+      await orchestratorApi.post<
+        ApiDataResponse<PaginatedResponse<ProductInfo>>
+      >(orchestratorApiRoutes.productInfo(productId), payload, apiConfig)
+    ).data;
+
+  const updateProductInfo = async ({
+    productId,
+    infoId,
+    payload,
+  }: {
+    productId: number;
+    infoId: number;
+    payload: ProductInfoRequest;
+  }) =>
+    (
+      await orchestratorApi.put<ApiDataResponse<ProductInfo>>(
+        orchestratorApiRoutes.productInfoById(productId, infoId),
+        payload,
+        apiConfig,
+      )
+    ).data;
+
+  const deleteProductInfo = async ({
+    productId,
+    infoId,
+  }: {
+    productId: number;
+    infoId: number;
+  }) =>
+    (
+      await orchestratorApi.delete<ApiDataResponse<null>>(
+        orchestratorApiRoutes.productInfoById(productId, infoId),
+        apiConfig,
+      )
+    ).data;
+
+  const revokeProductInfoKey = async ({
+    productId,
+    infoId,
+    payload,
+  }: {
+    productId: number;
+    infoId: number;
+    payload?: RevokeProductInfoKeyRequest;
+  }) =>
+    (
+      await orchestratorApi.post<ApiDataResponse<ProductInfo>>(
+        orchestratorApiRoutes.revokeProductInfoKey(productId, infoId),
+        payload ?? {},
+        apiConfig,
+      )
+    ).data;
+
+  /* =========================
      React Query Hooks
   ========================= */
   const useGetApiProducts = (
@@ -472,6 +584,75 @@ export default function useOrchestratorApiService() {
       onSuccess: (_, vars) => {
         queryClient.invalidateQueries({
           queryKey: QUERY_KEYS.apiSpec(vars.productId, vars.versionId),
+        });
+      },
+    });
+
+  /* =========================
+     React Query Hooks – ProductInfo
+  ========================= */
+  const useGetProductInfoList = (productId: number) =>
+    useQuery({
+      queryKey: QUERY_KEYS.productInfo(productId),
+      queryFn: () => getProductInfoList(productId),
+      enabled: !!productId,
+    });
+
+  const useGetProductInfoById = (
+    productId: number,
+    infoId: number,
+    options?: Omit<
+      UseQueryOptions<ApiDataResponse<ProductInfo>, Error>,
+      "queryKey" | "queryFn"
+    >,
+  ) =>
+    useQuery({
+      queryKey: QUERY_KEYS.productInfoById(productId, infoId),
+      queryFn: () => getProductInfoById(productId, infoId),
+      enabled: !!productId && !!infoId,
+      ...options,
+    });
+
+  const useAddProductInfo = () =>
+    useMutation({
+      mutationFn: addProductInfo,
+      onSuccess: (_, vars) =>
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.productInfo(vars.productId),
+        }),
+    });
+
+  const useUpdateProductInfo = () =>
+    useMutation({
+      mutationFn: updateProductInfo,
+      onSuccess: (_, vars) => {
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.productInfo(vars.productId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.productInfoById(vars.productId, vars.infoId),
+        });
+      },
+    });
+
+  const useDeleteProductInfo = () =>
+    useMutation({
+      mutationFn: deleteProductInfo,
+      onSuccess: (_, vars) =>
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.productInfo(vars.productId),
+        }),
+    });
+
+  const useRevokeProductInfoKey = () =>
+    useMutation({
+      mutationFn: revokeProductInfoKey,
+      onSuccess: (_, vars) => {
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.productInfo(vars.productId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.productInfoById(vars.productId, vars.infoId),
         });
       },
     });
@@ -664,6 +845,14 @@ export default function useOrchestratorApiService() {
     useGetProductApiEndpointById,
     useGetProductApiSpec,
     useUpdateProductApiSpec,
+
+    // ProductInfo
+    useGetProductInfoList,
+    useGetProductInfoById,
+    useAddProductInfo,
+    useUpdateProductInfo,
+    useDeleteProductInfo,
+    useRevokeProductInfoKey,
 
     // API Users
     useGetApiUsers,

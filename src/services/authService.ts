@@ -8,7 +8,7 @@ const config: UserManagerSettings = {
   client_id: "nextjs-app",
   redirect_uri: `${appBaseUrl}/callback`,
   post_logout_redirect_uri: `${appBaseUrl}`,
-  automaticSilentRenew: true,
+  automaticSilentRenew: false,
   response_type: "code",
   scope: "openid profile email api.read api.write",
   refreshTokenAllowedScope: "api.read api.write",

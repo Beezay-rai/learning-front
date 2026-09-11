@@ -14,6 +14,7 @@ import {
   CornerDownRight,
   FlaskConical,
   Stethoscope,
+  GitBranch,
 } from "lucide-react";
 import SettingsInputCompositeIcon from "@mui/icons-material/SettingsInputComposite";
 import ElectricalServicesIcon from "@mui/icons-material/ElectricalServices";
@@ -161,6 +162,19 @@ const menuItems: MenuItem[] = [
         id: "app-user-roles",
         label: "Roles",
         link: `${routes["(protected)"]["user-management"].role.index}`,
+        icon: CornerDownRight,
+      },
+    ],
+  },
+  {
+    id: "workflow",
+    label: "Workflows",
+    icon: GitBranch,
+    subItems: [
+      {
+        id: "workflow-list",
+        label: "State Machines",
+        link: `${routes["(protected)"].workflow.index}`,
         icon: CornerDownRight,
       },
     ],

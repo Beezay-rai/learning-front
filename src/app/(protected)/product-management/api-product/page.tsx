@@ -16,6 +16,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LayersIcon from "@mui/icons-material/Layers";
+import InfoIcon from "@mui/icons-material/Info";
 import { useState } from "react";
 import Link from "next/link";
 import { ColumnDef, Row } from "@tanstack/react-table";
@@ -108,6 +109,27 @@ function ApiProductPage() {
                 <LayersIcon fontSize="small" />
               </ListItemIcon>
               <ListItemText>Versions</ListItemText>
+            </Link>
+          </MenuItem>
+
+          <MenuItem>
+            <Link
+              href={
+                routes["(protected)"]["product-management"]["api-product"]
+                  .index +
+                row.original.id +
+                "/info"
+              }
+              style={{
+                display: "flex",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <ListItemIcon>
+                <InfoIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Product Info</ListItemText>
             </Link>
           </MenuItem>
 
