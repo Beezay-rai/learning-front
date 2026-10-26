@@ -21,6 +21,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import { routes } from "@/app/routes.generated";
+import FormShell from "@/components/molecules/FormShell";
+import FormActions from "@/components/molecules/FormActions";
 
 interface ClusterFormProps {
   onSubmit: (data: ClusterRequest) => void;
@@ -80,11 +82,8 @@ export default function ClusterForm({
   });
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit(onSubmit)}
-      sx={{ display: "flex", flexDirection: "column", gap: 3 }}
-    >
+    <FormShell title={isAdd ? "Add Cluster" : "Update Cluster"} description="Configure destinations for this API gateway cluster." component="form" onSubmit={handleSubmit(onSubmit)}>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       <Grid container spacing={2}>
         <Grid size={5}>
           <Controller
@@ -175,35 +174,8 @@ export default function ClusterForm({
         </Grid>
       ))}
 
-      <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
-        <Button
-          type="submit"
-          variant="contained"
-          color={isAdd ? "primary" : "warning"}
-          disabled={loading}
-          sx={{ minWidth: 120 }}
-        >
-          {loading
-            ? isAdd
-              ? "Adding..."
-              : "Updating..."
-            : isAdd
-              ? "Add Cluster"
-              : "Update"}
-        </Button>
-
-        <Link href={routes["(protected)"]["api-gateway"].cluster.index}>
-          <Button
-            type="button"
-            variant="outlined"
-            color="error"
-            disabled={loading}
-            sx={{ minWidth: 120 }}
-          >
-            Cancel
-          </Button>
-        </Link>
+      <FormActions submitLabel={isAdd ? "Add cluster" : "Update cluster"} loading={loading} cancel={<Link href={routes["(protected)"]["api-gateway"].cluster.index}><Button type="button" color="inherit" disabled={loading}>Cancel</Button></Link>} />
       </Box>
-    </Box>
+    </FormShell>
   );
 }

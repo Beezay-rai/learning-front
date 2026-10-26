@@ -84,13 +84,7 @@ export default function EditRoutePage() {
     return <NotFound />;
   }
 
-  return (
-    <Paper sx={{ p: 4 }}>
-      <Typography sx={{ my: 3 }} variant="h5">
-        Update Route
-      </Typography>
-
-      {routeLoading ? (
+  return routeLoading ? (
         <CircularProgress color="inherit" />
       ) : (
         <RouteForm
@@ -99,7 +93,5 @@ export default function EditRoutePage() {
           loading={isSubmitting}
           defaultValue={route.data}
         ></RouteForm>
-      )}
-    </Paper>
-  );
+      );
 }

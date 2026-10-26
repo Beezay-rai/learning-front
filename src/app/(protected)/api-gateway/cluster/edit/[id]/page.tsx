@@ -90,12 +90,7 @@ export default function UpdateCluster() {
     return <NotFound />;
   }
 
-  return (
-    <Paper sx={{ p: 4 }}>
-      <Typography variant="h5" gutterBottom>
-        Update Cluster
-      </Typography>
-      {clusterLoading ? (
+  return clusterLoading ? (
         <CircularProgress color="inherit" />
       ) : (
         <ClusterForm
@@ -104,7 +99,5 @@ export default function UpdateCluster() {
           defaultValue={cluster.data}
           loading={isSubmitting}
         ></ClusterForm>
-      )}
-    </Paper>
-  );
+      );
 }

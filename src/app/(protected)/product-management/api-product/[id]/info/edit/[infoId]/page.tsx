@@ -54,16 +54,11 @@ export default function EditProductInfo() {
   const { name, description, isActive } = productInfoRes.data;
 
   return (
-    <Paper sx={{ p: 4 }}>
-      <Typography variant="h5" gutterBottom>
-        Edit Product Info
-      </Typography>
       <ProductInfoForm
         onSubmit={onSubmit}
         loading={isPending}
         isAdd={false}
         defaultValue={{ name, description, isActive }}
       />
-    </Paper>
   );
 }

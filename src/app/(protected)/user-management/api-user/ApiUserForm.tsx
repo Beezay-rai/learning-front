@@ -15,6 +15,8 @@ import { routes } from "@/app/routes.generated";
 import FormTextField from "@/components/molecules/FormTextField";
 import { AddUserRequest } from "@/services/apiServices/idsrv/interface/UserModel";
 import { ApiUserRequest } from "@/services/apiServices/core/interface/apiUserModel";
+import FormShell from "@/components/molecules/FormShell";
+import FormActions from "@/components/molecules/FormActions";
 
 const userSchema = yup.object({
   name: yup.string().required("Name is required").max(50, "Max 50 characters"),
@@ -61,7 +63,7 @@ export default function ApiUserForm({
 
   return (
     <FormProvider {...formMethods}>
-      <form onSubmit={formMethods.handleSubmit(onSubmit)}>
+      <FormShell title={isAdd ? "Add API User" : "Update API User"} description="Manage credentials and access for an API consumer." component="form" onSubmit={formMethods.handleSubmit(onSubmit)}>
         <Grid
           container
           spacing={2}
@@ -88,38 +90,8 @@ export default function ApiUserForm({
           </Grid>
         </Grid>
 
-        <Box sx={{ display: "flex", gap: 2, m: 3 }}>
-          <Button
-            type="submit"
-            variant="contained"
-            color={isAdd ? "primary" : "warning"}
-            disabled={loading}
-            sx={{ minWidth: 120 }}
-          >
-            {loading
-              ? isAdd
-                ? "Adding..."
-                : "Updating..."
-              : isAdd
-                ? "Add User"
-                : "Update"}
-          </Button>
-
-          <Link
-            href={routes["(protected)"]["user-management"]["api-user"].index}
-          >
-            <Button
-              type="button"
-              variant="outlined"
-              color="error"
-              disabled={loading}
-              sx={{ minWidth: 120 }}
-            >
-              Cancel
-            </Button>
-          </Link>
-        </Box>
-      </form>
+        <FormActions submitLabel={isAdd ? "Add user" : "Update user"} loading={loading} cancel={<Link href={cancelUrl}><Button type="button" color="inherit" disabled={loading}>Cancel</Button></Link>} />
+      </FormShell>
     </FormProvider>
   );
 }

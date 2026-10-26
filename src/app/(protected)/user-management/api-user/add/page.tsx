@@ -23,17 +23,11 @@ export default function AddAppUser() {
   };
 
   return (
-    <Paper sx={{ p: 4 }}>
-      <Typography variant="h5" gutterBottom>
-        Add Api User
-      </Typography>
-
       <ApiUserForm
         onSubmit={submit}
         loading={isPending}
         isAdd={true}
         cancelUrl={routes["(protected)"]["user-management"]["api-user"].index}
       />
-    </Paper>
   );
 }

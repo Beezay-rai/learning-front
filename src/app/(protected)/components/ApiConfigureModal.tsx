@@ -15,6 +15,7 @@ import {
   FormControlLabel,
   Stack,
 } from "@mui/material";
+import ModalFormHeader from "@/components/molecules/ModalFormHeader";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -70,9 +71,9 @@ export default function ApiConfigureModal({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>Configure API</DialogTitle>
+      <ModalFormHeader title="Configure API" description="Set authentication, rate limiting, and request logging." />
 
-      <DialogContent>
+      <DialogContent sx={{ p: 3 }}>
         <Stack spacing={3} mt={1}>
           <FormProvider {...formMethods}>
             {/* Auth Select */}
@@ -149,7 +150,7 @@ export default function ApiConfigureModal({
         </Stack>
       </DialogContent>
 
-      <DialogActions>
+      <DialogActions sx={{ px: 3, pb: 3 }}>
         <Button
           onClick={onClose}
           disabled={isLoading}

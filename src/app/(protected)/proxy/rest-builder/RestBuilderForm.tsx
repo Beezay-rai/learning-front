@@ -34,6 +34,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CodeMirror from "@uiw/react-codemirror";
 import { json } from "@codemirror/lang-json";
+import { xml } from "@codemirror/lang-xml";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { KeyValuePair } from "@/common/types/keyValuePair";
 import {
@@ -67,6 +68,7 @@ import {
   TypeGenericKeyValuePair,
 } from "@/services/apiServices/common/GenericKeyValuePair";
 import { methodColorMap } from "@/palette/HttpMethodColor";
+import { Settings2 } from "lucide-react";
 
 interface ResponseData {
   status: number;
@@ -76,6 +78,19 @@ interface ResponseData {
   body: string;
   headers: Record<string, string>;
 }
+
+interface BodyField {
+  key: string;
+  value: string;
+  file?: {
+    name: string;
+    type: string;
+    base64: string;
+  };
+}
+
+type BodyMode = "none" | "raw" | "urlencoded" | "formData";
+type RawType = "json" | "xml" | "text";
 
 interface RestBuilderFormProps {
   onSubmit: (data: RestApiBuilderRequest) => void;
@@ -120,49 +135,104 @@ export default function RestBuilderForm({
   const params = formMethods.watch("params");
   const headers = formMethods.watch("headers");
 
-  const [contentType, setContentType] = useState("application/json");
+  const [bodyMode, setBodyMode] = useState<BodyMode>("raw");
+  const [rawType, setRawType] = useState<RawType>("json");
+  const [bodyFields, setBodyFields] = useState<BodyField[]>([
+    { key: "", value: "" },
+  ]);
 
   const [auth, setAuth] = useState<AuthConfig>({ type: "none" });
 
   const [response, setResponse] = useState<ResponseData | null>(null);
   const [apiLoading, setApiLoading] = useState(false);
+  const contentType =
+    bodyMode === "raw"
+      ? rawType === "json"
+        ? "application/json"
+        : rawType === "xml"
+          ? "application/xml"
+          : "text/plain"
+      : bodyMode === "urlencoded"
+        ? "application/x-www-form-urlencoded"
+        : bodyMode === "formData"
+          ? "multipart/form-data"
+          : "";
 
   const finalUrl = useMemo(() => {
-    // const enabled = params.filter((p) => p.enabled && p.key.trim());
-    // if (enabled.length === 0) return rawUrl;
+    if (!rawUrl?.trim()) return rawUrl;
 
     try {
       const u = new URL(rawUrl);
-      // enabled.forEach((p) => {
-      //   u.searchParams.set(p.key.trim(), p.value.trim());
-      // });
-      paramFields.forEach((p) => {
-        u.searchParams.set(p.key.trim(), p.value.trim());
+
+      params?.forEach((param) => {
+        const key = param.key.trim();
+        if (key) {
+          u.searchParams.set(key, param.value);
+        }
       });
+
       return u.toString();
     } catch {
-      return rawUrl;
+      const query = (params ?? [])
+        .filter((param) => param.key.trim())
+        .map(
+          (param) =>
+            `${encodeURIComponent(param.key.trim())}=${encodeURIComponent(param.value)}`,
+        )
+        .join("&");
+
+      if (!query) return rawUrl;
+      return `${rawUrl}${rawUrl.includes("?") ? "&" : "?"}${query}`;
     }
   }, [rawUrl, params]);
 
   const requestHeaders = useMemo(() => {
-    const h: Record<string, string> = { "Content-Type": contentType };
+    const headers: Record<string, string> =
+      contentType === "multipart/form-data"
+        ? {}
+        : { "Content-Type": contentType };
 
     if (auth.type === "basic") {
-      h["Authorization"] =
+      headers["Authorization"] =
         "Basic " +
         btoa(`${(auth as AuthBasic).username}:${(auth as AuthBasic).password}`);
     } else if (auth.type === "bearer") {
-      h["Authorization"] = "Bearer " + (auth as AuthBearer).token;
+      headers["Authorization"] = "Bearer " + (auth as AuthBearer).token;
     } else if (
       auth.type === "api-key" &&
       (auth as AuthApiKey).addTo === "header"
     ) {
-      h[(auth as AuthApiKey).key] = (auth as AuthApiKey).value;
+      headers[(auth as AuthApiKey).key] = (auth as AuthApiKey).value;
     }
 
-    return h;
+    return headers;
   }, [headerFields, contentType, auth]);
+
+  const requestBody = useMemo(() => {
+    const fields = bodyFields.filter((field) => field.key.trim());
+
+    if (contentType === "application/x-www-form-urlencoded") {
+      return fields
+        .map(
+          (field) =>
+            `${encodeURIComponent(field.key.trim())}=${encodeURIComponent(field.value)}`,
+        )
+        .join("&");
+    }
+
+    if (contentType === "multipart/form-data") {
+      return {
+        type: "multipart",
+        fields: fields.map((field) => ({
+          name: field.key.trim(),
+          value: field.value,
+          file: field.file,
+        })),
+      };
+    }
+
+    return bodyMode === "raw" ? body : "";
+  }, [body, bodyFields, bodyMode, contentType]);
 
   const sendRequest = useCallback(async () => {
     setApiLoading(true);
@@ -180,7 +250,11 @@ export default function RestBuilderForm({
         body: JSON.stringify({
           url: finalUrl,
           method: method,
-          headers: { ...requestHeaders, ...test },
+          headers: {
+            ...requestHeaders,
+            ...test,
+          },
+          body: requestBody,
         }),
       });
 
@@ -209,7 +283,7 @@ export default function RestBuilderForm({
     } finally {
       setApiLoading(false);
     }
-  }, [finalUrl, method, requestHeaders, body]);
+  }, [contentType, finalUrl, method, requestBody, requestHeaders, headers]);
 
   const formatJson = (raw: string) => {
     try {
@@ -217,6 +291,46 @@ export default function RestBuilderForm({
     } catch {
       return raw;
     }
+  };
+
+  const formatXml = (raw: string) => {
+    try {
+      const document = new DOMParser().parseFromString(raw, "application/xml");
+      if (document.querySelector("parsererror")) return raw;
+
+      let level = 0;
+      return new XMLSerializer()
+        .serializeToString(document)
+        .replace(/(>)(<)(\/*)/g, "$1\n$2$3")
+        .split("\n")
+        .map((line) => {
+          const trimmed = line.trim();
+          if (trimmed.startsWith("</")) level -= 1;
+          const formatted = `${"  ".repeat(Math.max(level, 0))}${trimmed}`;
+          if (
+            trimmed.startsWith("<") &&
+            !trimmed.startsWith("</") &&
+            !trimmed.startsWith("<?") &&
+            !trimmed.endsWith("/>")
+          ) {
+            level += 1;
+          }
+          return formatted;
+        })
+        .join("\n");
+    } catch {
+      return raw;
+    }
+  };
+
+  const formatRawBody = () => {
+    setBody((currentBody) =>
+      rawType === "json"
+        ? formatJson(currentBody)
+        : rawType === "xml"
+          ? formatXml(currentBody)
+          : currentBody,
+    );
   };
   const methodOptions: FormSelectOption[] = [
     "GET",
@@ -242,9 +356,18 @@ export default function RestBuilderForm({
 
   return (
     <Paper
-      elevation={3}
-      sx={{ borderRadius: 2, overflow: "hidden", height: "100%" }}
+      elevation={0}
+      sx={{ border: 1, borderColor: "divider", borderRadius: 2, overflow: "hidden", height: "100%" }}
     >
+      <Box sx={{ px: { xs: 2, sm: 3 }, py: 2.5, bgcolor: "action.hover", borderBottom: 1, borderColor: "divider" }}>
+        <Stack direction="row" spacing={1.5} alignItems="center">
+          <Settings2 size={22} />
+          <Box>
+            <Typography variant="h6">{isAdd ? "Add REST Request" : "Update REST Request"}</Typography>
+            <Typography variant="body2" color="text.secondary">Build, configure, and test an HTTP request.</Typography>
+          </Box>
+        </Stack>
+      </Box>
       <FormProvider {...formMethods}>
         <form
           onSubmit={formMethods.handleSubmit(
@@ -264,17 +387,17 @@ export default function RestBuilderForm({
             container
             spacing={2}
             sx={{
-              p: 3,
+              p: { xs: 2, md: 3 },
             }}
           >
-            <Grid size={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <FormTextField fullWidth label="Name" name="name" />
             </Grid>
-            <Grid size={8}>
+            <Grid size={{ xs: 12, md: 8 }}>
               {/* <FormTextField fullWidth label="Description" name="description" /> */}
             </Grid>
 
-            <Grid size={1}>
+            <Grid size={{ xs: 12, sm: 2, md: 2 }}>
               <FormSelect
                 name="method"
                 size="small"
@@ -321,7 +444,7 @@ export default function RestBuilderForm({
                 </Select>
               </FormControl> */}
             </Grid>
-            <Grid size={10}>
+            <Grid size={{ xs: 12, sm: 8, md: 8 }}>
               <FormTextField
                 name="url"
                 fullWidth
@@ -330,12 +453,13 @@ export default function RestBuilderForm({
                 onKeyDown={(e) => e.key === "Enter" && sendRequest()}
               ></FormTextField>
             </Grid>
-            <Grid size={1}>
+            <Grid size={{ xs: 12, sm: 2, md: 2 }}>
               <Button
                 variant="contained"
                 startIcon={<SendIcon />}
                 onClick={sendRequest}
                 disabled={apiLoading}
+                fullWidth
               >
                 {apiLoading ? "Sending…" : "Send"}
               </Button>
@@ -674,62 +798,205 @@ export default function RestBuilderForm({
             {/* BODY + CONTENT-TYPE */}
             {activeReqTab === 3 && (
               <Stack spacing={2}>
-                <RadioGroup
-                  sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                  }}
-                  value={contentType}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setContentType(val);
-                    // setHeaders((prev) =>
-                    //   prev.map((h) =>
-                    //     h.key === "Content-Type" ? { ...h, value: val } : h
-                    //   )
-                    // );
-                  }}
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  alignItems="center"
+                  flexWrap="wrap"
+                  useFlexGap
                 >
-                  <FormControlLabel value="" control={<Radio />} label="none" />
-                  <FormControlLabel
-                    value="application/json"
-                    control={<Radio />}
-                    label="application/json"
-                  />
-                  <FormControlLabel
-                    value="application/x-www-form-urlencoded"
-                    control={<Radio />}
-                    label="x-www-form-urlencoded"
-                  />
-                  <FormControlLabel
-                    value="text/plain"
-                    control={<Radio />}
-                    label="text/plain"
-                  />
-                  <FormControlLabel
-                    value="multipart/form-data"
-                    control={<Radio />}
-                    label="multipart/form-data"
-                  />
-                </RadioGroup>
+                  <RadioGroup
+                    row
+                    value={bodyMode}
+                    onChange={(e) => setBodyMode(e.target.value as BodyMode)}
+                  >
+                    <FormControlLabel value="none" control={<Radio />} label="None" />
+                    <FormControlLabel value="raw" control={<Radio />} label="Raw" />
+                    <FormControlLabel
+                      value="urlencoded"
+                      control={<Radio />}
+                      label="x-www-form-urlencoded"
+                    />
+                    <FormControlLabel
+                      value="formData"
+                      control={<Radio />}
+                      label="form-data"
+                    />
+                  </RadioGroup>
 
-                {contentType !== "multipart/form-data" ? (
-                  <CodeMirror
-                    value={body}
-                    height="280px"
-                    extensions={[json()]}
-                    theme={oneDark}
-                    onChange={(val) => setBody(val)}
-                  />
+                  {bodyMode === "raw" && (
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <FormControl size="small" sx={{ minWidth: 80 }}>
+                        <Select
+                          value={rawType}
+                          variant="standard"
+                          disableUnderline
+                          sx={{
+                            color: "primary.main",
+                            "& .MuiSelect-icon": { color: "primary.main" },
+                          }}
+                          onChange={(e) => setRawType(e.target.value as RawType)}
+                        >
+                          <MenuItem value="json">JSON</MenuItem>
+                          <MenuItem value="xml">XML</MenuItem>
+                          <MenuItem value="text">Text</MenuItem>
+                        </Select>
+                      </FormControl>
+                      {rawType !== "text" && (
+                        <Button variant="outlined" size="small" onClick={formatRawBody}>
+                          Beautify
+                        </Button>
+                      )}
+                    </Stack>
+                  )}
+                </Stack>
+
+                {bodyMode === "raw" ? (
+                  <Stack spacing={1}>
+                    <CodeMirror
+                      value={body}
+                      height="280px"
+                      extensions={rawType === "json" ? [json()] : rawType === "xml" ? [xml()] : []}
+                      theme={oneDark}
+                      onChange={(val) => setBody(val)}
+                    />
+                  </Stack>
+                ) : bodyMode === "urlencoded" || bodyMode === "formData" ? (
+                  <TableContainer>
+                    <Table size="small">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Key</TableCell>
+                          <TableCell>Value</TableCell>
+                          <TableCell width={120}>
+                            <Button
+                              startIcon={<AddIcon />}
+                              size="small"
+                              onClick={() =>
+                                setBodyFields((fields) => [
+                                  ...fields,
+                                  { key: "", value: "" },
+                                ])
+                              }
+                            >
+                              Add Field
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {bodyFields.map((field, index) => (
+                          <TableRow key={index}>
+                            <TableCell>
+                              <TextField
+                                size="small"
+                                value={field.key}
+                                onChange={(event) =>
+                                  setBodyFields((fields) =>
+                                    fields.map((item, itemIndex) =>
+                                      itemIndex === index
+                                        ? { ...item, key: event.target.value }
+                                        : item,
+                                    ),
+                                  )
+                                }
+                                fullWidth
+                                placeholder="Field name"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <TextField
+                                size="small"
+                                value={field.value}
+                                disabled={bodyMode === "formData" && !!field.file}
+                                onChange={(event) =>
+                                  setBodyFields((fields) =>
+                                    fields.map((item, itemIndex) =>
+                                      itemIndex === index
+                                        ? {
+                                            ...item,
+                                            value: event.target.value,
+                                          }
+                                        : item,
+                                    ),
+                                  )
+                                }
+                                fullWidth
+                                placeholder="Value"
+                              />
+                              {bodyMode === "formData" && (
+                                <Button
+                                  component="label"
+                                  size="small"
+                                  sx={{ mt: 0.5 }}
+                                >
+                                  {field.file ? field.file.name : "Choose file"}
+                                  <input
+                                    hidden
+                                    type="file"
+                                    onChange={async (event) => {
+                                      const file = event.target.files?.[0];
+                                      if (!file) return;
+
+                                      const bytes = new Uint8Array(
+                                        await file.arrayBuffer(),
+                                      );
+                                      let binary = "";
+                                      const chunkSize = 0x8000;
+                                      for (
+                                        let offset = 0;
+                                        offset < bytes.length;
+                                        offset += chunkSize
+                                      ) {
+                                        binary += String.fromCharCode(
+                                          ...bytes.subarray(offset, offset + chunkSize),
+                                        );
+                                      }
+                                      const base64 = btoa(binary);
+
+                                      setBodyFields((fields) =>
+                                        fields.map((item, itemIndex) =>
+                                          itemIndex === index
+                                            ? {
+                                                ...item,
+                                                file: {
+                                                  name: file.name,
+                                                  type: file.type,
+                                                  base64,
+                                                },
+                                              }
+                                            : item,
+                                        ),
+                                      );
+                                    }}
+                                  />
+                                </Button>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              <IconButton
+                                size="small"
+                                onClick={() =>
+                                  setBodyFields((fields) =>
+                                    fields.filter(
+                                      (_, itemIndex) => itemIndex !== index,
+                                    ),
+                                  )
+                                }
+                                disabled={bodyFields.length === 1}
+                              >
+                                <DeleteIcon fontSize="small" />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
                 ) : (
-                  <>
-                    <Typography
-                      color="text.secondary"
-                      sx={{ fontStyle: "italic" }}
-                    >
-                      No request body
-                    </Typography>
-                  </>
+                  <Typography color="text.secondary" sx={{ fontStyle: "italic" }}>
+                    No request body
+                  </Typography>
                 )}
 
                 {/* {contentType === "multipart/form-data" && (

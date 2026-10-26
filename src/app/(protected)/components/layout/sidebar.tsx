@@ -1,498 +1,170 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronUp,
-  ChevronDown,
-  Database,
-  Layers,
-  House,
-  Activity,
-  CornerDownRight,
-  FlaskConical,
-  Stethoscope,
-  GitBranch,
-} from "lucide-react";
-import SettingsInputCompositeIcon from "@mui/icons-material/SettingsInputComposite";
-import ElectricalServicesIcon from "@mui/icons-material/ElectricalServices";
-import {
+  Box,
   Button,
-  Drawer,
-  Collapse,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  ListSubheader,
   Dialog,
-  DialogTitle,
   DialogActions,
   DialogContent,
-  Box,
-  Avatar,
-  Typography,
+  DialogTitle,
+  Drawer,
+  IconButton,
+  List,
+  ListSubheader,
   Stack,
+  Typography,
 } from "@mui/material";
-import SettingsIcon from "@mui/icons-material/Settings";
-import { routes } from "@/app/routes.generated";
-import { useDispatch, useSelector } from "react-redux";
-import { signoutRedirect } from "@/services/authService";
+import type { Theme } from "@mui/material/styles";
 import { useGetUserInfo } from "@/hooks/useGetUserInfo";
 import { useAuth } from "@/lib/auth/useAuth";
-interface MenuItem {
-  id: string;
-  label: string;
-  link?: string;
-  icon: React.ElementType;
-  subItems?: MenuItem[];
+import { findActiveHref, findGroupIdByHref, menuItems } from "./MenuConfig";
+import { SidebarNavItem } from "./SidebarNavItem";
+import { SidebarUserFooter } from "./SidebarUserFooter";
+
+const EXPANDED_WIDTH = 300;
+const COLLAPSED_WIDTH = 80;
+
+const widthTransition = (collapsed: boolean) => (theme: Theme) =>
+  theme.transitions.create("width", {
+    easing: theme.transitions.easing.sharp,
+    duration: collapsed
+      ? theme.transitions.duration.leavingScreen
+      : theme.transitions.duration.enteringScreen,
+  });
+
+function LogoutDialog({
+  open,
+  onClose,
+  onConfirm,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>Confirm logout</DialogTitle>
+      <DialogContent>Are you sure you want to log out?</DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button color="error" onClick={onConfirm}>
+          Log out
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
 }
 
-const menuItems: MenuItem[] = [
-  { id: "dashboard", label: "Dashboard", link: "/dashboard", icon: House },
-  {
-    id: "api-gateway",
-    label: "API Gateway",
-    icon: Layers,
-    subItems: [
-      {
-        id: "route",
-        label: "Route",
-        link: "/api-gateway/route",
-        icon: CornerDownRight,
-      },
-      {
-        id: "cluster",
-        label: "Cluster",
-        link: "/api-gateway/cluster",
-        icon: CornerDownRight,
-      },
-    ],
-  },
-  {
-    id: "webSocket",
-    label: "Sockets",
-    icon: ElectricalServicesIcon,
-    subItems: [
-      {
-        id: "signalR",
-        label: "SignalR Hubs",
-        link: "/sockets/signalR",
-        icon: CornerDownRight,
-      },
-      {
-        id: "webSocket",
-        label: "Web Sockets",
-        link: "/sockets/web-socket",
-        icon: CornerDownRight,
-      },
-    ],
-  },
-  {
-    id: "httpProxy",
-    label: "Http Proxy",
-    icon: SettingsInputCompositeIcon,
-    subItems: [
-      {
-        id: "restBuilder",
-        label: "Rest Builder",
-        link: "/proxy/rest-builder",
-        icon: CornerDownRight,
-      },
-      {
-        id: "soapBuilder",
-        label: "Soap Builder",
-        link: "/proxy/soap-builder",
-        icon: CornerDownRight,
-      },
-    ],
-  },
-
-  {
-    id: "config",
-    label: "Configure",
-    icon: SettingsIcon,
-    subItems: [
-      {
-        id: "identity-config",
-        label: "Identity Server",
-        link: `${routes["(protected)"].configure.index}`,
-        icon: CornerDownRight,
-      },
-      {
-        id: "ssl-certificate",
-        label: "SSL Certificate",
-        link: `${routes["(protected)"].configure["ssl-certificate"].index}`,
-        icon: CornerDownRight,
-      },
-      {
-        id: "ca-certificate",
-        label: "CA Certificate",
-        link: `${routes["(protected)"].configure["ca-certificate"].index}`,
-        icon: CornerDownRight,
-      },
-      {
-        id: "work-flow",
-        label: "Step Flows",
-        link: `/workflow`,
-        icon: CornerDownRight,
-      },
-    ],
-  },
-  {
-    id: "user-management",
-    label: "User Management",
-    icon: SettingsIcon,
-    subItems: [
-      {
-        id: "api-user",
-        label: "API Users",
-        link: `${routes["(protected)"]["user-management"]["api-user"].index}`,
-        icon: CornerDownRight,
-      },
-      {
-        id: "app-user",
-        label: "System Users",
-        link: `${routes["(protected)"]["user-management"].user.index}`,
-        icon: CornerDownRight,
-      },
-      {
-        id: "app-user-roles",
-        label: "Roles",
-        link: `${routes["(protected)"]["user-management"].role.index}`,
-        icon: CornerDownRight,
-      },
-    ],
-  },
-  {
-    id: "workflow",
-    label: "Workflows",
-    icon: GitBranch,
-    subItems: [
-      {
-        id: "workflow-list",
-        label: "State Machines",
-        link: `${routes["(protected)"].workflow.index}`,
-        icon: CornerDownRight,
-      },
-    ],
-  },
-  {
-    id: "product-management",
-    label: "Product Management",
-    icon: SettingsIcon,
-    subItems: [
-      {
-        id: "api-product",
-        label: "API Products",
-        link: `${routes["(protected)"]["product-management"]["api-product"].index}`,
-        icon: CornerDownRight,
-      },
-    ],
-  },
-  {
-    id: "playground",
-    label: "Playground",
-    icon: FlaskConical,
-    subItems: [
-      {
-        id: "code-editor",
-        label: "Code Editor",
-        link: "/playground/code-editor",
-        icon: CornerDownRight,
-      },
-
-      {
-        id: "json-formatter",
-        label: "JSON Formatter",
-        link: "/playground/json-formatter",
-        icon: CornerDownRight,
-      },
-      {
-        id: "api-tester",
-        label: "API Tester",
-        link: "/playground/api-tester",
-        icon: CornerDownRight,
-      },
-      {
-        id: "jwt-inspector",
-        label: "JWT Inspector",
-        link: "/playground/jwt-inspector",
-        icon: CornerDownRight,
-      },
-    ],
-  },
-  {
-    id: "diagnose",
-    label: "Diagnose",
-    icon: Stethoscope,
-    subItems: [
-      {
-        id: "network-logs",
-        label: "Network Logs",
-        link: "/diagnose/network-logs",
-        icon: CornerDownRight,
-      },
-    ],
-  },
-];
-
-export function SideBar() {
-  const [isCollapsed, setIsCollapsed] = React.useState(false);
-  const [activeItem, setActiveItem] = React.useState("home");
-  const [openItem, setOpenItem] = React.useState<string | null>(null);
-  const [logoutOpen, setLogoutOpen] = React.useState(false);
-  const dispatch = useDispatch();
-  const handleItemClick = (itemId: string, hasSubItems: boolean) => {
-    setActiveItem(itemId);
-    if (hasSubItems) {
-      setOpenItem(openItem === itemId ? null : itemId);
-    }
-  };
+export function Sidebar() {
+  const pathname = usePathname();
   const { logout } = useAuth();
+  const { fullName = "", email = "" } = useGetUserInfo();
 
-  const { fullName, email } = useGetUserInfo();
-  const initials = fullName
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .substring(0, 2)
-    .toUpperCase();
+  const [isCollapsed, setIsCollapsed] = React.useState(false);
+  const [openGroupId, setOpenGroupId] = React.useState<string | null>(null);
+  const [logoutOpen, setLogoutOpen] = React.useState(false);
+
+  const activeHref = React.useMemo(() => findActiveHref(pathname), [pathname]);
+
+  React.useEffect(() => {
+    const groupId = findGroupIdByHref(activeHref);
+    if (groupId) setOpenGroupId(groupId);
+  }, [activeHref]);
+
+  const toggleGroup = React.useCallback(
+    (id: string) => setOpenGroupId((prev) => (prev === id ? null : id)),
+    [],
+  );
+
+  const width = isCollapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH;
 
   return (
     <Drawer
       variant="permanent"
       sx={{
-        width: !isCollapsed ? 300 : 80,
+        width,
         flexShrink: 0,
         whiteSpace: "nowrap",
+        transition: widthTransition(isCollapsed),
         "& .MuiDrawer-paper": {
-          width: !isCollapsed ? 300 : 80,
+          width,
           boxSizing: "border-box",
           overflowX: "hidden",
-          transition: (theme) =>
-            theme.transitions.create("width", {
-              easing: theme.transitions.easing.sharp,
-              duration: isCollapsed
-                ? theme.transitions.duration.leavingScreen // collapsing
-                : theme.transitions.duration.enteringScreen, // expanding
-            }),
+          transition: widthTransition(isCollapsed),
         },
       }}
     >
-      <div
-        className={`py-4 border-b border-sidebar-border flex ${isCollapsed ? "flex-col gap-3 px-1" : "items-center justify-between px-4"}`}
-      >
-        <div className="flex items-center gap-2">
-          <img
-            src="/icon.svg"
-            alt="Logo"
-            className="w-10 h-10 object-contain flex-shrink-0"
-          />
-          <span
-            className="font-semibold text-sidebar-foreground whitespace-nowrap"
-            style={{
-              opacity: isCollapsed ? 0 : 1,
-              transition: "opacity 0.2s, width 0.3s",
-              width: isCollapsed ? 0 : "60px",
-              overflow: "hidden",
-            }}
-          >
-            FlowX
-          </span>
-        </div>
-        <Button
-          variant="text"
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="text-sidebar-foreground hover:bg-sidebar-accent transition-all duration-300"
-          sx={{ minWidth: "auto", p: 1 }}
-        >
-          {isCollapsed ? (
-            <ChevronRight className="w-4 h-4" />
-          ) : (
-            <ChevronLeft className="w-4 h-4" />
-          )}
-        </Button>
-      </div>
-
-      <List
-        component="nav"
-        aria-labelledby="sidebar-menu"
-        subheader={
-          <ListSubheader
-            component="div"
-            id="sidebar-menu"
-            sx={{ opacity: isCollapsed ? 0 : 1, transition: "opacity 0.3s" }}
-          >
-            Menu
-          </ListSubheader>
-        }
-      >
-        {menuItems.map(({ id, label, link, icon: Icon, subItems }) => {
-          const isActive = activeItem === id;
-          const isOpen = openItem === id;
-
-          return (
-            <React.Fragment key={id}>
-              <ListItemButton
-                selected={isActive}
-                onClick={() => handleItemClick(id, !!subItems)}
-                sx={{
-                  minHeight: 48,
-                  justifyContent: isCollapsed ? "center" : "initial",
-                  px: 2.5,
-                }}
-              >
-                {link ? (
-                  <Link
-                    href={link}
-                    className={`flex items-center gap-3 w-full ${isCollapsed ? "justify-center" : ""}`}
-                  >
-                    <ListItemIcon
-                      sx={{
-                        minWidth: 0,
-                        mr: isCollapsed ? 0 : 3,
-                        justifyContent: "center",
-                        transition: "margin 0.3s",
-                      }}
-                    >
-                      <Icon
-                        className={`flex-shrink-0 ${isCollapsed ? "w-6 h-6" : "w-4 h-4"}`}
-                        style={{ transition: "width 0.3s, height 0.3s" }}
-                      />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={label}
-                      sx={{
-                        opacity: isCollapsed ? 0 : 1,
-                        transition: "opacity 0.3s",
-                      }}
-                    />
-                  </Link>
-                ) : (
-                  <>
-                    <ListItemIcon
-                      sx={{
-                        minWidth: 0,
-                        mr: isCollapsed ? 0 : 3,
-                        justifyContent: "center",
-                        transition: "margin 0.3s",
-                      }}
-                    >
-                      <Icon
-                        className={`flex-shrink-0 ${isCollapsed ? "w-6 h-6" : "w-4 h-4"}`}
-                        style={{ transition: "width 0.3s, height 0.3s" }}
-                      />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={label}
-                      sx={{
-                        opacity: isCollapsed ? 0 : 1,
-                        transition: "opacity 0.3s",
-                      }}
-                    />
-                    {subItems && (
-                      <div
-                        style={{
-                          opacity: isCollapsed ? 0 : 1,
-                          transition: "opacity 0.3s",
-                        }}
-                      >
-                        {isOpen ? (
-                          <ChevronUp className="w-4 h-4" />
-                        ) : (
-                          <ChevronDown className="w-4 h-4" />
-                        )}
-                      </div>
-                    )}
-                  </>
-                )}
-              </ListItemButton>
-
-              {subItems && (
-                <Collapse
-                  in={isOpen && !isCollapsed}
-                  timeout="auto"
-                  unmountOnExit
-                >
-                  <List component="div" disablePadding>
-                    {subItems.map((sub) => (
-                      <ListItemButton key={sub.id} sx={{ pl: 4 }}>
-                        <Link
-                          href={sub.link || "#"}
-                          className="flex items-center gap-3 w-full"
-                        >
-                          <ListItemIcon>
-                            <sub.icon className="w-4 h-4" />
-                          </ListItemIcon>
-                          <ListItemText primary={sub.label} />
-                        </Link>
-                      </ListItemButton>
-                    ))}
-                  </List>
-                </Collapse>
-              )}
-            </React.Fragment>
-          );
-        })}
-      </List>
-
-      <Box
+      <Stack
+        direction={isCollapsed ? "column" : "row"}
+        alignItems="center"
+        justifyContent={isCollapsed ? "center" : "space-between"}
+        spacing={isCollapsed ? 1 : 0}
         sx={{
-          opacity: isCollapsed ? 0 : 1,
-          transition: "opacity 0.3s",
-          pointerEvents: isCollapsed ? "none" : "auto",
-          overflow: "hidden",
+          px: isCollapsed ? 0 : 2,
+          py: 2,
+          borderBottom: 1,
+          borderColor: "divider",
         }}
       >
-        <Box
-          sx={{
-            p: 2,
-            borderTop: "1px solid",
-            borderColor: "divider",
-            cursor: "pointer",
-            "&:hover": {
-              backgroundColor: "action.hover",
-            },
-          }}
-          onClick={() => setLogoutOpen(true)}
+        <Stack direction="row" alignItems="center" spacing={1.5}>
+          <Image src="/icon.svg" alt="FlowX logo" width={40} height={40} />
+          {!isCollapsed && (
+            <Typography variant="subtitle1" fontWeight={600}>
+              FlowX
+            </Typography>
+          )}
+        </Stack>
+        <IconButton
+          size="small"
+          onClick={() => setIsCollapsed((prev) => !prev)}
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          <Stack direction="row" spacing={2} alignItems="center">
-            <Avatar
-              sx={{
-                width: 32,
-                height: 32,
-                bgcolor: "primary.main",
-                color: "primary.contrastText",
-                fontSize: "0.75rem",
-              }}
-            >
-              {initials}
-            </Avatar>
+          {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+        </IconButton>
+      </Stack>
 
-            <Box sx={{ minWidth: 0 }}>
-              <Typography variant="body2" noWrap fontWeight={500}>
-                {fullName}
-              </Typography>
-              <Typography variant="caption" color="text.secondary" noWrap>
-                {email}
-              </Typography>
-            </Box>
-          </Stack>
-        </Box>
+      <Box
+        component="nav"
+        aria-label="Main navigation"
+        sx={{ flex: 1, overflowY: "auto", overflowX: "hidden" }}
+      >
+        <List
+          sx={{ pt: isCollapsed ? 1 : 0 }}
+          subheader={
+            isCollapsed ? undefined : (
+              <ListSubheader component="div">Menu</ListSubheader>
+            )
+          }
+        >
+          {menuItems.map((entry) => (
+            <SidebarNavItem
+              key={entry.id}
+              entry={entry}
+              collapsed={isCollapsed}
+              activeHref={activeHref}
+              open={openGroupId === entry.id}
+              onToggle={toggleGroup}
+            />
+          ))}
+        </List>
       </Box>
-      <Dialog open={logoutOpen} onClose={() => setLogoutOpen(false)}>
-        <DialogTitle>Confirm Logout</DialogTitle>
-        <DialogContent>Are you sure you want to log out?</DialogContent>
-        <DialogActions>
-          <Button onClick={() => setLogoutOpen(false)}>Cancel</Button>
-          <Button color="error" onClick={logout}>
-            Logout
-          </Button>
-        </DialogActions>
-      </Dialog>
+
+      <SidebarUserFooter
+        fullName={fullName}
+        email={email}
+        collapsed={isCollapsed}
+        onClick={() => setLogoutOpen(true)}
+      />
+
+      <LogoutDialog
+        open={logoutOpen}
+        onClose={() => setLogoutOpen(false)}
+        onConfirm={logout}
+      />
     </Drawer>
   );
 }

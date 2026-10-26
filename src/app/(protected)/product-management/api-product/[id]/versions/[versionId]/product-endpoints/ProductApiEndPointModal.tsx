@@ -2,7 +2,6 @@
 
 import {
   Dialog,
-  DialogTitle,
   DialogContent,
   DialogActions,
   Button,
@@ -10,6 +9,7 @@ import {
   Switch,
   FormControlLabel,
 } from "@mui/material";
+import ModalFormHeader from "@/components/molecules/ModalFormHeader";
 import { useEffect, useMemo } from "react";
 import { FormProvider, Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -198,11 +198,11 @@ export default function ProductApiEndpointModal({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>{isEditMode ? "Edit Endpoint" : "Add Endpoint"}</DialogTitle>
+      <ModalFormHeader title={isEditMode ? "Edit Endpoint" : "Add Endpoint"} description="Connect this endpoint to an executable API resource." />
 
       <FormProvider {...formMethods}>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogContent>
+          <DialogContent sx={{ p: 3 }}>
             <Grid container spacing={2} mt={1}>
               <Grid size={{ xs: 12, sm: 6 }}>
                 <FormTextField fullWidth label="Name" name="name" />
@@ -255,7 +255,7 @@ export default function ProductApiEndpointModal({
             </Grid>
           </DialogContent>
 
-          <DialogActions>
+          <DialogActions sx={{ px: 3, pb: 3 }}>
             <Button onClick={onClose} color="inherit">
               Cancel
             </Button>

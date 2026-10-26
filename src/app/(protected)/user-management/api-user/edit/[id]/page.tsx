@@ -61,11 +61,6 @@ export default function AddAppUser() {
     : undefined;
 
   return (
-    <Paper sx={{ p: 4 }}>
-      <Typography variant="h5" gutterBottom>
-        Update Api User
-      </Typography>
-
       <ApiUserForm
         onSubmit={onSubmit}
         defaultValue={defaultFormValue}
@@ -73,6 +68,5 @@ export default function AddAppUser() {
         isAdd={false}
         cancelUrl={routes["(protected)"]["user-management"]["api-user"].index}
       />
-    </Paper>
   );
 }

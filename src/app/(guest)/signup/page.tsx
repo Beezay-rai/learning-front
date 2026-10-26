@@ -5,12 +5,11 @@ import { useRouter } from "next/navigation";
 import {
   Box,
   Button,
-  Card,
-  CardContent,
   TextField,
   Typography,
   Alert,
 } from "@mui/material";
+import FormShell from "@/components/molecules/FormShell";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -66,25 +65,14 @@ export default function SignupPage() {
         backgroundColor: "#f5f5f5",
       }}
     >
-      <Card sx={{ width: 400, borderRadius: 3, boxShadow: 4 }}>
-        <CardContent>
-          <Typography
-            variant="h5"
-            component="h1"
-            textAlign="center"
-            fontWeight={600}
-            mb={3}
-          >
-            Sign Up
-          </Typography>
-
+      <Box sx={{ width: 400, maxWidth: "calc(100% - 32px)" }}>
+        <FormShell title="Create your account" description="Set up your workspace access in a few steps" component="form" onSubmit={handleSubmit(onSubmit)}>
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {error}
             </Alert>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <TextField
               fullWidth
               label="Full Name"
@@ -128,8 +116,6 @@ export default function SignupPage() {
             >
               Sign Up
             </Button>
-          </form>
-
           <Typography
             variant="body2"
             color="text.secondary"
@@ -138,8 +124,8 @@ export default function SignupPage() {
           >
             Already have an account? <a href="/login">Login</a>
           </Typography>
-        </CardContent>
-      </Card>
+        </FormShell>
+      </Box>
     </Box>
   );
 }

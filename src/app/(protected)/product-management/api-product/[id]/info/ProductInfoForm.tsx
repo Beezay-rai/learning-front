@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Button, Grid, FormControlLabel, Switch } from "@mui/material";
+import { Button, Grid, FormControlLabel, Switch } from "@mui/material";
 import { FormProvider, useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -10,6 +10,8 @@ import { useParams } from "next/navigation";
 import FormTextField from "@/components/molecules/FormTextField";
 import { routes } from "@/app/routes.generated";
 import { ProductInfoRequest } from "@/services/apiServices/orchestrator/useOrchestratorApiService";
+import FormShell from "@/components/molecules/FormShell";
+import FormActions from "@/components/molecules/FormActions";
 
 const productInfoSchema = yup.object({
   name: yup
@@ -55,7 +57,7 @@ export default function ProductInfoForm({
 
   return (
     <FormProvider {...formMethods}>
-      <form onSubmit={formMethods.handleSubmit(onSubmit)}>
+      <FormShell title={isAdd ? "Add Product Info" : "Update Product Info"} description="Add descriptive information and publishing status." component="form" onSubmit={formMethods.handleSubmit(onSubmit)}>
         <Grid container spacing={2} sx={{ p: 2 }}>
           <Grid size={5}>
             <FormTextField fullWidth label="Name" name="name" />
@@ -91,36 +93,8 @@ export default function ProductInfoForm({
           </Grid>
         </Grid>
 
-        <Box sx={{ display: "flex", gap: 2, m: 3 }}>
-          <Button
-            type="submit"
-            variant="contained"
-            color={isAdd ? "primary" : "warning"}
-            disabled={loading}
-            sx={{ minWidth: 120 }}
-          >
-            {loading
-              ? isAdd
-                ? "Adding..."
-                : "Updating..."
-              : isAdd
-                ? "Add Info"
-                : "Update"}
-          </Button>
-
-          <Link href={listHref}>
-            <Button
-              type="button"
-              variant="outlined"
-              color="error"
-              disabled={loading}
-              sx={{ minWidth: 120 }}
-            >
-              Cancel
-            </Button>
-          </Link>
-        </Box>
-      </form>
+        <FormActions submitLabel={isAdd ? "Add info" : "Update info"} loading={loading} cancel={<Link href={listHref}><Button type="button" color="inherit" disabled={loading}>Cancel</Button></Link>} />
+      </FormShell>
     </FormProvider>
   );
 }

@@ -22,12 +22,6 @@ export default function AddProduct() {
   };
 
   return (
-    <Paper sx={{ p: 4 }}>
-      <Typography variant="h5" gutterBottom>
-        Add Api Product
-      </Typography>
-
       <ApiProductForm onSubmit={submit} loading={isPending} isAdd={true} />
-    </Paper>
   );
 }

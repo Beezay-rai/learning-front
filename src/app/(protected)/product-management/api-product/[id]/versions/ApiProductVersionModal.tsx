@@ -2,7 +2,6 @@
 
 import {
   Dialog,
-  DialogTitle,
   DialogContent,
   DialogActions,
   Button,
@@ -20,6 +19,7 @@ import FormTextField from "@/components/molecules/FormTextField";
 import useOrchestratorApiService, {
   ProductVersion,
 } from "@/services/apiServices/orchestrator/useOrchestratorApiService";
+import ModalFormHeader from "@/components/molecules/ModalFormHeader";
 
 /* =======================
    Schema
@@ -122,11 +122,11 @@ export default function ApiProductVersionModal({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>{isEditMode ? "Edit Version" : "Add Version"}</DialogTitle>
+      <ModalFormHeader title={isEditMode ? "Edit Version" : "Add Version"} description="Manage the product version and its availability." />
 
       <FormProvider {...formMethods}>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogContent>
+          <DialogContent sx={{ p: 3 }}>
             <Grid container spacing={2} mt={1}>
               <Grid
                 size={{
@@ -172,7 +172,7 @@ export default function ApiProductVersionModal({
             </Grid>
           </DialogContent>
 
-          <DialogActions>
+          <DialogActions sx={{ px: 3, pb: 3 }}>
             <Button onClick={onClose} color="inherit">
               Cancel
             </Button>

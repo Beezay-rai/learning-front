@@ -88,17 +88,11 @@ export default function EditRoutePage() {
   }
 
   return (
-    <Paper sx={{ p: 4 }}>
-      <Typography sx={{ my: 3 }} variant="h5">
-        Update Route
-      </Typography>
-
       <RouteForm
         isAdd={false}
         onSubmit={onSubmit}
         loading={isSubmitting}
         defaultValue={route?.data}
       ></RouteForm>
-    </Paper>
   );
 }

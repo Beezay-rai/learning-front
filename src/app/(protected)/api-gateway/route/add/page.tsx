@@ -29,12 +29,6 @@ export default function AddRoutePage() {
   };
 
   return (
-    <Paper sx={{ p: 4 }}>
-      <Typography variant="h5" gutterBottom>
-        Add Route
-      </Typography>
-
       <RouteForm onSubmit={onSubmit} loading={isSubmitting}></RouteForm>
-    </Paper>
   );
 }

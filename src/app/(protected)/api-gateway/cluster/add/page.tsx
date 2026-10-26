@@ -79,11 +79,6 @@ export default function AddCluster() {
   };
 
   return (
-    <Paper sx={{ p: 4 }}>
-      <Typography variant="h5" gutterBottom>
-        Add Cluster
-      </Typography>
-      <ClusterForm onSubmit={onSubmit} loading={isSubmitting}></ClusterForm>
-    </Paper>
+    <ClusterForm onSubmit={onSubmit} loading={isSubmitting}></ClusterForm>
   );
 }

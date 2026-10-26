@@ -74,13 +74,7 @@ export default function EditRoutePage() {
     return <NotFound />;
   }
 
-  return (
-    <Paper sx={{ p: 4 }}>
-      <Typography sx={{ mb: 3 }} variant="h5">
-        Update Api
-      </Typography>
-
-      {restApiBuilderLoading ? (
+  return restApiBuilderLoading ? (
         <CircularProgress color="inherit" />
       ) : (
         <RestBuilderForm
@@ -89,7 +83,5 @@ export default function EditRoutePage() {
           loading={isSubmitting}
           defaultValue={restApiBuilder?.data}
         ></RestBuilderForm>
-      )}
-    </Paper>
-  );
+      );
 }

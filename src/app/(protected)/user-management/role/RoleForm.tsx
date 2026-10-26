@@ -14,6 +14,8 @@ import {
   RoleModel,
   UpdateRoleRequest,
 } from "@/services/apiServices/idsrv/interface/RoleModel";
+import FormShell from "@/components/molecules/FormShell";
+import FormActions from "@/components/molecules/FormActions";
 
 interface RoleFormProps {
   onSubmit: (data: AddRoleRequest | UpdateRoleRequest) => void;
@@ -40,7 +42,7 @@ export default function RoleForm({
 
   return (
     <FormProvider {...formMethods}>
-      <form onSubmit={formMethods.handleSubmit(onSubmit)}>
+      <FormShell title={isAdd ? "Add Role" : "Update Role"} description="Define a role and the user type it applies to." component="form" onSubmit={formMethods.handleSubmit(onSubmit)}>
         <Grid container spacing={2} sx={{ p: 2 }}>
           <Grid size={6}>
             <FormTextField fullWidth label="Role Name" name="name" />
@@ -66,36 +68,8 @@ export default function RoleForm({
           </Grid>
         </Grid>
 
-        <Box sx={{ display: "flex", gap: 2, m: 3 }}>
-          <Button
-            type="submit"
-            variant="contained"
-            color={isAdd ? "primary" : "warning"}
-            disabled={loading}
-            sx={{ minWidth: 120 }}
-          >
-            {loading
-              ? isAdd
-                ? "Adding..."
-                : "Updating..."
-              : isAdd
-              ? "Add Role"
-              : "Update"}
-          </Button>
-
-          <Link href={routes["(protected)"]["user-management"].role.index}>
-            <Button
-              type="button"
-              variant="outlined"
-              color="error"
-              disabled={loading}
-              sx={{ minWidth: 120 }}
-            >
-              Cancel
-            </Button>
-          </Link>
-        </Box>
-      </form>
+        <FormActions submitLabel={isAdd ? "Add role" : "Update role"} loading={loading} cancel={<Link href={routes["(protected)"]["user-management"].role.index}><Button type="button" color="inherit" disabled={loading}>Cancel</Button></Link>} />
+      </FormShell>
     </FormProvider>
   );
 }

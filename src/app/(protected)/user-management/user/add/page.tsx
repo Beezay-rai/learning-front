@@ -27,17 +27,11 @@ export default function AddAppUser() {
   };
 
   return (
-    <Paper sx={{ p: 4 }}>
-      <Typography variant="h5" gutterBottom>
-        Add User
-      </Typography>
-
       <UserForm
         onSubmit={submit}
         loading={isPending}
         isAdd={true}
         cancelUrl={routes["(protected)"]["user-management"]["user"].index}
       />
-    </Paper>
   );
 }

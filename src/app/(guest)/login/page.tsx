@@ -5,12 +5,11 @@ import { useState } from "react";
 import {
   Box,
   Button,
-  Card,
-  CardContent,
   TextField,
   Typography,
   Alert,
 } from "@mui/material";
+import FormShell from "@/components/molecules/FormShell";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -60,25 +59,14 @@ export default function LoginPage() {
         backgroundColor: "#f5f5f5",
       }}
     >
-      <Card sx={{ width: 400, borderRadius: 3, boxShadow: 4 }}>
-        <CardContent>
-          <Typography
-            variant="h5"
-            component="h1"
-            textAlign="center"
-            fontWeight={600}
-            mb={3}
-          >
-            Login
-          </Typography>
-
+      <Box sx={{ width: 400, maxWidth: "calc(100% - 32px)" }}>
+        <FormShell title="Welcome back" description="Sign in to continue to your workspace" component="form" onSubmit={handleSubmit(onSubmit)}>
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {error}
             </Alert>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <TextField
               fullWidth
               label="Email"
@@ -108,8 +96,6 @@ export default function LoginPage() {
             >
               Sign In
             </Button>
-          </form>
-
           <Typography
             variant="body2"
             color="text.secondary"
@@ -118,8 +104,8 @@ export default function LoginPage() {
           >
             Don’t have an account? <a href="/signup">Sign up</a>
           </Typography>
-        </CardContent>
-      </Card>
+        </FormShell>
+      </Box>
     </Box>
   );
 }

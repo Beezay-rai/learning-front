@@ -56,13 +56,7 @@ export default function AddAppUser() {
     <CircularProgress size={24} />;
   }
 
-  return (
-    <Paper sx={{ p: 4 }}>
-      <Typography variant="h5" gutterBottom>
-        Update User
-      </Typography>
-
-      {isUserLoading ? (
+  return isUserLoading ? (
         <CircularProgress size={24} />
       ) : (
         <UserForm
@@ -72,7 +66,5 @@ export default function AddAppUser() {
           isAdd={false}
           cancelUrl={routes["(protected)"]["user-management"]["user"].index}
         />
-      )}
-    </Paper>
-  );
+      );
 }

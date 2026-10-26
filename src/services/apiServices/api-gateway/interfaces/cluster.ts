@@ -1,4 +1,4 @@
-import { BaseEntity } from "./common/baseEntitiy";
+import { BaseEntity } from "./common/baseEntity";
 
 export interface AddClusterDestination {
   name: string;

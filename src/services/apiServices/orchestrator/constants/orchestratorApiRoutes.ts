@@ -1,4 +1,4 @@
-export const ORCHESTRATOR_API_ROUTES = {
+export const orchestratorApiRoutes = {
   builder: {
     restApi: "api/builder/rest-api",
     soapApi: "api/builder/soap-api",

@@ -39,11 +39,6 @@ export default function AddProductInfo() {
   };
 
   return (
-    <Paper sx={{ p: 4 }}>
-      <Typography variant="h5" gutterBottom>
-        Add Product Info
-      </Typography>
       <ProductInfoForm onSubmit={onSubmit} loading={isPending} isAdd={true} />
-    </Paper>
   );
 }

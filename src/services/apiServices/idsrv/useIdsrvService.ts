@@ -5,7 +5,7 @@ import {
   UseQueryOptions,
 } from "@tanstack/react-query";
 import { idsrvApi } from "@/lib/apis";
-import { idsrvAPIRoutes } from "./idsrvAPIRoutes";
+import { idsrvApiRoutes } from "./idsrvApiRoutes";
 import {
   PaginatedResponse,
   PaginationRequest,
@@ -63,7 +63,7 @@ export default function useIdsrvService() {
     (
       await idsrvApi.get<
         IdsrvApiDataResponse<PaginatedResponse<IdentityClientModel>>
-      >(idsrvAPIRoutes.clients, {
+      >(idsrvApiRoutes.clients, {
         ...apiConfig,
         axios_config: {
           params: pagination,
@@ -74,7 +74,7 @@ export default function useIdsrvService() {
   const getClientById = async (id: number) =>
     (
       await idsrvApi.get<IdsrvApiDataResponse<IdentityClientModel>>(
-        `${idsrvAPIRoutes.clients}/${id}`,
+        `${idsrvApiRoutes.clients}/${id}`,
         apiConfig,
       )
     ).data;
@@ -82,7 +82,7 @@ export default function useIdsrvService() {
   const addClient = async (payload: AddIdentityClientRequest) =>
     (
       await idsrvApi.post<IdsrvApiDataResponse<IdentityClientModel>>(
-        idsrvAPIRoutes.clients,
+        idsrvApiRoutes.clients,
         payload,
         apiConfig,
       )
@@ -97,7 +97,7 @@ export default function useIdsrvService() {
   }) =>
     (
       await idsrvApi.put<IdsrvApiDataResponse<IdentityClientModel>>(
-        `${idsrvAPIRoutes.clients}/${id}`,
+        `${idsrvApiRoutes.clients}/${id}`,
         payload,
         apiConfig,
       )
@@ -106,7 +106,7 @@ export default function useIdsrvService() {
   const deleteClient = async (id: number) =>
     (
       await idsrvApi.delete<IdsrvApiResponse>(
-        `${idsrvAPIRoutes.clients}/${id}`,
+        `${idsrvApiRoutes.clients}/${id}`,
         apiConfig,
       )
     ).data;
@@ -117,7 +117,7 @@ export default function useIdsrvService() {
     (
       await idsrvApi.get<
         IdsrvApiDataResponse<PaginatedResponse<ApiScopeModel>>
-      >(idsrvAPIRoutes.apiScopes, {
+      >(idsrvApiRoutes.apiScopes, {
         ...apiConfig,
         axios_config: {
           params: pagination,
@@ -128,7 +128,7 @@ export default function useIdsrvService() {
   const getApiScopeById = async (id: number) =>
     (
       await idsrvApi.get<IdsrvApiDataResponse<ApiScopeModel>>(
-        `${idsrvAPIRoutes.apiScopes}/${id}`,
+        `${idsrvApiRoutes.apiScopes}/${id}`,
         apiConfig,
       )
     ).data;
@@ -136,7 +136,7 @@ export default function useIdsrvService() {
   const addApiScope = async (payload: AddApiScopeRequest) =>
     (
       await idsrvApi.post<IdsrvApiDataResponse<ApiScopeModel>>(
-        idsrvAPIRoutes.apiScopes,
+        idsrvApiRoutes.apiScopes,
         payload,
         apiConfig,
       )
@@ -151,7 +151,7 @@ export default function useIdsrvService() {
   }) =>
     (
       await idsrvApi.put<IdsrvApiDataResponse<ApiScopeModel>>(
-        `${idsrvAPIRoutes.apiScopes}/${id}`,
+        `${idsrvApiRoutes.apiScopes}/${id}`,
         payload,
         apiConfig,
       )
@@ -160,7 +160,7 @@ export default function useIdsrvService() {
   const deleteApiScope = async (id: number) =>
     (
       await idsrvApi.delete<IdsrvApiResponse>(
-        `${idsrvAPIRoutes.apiScopes}/${id}`,
+        `${idsrvApiRoutes.apiScopes}/${id}`,
         apiConfig,
       )
     ).data;
@@ -170,7 +170,7 @@ export default function useIdsrvService() {
   ) =>
     (
       await idsrvApi.get<IdsrvApiDataResponse<PaginatedResponse<UserModel>>>(
-        idsrvAPIRoutes.users,
+        idsrvApiRoutes.users,
         {
           ...apiConfig,
           axios_config: {
@@ -183,7 +183,7 @@ export default function useIdsrvService() {
   const getUserById = async (id: number) =>
     (
       await idsrvApi.get<IdsrvApiDataResponse<UserModel>>(
-        `${idsrvAPIRoutes.users}/${id}`,
+        `${idsrvApiRoutes.users}/${id}`,
         apiConfig,
       )
     ).data;
@@ -191,7 +191,7 @@ export default function useIdsrvService() {
   const addUser = async (payload: AddUserRequest) =>
     (
       await idsrvApi.post<IdsrvApiDataResponse<UserModel>>(
-        idsrvAPIRoutes.users,
+        idsrvApiRoutes.users,
         payload,
         apiConfig,
       )
@@ -206,7 +206,7 @@ export default function useIdsrvService() {
   }) =>
     (
       await idsrvApi.put<IdsrvApiDataResponse<UserModel>>(
-        `${idsrvAPIRoutes.users}/${id}`,
+        `${idsrvApiRoutes.users}/${id}`,
         payload,
         apiConfig,
       )
@@ -215,7 +215,7 @@ export default function useIdsrvService() {
   const deleteUser = async (id: number) =>
     (
       await idsrvApi.delete<IdsrvApiResponse>(
-        `${idsrvAPIRoutes.users}/${id}`,
+        `${idsrvApiRoutes.users}/${id}`,
         apiConfig,
       )
     ).data;
@@ -285,7 +285,7 @@ export default function useIdsrvService() {
   ) =>
     (
       await idsrvApi.get<IdsrvApiDataResponse<PaginatedResponse<RoleModel>>>(
-        idsrvAPIRoutes.roles,
+        idsrvApiRoutes.roles,
         {
           ...apiConfig,
           axios_config: {
@@ -298,7 +298,7 @@ export default function useIdsrvService() {
   const getRoleById = async (id: number) =>
     (
       await idsrvApi.get<IdsrvApiDataResponse<RoleModel>>(
-        `${idsrvAPIRoutes.roles}/${id}`,
+        `${idsrvApiRoutes.roles}/${id}`,
         apiConfig,
       )
     ).data;
@@ -306,7 +306,7 @@ export default function useIdsrvService() {
   const addRole = async (payload: AddRoleRequest) =>
     (
       await idsrvApi.post<IdsrvApiDataResponse<RoleModel>>(
-        idsrvAPIRoutes.roles,
+        idsrvApiRoutes.roles,
         payload,
         apiConfig,
       )
@@ -321,7 +321,7 @@ export default function useIdsrvService() {
   }) =>
     (
       await idsrvApi.put<IdsrvApiDataResponse<RoleModel>>(
-        `${idsrvAPIRoutes.roles}/${id}`,
+        `${idsrvApiRoutes.roles}/${id}`,
         payload,
         apiConfig,
       )
@@ -330,7 +330,7 @@ export default function useIdsrvService() {
   const deleteRole = async (id: number) =>
     (
       await idsrvApi.delete<IdsrvApiResponse>(
-        `${idsrvAPIRoutes.roles}/${id}`,
+        `${idsrvApiRoutes.roles}/${id}`,
         apiConfig,
       )
     ).data;

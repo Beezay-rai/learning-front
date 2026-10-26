@@ -86,11 +86,6 @@ export default function AddRestApi() {
     }
   };
   return (
-    <Paper sx={{ p: 4 }}>
-      <Typography sx={{ mb: 3 }} variant="h5">
-        Add Api
-      </Typography>
       <RestBuilderForm onSubmit={onSubmit}></RestBuilderForm>
-    </Paper>
   );
 }

@@ -41,12 +41,6 @@ export default function AddAppRole() {
   };
 
   return (
-    <Paper sx={{ p: 4 }}>
-      <Typography variant="h5" gutterBottom>
-        Add Role
-      </Typography>
-
       <RoleForm onSubmit={submit} loading={isPending} isAdd={true} />
-    </Paper>
   );
 }

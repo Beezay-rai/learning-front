@@ -57,13 +57,7 @@ export default function AddAppRole() {
     return <NotFound />;
   }
 
-  return (
-    <Paper sx={{ p: 4 }}>
-      <Typography variant="h5" gutterBottom>
-        Update Role
-      </Typography>
-
-      {isRoleLoading ? (
+  return isRoleLoading ? (
         <CircularProgress size={24} />
       ) : (
         <RoleForm
@@ -72,7 +66,5 @@ export default function AddAppRole() {
           loading={isSubmitting}
           isAdd={false}
         />
-      )}
-    </Paper>
-  );
+      );
 }

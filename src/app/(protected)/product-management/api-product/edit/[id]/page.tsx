@@ -47,17 +47,11 @@ export default function UpdateProduct() {
     return <NotFound />;
   }
   return (
-    <Paper sx={{ p: 4 }}>
-      <Typography variant="h5" gutterBottom>
-        Edit Api Product
-      </Typography>
-
       <ApiProductForm
         onSubmit={submit}
         loading={isPending}
         isAdd={false}
         defaultValue={apiProduct?.data as unknown as ApiProductRequest}
       />
-    </Paper>
   );
 }

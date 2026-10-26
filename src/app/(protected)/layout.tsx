@@ -1,10 +1,10 @@
-import { SideBar } from "@/app/(protected)/components/layout/sidebar";
-import Breadcrumbs from "./components/layout/breadcrumb";
-import { TopBar } from "./components/layout/topbar";
+import AuthProvider from "@/providers/AuthProvider";
 import MyQueryClientProvider from "@/providers/MyQueryClientProvider";
 import { ToastContainer } from "react-toastify";
-import AuthProvider from "@/providers/AuthProvider";
-import NetworkLogPanel from "./components/network-log-panel";
+import Breadcrumbs from "./components/layout/breadcrumb";
+import { Sidebar } from "./components/layout/SideBar";
+import { TopBar } from "./components/layout/topbar";
+import NetworkLogPanel from "./components/NetworkLogPanel";
 
 export default function ProtectedLayout({
   children,
@@ -15,7 +15,7 @@ export default function ProtectedLayout({
     <AuthProvider>
       <MyQueryClientProvider>
         <div className="flex h-screen">
-          <SideBar />
+          <Sidebar />
           <div className="flex flex-col flex-1 overflow-hidden">
             <TopBar />
             <main className="flex-1 overflow-auto transition-all duration-300">

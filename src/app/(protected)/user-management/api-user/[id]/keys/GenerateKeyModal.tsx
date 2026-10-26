@@ -6,7 +6,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
   Grid,
 } from "@mui/material";
 import { FormProvider, useForm } from "react-hook-form";
@@ -14,6 +13,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import FormTextField from "@/components/molecules/FormTextField";
 import { ApiUserKeyRequest } from "@/services/apiServices/core/interface/apiUserModel";
+import ModalFormHeader from "@/components/molecules/ModalFormHeader";
 
 const keySchema = yup.object({
   keyName: yup.string().required("Key name is required").max(100),
@@ -57,11 +57,11 @@ export default function GenerateKeyModal({
       maxWidth="sm"
       fullWidth
     >
-      <DialogTitle>Generate New Key</DialogTitle>
+      <ModalFormHeader title="Generate New Key" description="Create a credential for this API user." />
 
       <FormProvider {...formMethods}>
         <form onSubmit={formMethods.handleSubmit(handleFormSubmit)}>
-          <DialogContent dividers>
+          <DialogContent sx={{ p: 3 }}>
             <Grid container spacing={3}>
               <Grid size={12}>
                 <FormTextField
@@ -83,11 +83,11 @@ export default function GenerateKeyModal({
               </Grid>
             </Grid>
           </DialogContent>
-          <DialogActions sx={{ p: 2 }}>
+          <DialogActions sx={{ px: 3, pb: 3 }}>
             <Button
               onClick={handleClose}
-              variant="outlined"
-              color="error"
+              variant="text"
+              color="inherit"
               disabled={loading}
             >
               Cancel

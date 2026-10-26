@@ -24,6 +24,8 @@ import FormSelect from "@/components/molecules/FormSelect";
 import FormUtility from "@/utils/formUtility";
 import { UserType } from "@/services/apiServices/idsrv/enums/UserType";
 import FormRoleSelect from "@/components/molecules/FormRoleSelect";
+import FormShell from "@/components/molecules/FormShell";
+import FormActions from "@/components/molecules/FormActions";
 
 interface UserFormProps {
   onSubmit: (data: AddUserRequest | UpdateUserRequest) => void;
@@ -49,11 +51,9 @@ export default function UserForm({
 
   return (
     <FormProvider {...formMethods}>
-      <form
-        onSubmit={formMethods.handleSubmit(onSubmit, (errors) => {
+      <FormShell title={isAdd ? "Add System User" : "Update System User"} description="Set the user's profile, role, and contact details." component="form" onSubmit={formMethods.handleSubmit(onSubmit, (errors) => {
           console.log("❌ Form Submission Errors:", errors);
-        })}
-      >
+        })}>
         <Grid
           container
           spacing={2}
@@ -90,36 +90,8 @@ export default function UserForm({
           </Grid>
         </Grid>
 
-        <Box sx={{ display: "flex", gap: 2, m: 3 }}>
-          <Button
-            type="submit"
-            variant="contained"
-            color={isAdd ? "primary" : "warning"}
-            disabled={loading}
-            sx={{ minWidth: 120 }}
-          >
-            {loading
-              ? isAdd
-                ? "Adding..."
-                : "Updating..."
-              : isAdd
-              ? "Add User"
-              : "Update"}
-          </Button>
-
-          <Link href={routes["(protected)"]["user-management"].user.index}>
-            <Button
-              type="button"
-              variant="outlined"
-              color="error"
-              disabled={loading}
-              sx={{ minWidth: 120 }}
-            >
-              Cancel
-            </Button>
-          </Link>
-        </Box>
-      </form>
+        <FormActions submitLabel={isAdd ? "Add user" : "Update user"} loading={loading} cancel={<Link href={cancelUrl}><Button type="button" color="inherit" disabled={loading}>Cancel</Button></Link>} />
+      </FormShell>
     </FormProvider>
   );
 }

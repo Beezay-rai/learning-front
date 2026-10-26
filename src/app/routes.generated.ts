@@ -32,7 +32,17 @@ export const routes = {
       },
     },
     configure: {
-      index: "/configure",
+      idsrv: {
+        index: "/configure/idsrv",
+        clients: {
+          add: { index: "/configure/idsrv/clients/add" },
+          edit: { index: "/configure/idsrv/clients/edit/" },
+        },
+        scopes: {
+          add: { index: "/configure/idsrv/scopes/add" },
+          edit: { index: "/configure/idsrv/scopes/edit/" },
+        },
+      },
       "ca-certificate": {
         index: "/configure/ca-certificate",
       },

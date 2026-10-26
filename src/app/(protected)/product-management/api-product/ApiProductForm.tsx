@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Button, Grid } from "@mui/material";
+import { Button, Grid } from "@mui/material";
 import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -8,6 +8,8 @@ import Link from "next/link";
 
 import FormTextField from "@/components/molecules/FormTextField";
 import { routes } from "@/app/routes.generated";
+import FormShell from "@/components/molecules/FormShell";
+import FormActions from "@/components/molecules/FormActions";
 
 const apiProductSchema = yup.object({
   name: yup.string().required("Name is required").max(50, "Max 50 characters"),
@@ -44,7 +46,7 @@ export default function ApiProductForm({
 
   return (
     <FormProvider {...formMethods}>
-      <form onSubmit={formMethods.handleSubmit(onSubmit)}>
+      <FormShell title={isAdd ? "Add API Product" : "Update API Product"} description="Define the public details and base address for this API." component="form" onSubmit={formMethods.handleSubmit(onSubmit)}>
         <Grid container spacing={2} sx={{ p: 2 }}>
           <Grid size={4}>
             <FormTextField fullWidth label="Name" name="name" />
@@ -63,36 +65,8 @@ export default function ApiProductForm({
           </Grid>
         </Grid>
 
-        <Box sx={{ display: "flex", gap: 2, m: 3 }}>
-          <Button
-            type="submit"
-            variant="contained"
-            color={isAdd ? "primary" : "warning"}
-            disabled={loading}
-            sx={{ minWidth: 120 }}
-          >
-            {loading
-              ? isAdd
-                ? "Adding..."
-                : "Updating..."
-              : isAdd
-                ? "Add Product"
-                : "Update"}
-          </Button>
-
-          <Link href={routes["(protected)"]["product-management"]["api-product"].index}>
-            <Button
-              type="button"
-              variant="outlined"
-              color="error"
-              disabled={loading}
-              sx={{ minWidth: 120 }}
-            >
-              Cancel
-            </Button>
-          </Link>
-        </Box>
-      </form>
+        <FormActions submitLabel={isAdd ? "Add product" : "Update product"} loading={loading} cancel={<Link href={routes["(protected)"]["product-management"]["api-product"].index}><Button type="button" color="inherit" disabled={loading}>Cancel</Button></Link>} />
+      </FormShell>
     </FormProvider>
   );
 }

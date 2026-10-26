@@ -20,6 +20,8 @@ import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import useApiGatewayService from "@/services/apiServices/api-gateway/useApiGatewayService";
+import FormShell from "@/components/molecules/FormShell";
+import FormActions from "@/components/molecules/FormActions";
 
 const methodOptions = ["GET", "POST", "PUT", "DELETE", "PATCH"];
 
@@ -68,11 +70,8 @@ export default function RouteForm({
   });
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit(onSubmit)}
-      sx={{ display: "flex", flexDirection: "column", gap: 3 }}
-    >
+    <FormShell title={isAdd ? "Add Route" : "Update Route"} description="Connect an API path to a gateway cluster." component="form" onSubmit={handleSubmit(onSubmit)}>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       <Grid container spacing={3}>
         <Grid size={4}>
           <Controller
@@ -168,35 +167,8 @@ export default function RouteForm({
         </Grid>
       </Grid>
 
-      <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
-        <Button
-          type="submit"
-          variant="contained"
-          color={isAdd ? "primary" : "warning"}
-          disabled={loading}
-          sx={{ minWidth: 120 }}
-        >
-          {loading
-            ? isAdd
-              ? "Adding..."
-              : "Updating..."
-            : isAdd
-              ? "Add Route"
-              : "Update"}
-        </Button>
-
-        <Link href={routes["(protected)"]["api-gateway"].route.index}>
-          <Button
-            type="button"
-            variant="outlined"
-            color="error"
-            disabled={loading}
-            sx={{ minWidth: 120 }}
-          >
-            Cancel
-          </Button>
-        </Link>
+      <FormActions submitLabel={isAdd ? "Add route" : "Update route"} loading={loading} cancel={<Link href={routes["(protected)"]["api-gateway"].route.index}><Button type="button" color="inherit" disabled={loading}>Cancel</Button></Link>} />
       </Box>
-    </Box>
+    </FormShell>
   );
 }
