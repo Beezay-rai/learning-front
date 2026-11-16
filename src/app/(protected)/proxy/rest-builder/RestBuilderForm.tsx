@@ -238,13 +238,12 @@ export default function RestBuilderForm({
     setApiLoading(true);
     setResponse(null);
     const start = performance.now();
-
-    try {
-      const test = headers?.reduce<Record<string, string>>((acc, x) => {
+    const proxyHeaders = headers?.reduce<Record<string, string>>((acc, x) => {
         acc[x.key] = x.value;
         return acc;
       }, {});
 
+    try {
       const res = await fetch("/api/proxy", {
         method: "POST",
         body: JSON.stringify({
@@ -252,7 +251,7 @@ export default function RestBuilderForm({
           method: method,
           headers: {
             ...requestHeaders,
-            ...test,
+            ...proxyHeaders,
           },
           body: requestBody,
         }),

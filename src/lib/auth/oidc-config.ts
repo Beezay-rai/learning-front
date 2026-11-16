@@ -1,7 +1,9 @@
 import { UserManager, UserManagerSettings } from "oidc-client-ts";
 
 export const oidcConfig: UserManagerSettings = {
-  authority: process.env.IDENTITY_SERVER_URL_DEV ?? "https://localhost:5082",
+  authority:
+    process.env.NEXT_PUBLIC_IDENTITY_SERVER_URL_DEV ??
+    "http://idsrv.runasp.net",
   client_id: "nextjs-app",
   redirect_uri: "http://localhost:3000/callback",
   post_logout_redirect_uri: "http://localhost:3000",

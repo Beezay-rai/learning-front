@@ -4,7 +4,9 @@ import { WebStorageStateStore } from "oidc-client-ts";
 const appBaseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
 const config: UserManagerSettings = {
-  authority: process.env.NEXT_PUBLIC_IDENTITY_SERVER_URL_DEV ?? "https://localhost:5082",
+  authority:
+    process.env.NEXT_PUBLIC_IDENTITY_SERVER_URL_DEV ??
+    "https://idsrv.runasp.net",
   client_id: "nextjs-app",
   redirect_uri: `${appBaseUrl}/callback`,
   post_logout_redirect_uri: `${appBaseUrl}`,
